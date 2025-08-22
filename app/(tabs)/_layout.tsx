@@ -25,14 +25,17 @@ const TabsLayout = () => {
           backgroundColor: 'transparent',
           marginHorizontal: 30,
           height: 70,
-          position: 'absolute'
-        }
+          position: 'absolute',
+          
+        },
       }}
     >
       <Tabs.Screen
         name='profile'
         options={{
-          // title: 'connect',
+          sceneStyle: {
+            backgroundColor: '#f5ea6e'
+          },
           tabBarIcon: ({focused}) => (
             <TabBarIcon 
             focused={focused}
@@ -44,6 +47,9 @@ const TabsLayout = () => {
       <Tabs.Screen
         name='index'
         options={{
+          sceneStyle: {
+            backgroundColor: '#f5ea6e'
+          },
           tabBarIcon: ({focused}) => (
             <TabBarIcon 
             focused={focused}
@@ -55,6 +61,9 @@ const TabsLayout = () => {
       <Tabs.Screen
         name='settings'
         options={{
+          sceneStyle: {
+            backgroundColor: '#f5ea6e'
+          },
           tabBarIcon: ({focused}) => (
             <TabBarIcon 
             focused={focused}
