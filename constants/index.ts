@@ -3,11 +3,15 @@ import search from '@/assets/icons/search.png';
 import settings from '@/assets/icons/settings.png';
 import buritto from "@/assets/images/buritto.png";
 import ket from '@/assets/images/ket.jpg';
+import mrEggPlant from '@/assets/images/mrEggPlant.jpg';
+import penthouseKet from '@/assets/images/penthouseKet.jpg';
 
 
 export const images = {
     ket,
-    buritto
+    buritto,
+    mrEggPlant,
+    penthouseKet
 };
 
 export const icons = {
