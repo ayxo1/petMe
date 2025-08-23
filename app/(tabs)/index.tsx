@@ -50,21 +50,26 @@ const ProfileCard = ({ profileImage, profileName, profileDescription }: ProfileC
             />
           </ImageBackground>
       </View>
-        <View className="absolute bottom-24 left-0 right-0">
+        <View className="absolute bottom-36 left-0 right-0">
           <Text
-            className="font-bold text-4xl  text-primary text-center mb-2"
+            className="font-bold text-4xl text-primary text-center"
+            numberOfLines={1}
           >
             {profileName}
           </Text>
-          <Text
-            className="text-xl mx-8 text-white"
-            numberOfLines={2}
-          >
-            {profileDescription}
-          </Text>
         </View>
-      </>
-      )
+      <View
+        className="absolute  left-0 right-0 bottom-16 h-16 justify-start"
+      >
+        <Text
+          className="text-xl mx-8 text-white"
+          numberOfLines={2}
+        >
+          {profileDescription}
+        </Text>
+      </View>
+  </>
+  )
 }
 
 
