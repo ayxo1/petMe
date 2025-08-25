@@ -1,6 +1,6 @@
 import { icons } from '@/constants'
 import { TabBarIconProps } from '@/type'
-import { Tabs } from 'expo-router'
+import { Redirect, Tabs } from 'expo-router'
 import { Image, View } from 'react-native'
 
 const TabBarIcon = ({focused, icon}: TabBarIconProps) => (
@@ -15,6 +15,11 @@ const TabBarIcon = ({focused, icon}: TabBarIconProps) => (
 )
 
 const TabsLayout = () => {
+
+  const isAuthenticated = false;
+
+  if(!isAuthenticated) return <Redirect href='/signin' />
+
   return (
     <Tabs
       screenOptions={{
@@ -58,6 +63,20 @@ const TabsLayout = () => {
           ),
         }}
       />
+        <Tabs.Screen
+          name='shelter'
+          options={{
+            sceneStyle: {
+              backgroundColor: '#f5ea6e'
+            },
+            tabBarIcon: ({focused}) => (
+              <TabBarIcon 
+              focused={focused}
+              icon={icons.shelter}
+              />
+            ),
+          }}
+        />
       <Tabs.Screen
         name='settings'
         options={{
