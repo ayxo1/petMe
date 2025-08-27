@@ -1,7 +1,8 @@
-import { icons } from '@/constants'
-import { TabBarIconProps } from '@/type'
-import { Redirect, Tabs } from 'expo-router'
-import { Image, View } from 'react-native'
+import { icons } from '@/constants';
+import { TabBarIconProps } from '@/type';
+import { Redirect, Tabs } from 'expo-router';
+import { Image, View } from 'react-native';
+
 
 const TabBarIcon = ({focused, icon}: TabBarIconProps) => (
   <View>
@@ -12,9 +13,11 @@ const TabBarIcon = ({focused, icon}: TabBarIconProps) => (
       tintColor={focused ? '#ffffff' : '#000000'}
     />
   </View>
-)
+);
 
 const TabsLayout = () => {
+
+  const backgroundColor = '#f5c66e';
 
   const isAuthenticated = false;
 
@@ -39,7 +42,7 @@ const TabsLayout = () => {
         name='profile'
         options={{
           sceneStyle: {
-            backgroundColor: '#f5ea6e'
+            backgroundColor
           },
           tabBarIcon: ({focused}) => (
             <TabBarIcon 
@@ -53,7 +56,7 @@ const TabsLayout = () => {
         name='index'
         options={{
           sceneStyle: {
-            backgroundColor: '#f5ea6e'
+            backgroundColor
           },
           tabBarIcon: ({focused}) => (
             <TabBarIcon 
@@ -67,7 +70,7 @@ const TabsLayout = () => {
           name='shelter'
           options={{
             sceneStyle: {
-              backgroundColor: '#f5ea6e'
+              backgroundColor
             },
             tabBarIcon: ({focused}) => (
               <TabBarIcon 
@@ -81,7 +84,7 @@ const TabsLayout = () => {
         name='settings'
         options={{
           sceneStyle: {
-            backgroundColor: '#f5ea6e'
+            backgroundColor
           },
           tabBarIcon: ({focused}) => (
             <TabBarIcon 
