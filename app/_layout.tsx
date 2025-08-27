@@ -3,6 +3,6 @@ import './globals.css';
 
 export default function RootLayout() {
   return <Stack 
-  screenOptions={{ headerShown: false, contentStyle: {backgroundColor: '#f5ea6e'}}}
+  screenOptions={{ headerShown: false, contentStyle: {backgroundColor: '#f5c66e'}}}
   />;
 }
