@@ -1,34 +1,32 @@
-import ButtonComponent from '@/components/ButtonComponent';
-import InputComponent from '@/components/InputComponent';
+import FormComponent from '@/components/FormComponent';
+import { FormInputData } from '@/type';
 import { Link } from 'expo-router';
 import { Text, View } from 'react-native';
 
+const formInputData: FormInputData[] = [
+  {
+    name: 'email',
+    placeholder: 'enter your email',
+    label: 'email',
+    keyboardType: "email-address",
+  },
+  {
+    name: 'password',
+    placeholder: 'enter your password',
+    label: 'password',
+    keyboardType: "default",
+  },
+];
+
 const SignIn = () => {
   return (
-    <View
-      className='gap-3 rounded-lg p-5 mt-5'
-    >
-      <InputComponent 
-        placeholder='enter your email'
-        value=''
-        onChangeText={() => {}}
-        label='email'
-        keyboardType="email-address"
-      />
-      <InputComponent 
-        placeholder='enter your password'
-        value=''
-        onChangeText={() => {}}
-        label='password'
-        secureTextEntry={true}
-      />
-      <ButtonComponent title='sign in' />
-
+    <View>
+      <FormComponent formInputData={formInputData} />
       <View
         className='flex justify-center flex-row mt-5 gap-2 border-t border-primary p-3'
       >
         <Text>
-          new here?
+          no account?
         </Text>
         <Link 
           href={'/(auth)/signup'}
