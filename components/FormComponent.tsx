@@ -1,15 +1,19 @@
 import ButtonComponent from '@/components/ButtonComponent';
 import InputController from '@/components/controllers/InputController';
-import { authSchema } from '@/constants/schemas/authSchemas';
-import { FormInputData, SignUpFormData } from '@/type';
+import { FormInputData } from '@/type';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 import { View } from 'react-native';
+import { AnyObject, ObjectSchema } from 'yup';
 
-const FormComponent = ({ formInputData }: 
-  {formInputData: FormInputData[]}
-) => {
+interface FormComponentProps<T extends AnyObject> {
+  formInputData: FormInputData[];
+  submit: (data: T) => void;
+  validationSchema: ObjectSchema<T>
+}
+
+const FormComponent = <T extends AnyObject>({ formInputData, submit, validationSchema }: FormComponentProps<T>) => {
 
   const {
     control,
@@ -17,17 +21,12 @@ const FormComponent = ({ formInputData }:
     formState: {
       errors
     }
-  } = useForm({
-    resolver: yupResolver(authSchema)
+  } = useForm<T>({
+    resolver: yupResolver(validationSchema)
   })
-
-  const submit = (data: SignUpFormData) => {
-    console.log(data);
-  }
 
   console.log(JSON.stringify(errors, null, 3));
   
-
   return (
     <View
       className='gap-3 rounded-lg p-5'
