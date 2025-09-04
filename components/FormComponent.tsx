@@ -5,15 +5,21 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 import { View } from 'react-native';
-import { AnyObject, ObjectSchema } from 'yup';
+import { ObjectSchema } from 'yup';
 
-interface FormComponentProps<T extends AnyObject> {
+// interface FormComponentProps<T extends AnyObject> {
+//   formInputData: FormInputData[];
+//   submit: (data: T) => void;
+//   validationSchema: ObjectSchema<T>
+// }
+
+interface FormComponentProps {
   formInputData: FormInputData[];
-  submit: (data: T) => void;
-  validationSchema: ObjectSchema<T>
+  submit: (data: Record<string, any>) => void;
+  validationSchema: ObjectSchema<Record<string, any>>
 }
 
-const FormComponent = <T extends AnyObject>({ formInputData, submit, validationSchema }: FormComponentProps<T>) => {
+const FormComponent = ({ formInputData, submit, validationSchema }: FormComponentProps) => {
 
   const {
     control,
@@ -21,7 +27,7 @@ const FormComponent = <T extends AnyObject>({ formInputData, submit, validationS
     formState: {
       errors
     }
-  } = useForm<T>({
+  } = useForm({
     resolver: yupResolver(validationSchema)
   })
 
