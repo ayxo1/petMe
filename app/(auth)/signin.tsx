@@ -3,8 +3,8 @@ import InputController from '@/components/controllers/InputController';
 import { authSignInSchema } from '@/constants/schemas/authSchemas';
 import { FormInputData, SignInFormData } from '@/type';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Link } from 'expo-router';
-import { Fragment } from 'react';
+import { Link, router } from 'expo-router';
+import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
 
@@ -25,6 +25,8 @@ const formInputData: FormInputData[] = [
 
 const SignIn = () => {
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const {
     control,
     handleSubmit,
@@ -36,7 +38,12 @@ const SignIn = () => {
   })
 
   const submit = (data: SignInFormData) => {
+    setIsSubmitting(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+    }, 1000);
     console.log(data);
+    // router.replace('/');
   }
 
   return (
@@ -57,7 +64,11 @@ const SignIn = () => {
             />
           </Fragment>
         ))}
-        <ButtonComponent title='submit' onPress={handleSubmit(submit)}/>
+        <ButtonComponent 
+          title='submit' 
+          onPress={handleSubmit(submit)}
+          isLoading={isSubmitting}
+        />
       </View>
       <View
         className='flex justify-center flex-row mt-5 gap-2 border-t border-primary p-3'

@@ -13,6 +13,7 @@ const ButtonComponent = ({
     <TouchableOpacity
       className={`custom-btn ${style}`}
       onPress={onPress} 
+      disabled={isLoading}
     >
       {leftIcon}
       <View

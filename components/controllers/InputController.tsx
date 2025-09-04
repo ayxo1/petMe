@@ -1,11 +1,19 @@
 import { FormInputControllerProps } from '@/type';
 import React, { FC } from 'react';
-import { Control, Controller, FieldErrors, FieldValues, useForm } from 'react-hook-form';
-import { Text, View } from 'react-native';
+import { Controller } from 'react-hook-form';
+import { Text } from 'react-native';
 
 import InputComponent from '../InputComponent';
 
-const InputController: FC<FormInputControllerProps> = ({ control, errors, name, placeholder, label, keyboardType, secureTextEntry = false }) => {
+const InputController: FC<FormInputControllerProps> = (
+  { control, 
+    errors, 
+    name, 
+    placeholder, 
+    label, 
+    keyboardType, 
+    secureTextEntry = false 
+  }) => {
 
   return (
     <>
@@ -26,7 +34,11 @@ const InputController: FC<FormInputControllerProps> = ({ control, errors, name, 
           )
         }}
       />
-      {errors && errors[name] && <Text className='text-red-500 text-center'>{errors[name]?.message}</Text>}
+      {errors && errors[name] && (
+        <Text className='text-red-500 text-center'>
+          {errors[name]?.message}
+        </Text>
+      )}
     </>
   )
 }
