@@ -17,7 +17,7 @@ const ButtonComponent = ({
     >
       {leftIcon}
       <View
-        className='flex-center flex-row'
+        // className='flex-center flex-row'
       >
         {isLoading ? (
           <ActivityIndicator

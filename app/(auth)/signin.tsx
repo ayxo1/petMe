@@ -81,7 +81,7 @@ const SignIn = () => {
           </Fragment>
         ))}
         <ButtonComponent 
-          title='submit' 
+          title='submit'
           onPress={handleSubmit(submit)}
           isLoading={isLoading}
         />
