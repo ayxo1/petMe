@@ -18,7 +18,6 @@ const TabBarIcon = ({focused, icon}: TabBarIconProps) => (
 const TabsLayout = () => {
 
   const backgroundColor = '#f5c66e';
-  // useAuthStore.persist.clearStorage() // reset storage
 
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
 
@@ -45,10 +44,10 @@ const TabsLayout = () => {
           sceneStyle: {
             backgroundColor
           },
-          tabBarIcon: ({focused}) => (
+          tabBarIcon: ({focused}: {focused: boolean}) => (
             <TabBarIcon 
-            focused={focused}
-            icon={icons.profile}
+              focused={focused}
+              icon={icons.profile}
             />
           ),
         }}
@@ -59,10 +58,10 @@ const TabsLayout = () => {
           sceneStyle: {
             backgroundColor
           },
-          tabBarIcon: ({focused}) => (
+          tabBarIcon: ({focused}: {focused: boolean}) => (
             <TabBarIcon 
-            focused={focused}
-            icon={icons.search}
+              focused={focused}
+              icon={icons.search}
             />
           ),
         }}
@@ -73,10 +72,10 @@ const TabsLayout = () => {
             sceneStyle: {
               backgroundColor
             },
-            tabBarIcon: ({focused}) => (
+            tabBarIcon: ({focused}: {focused: boolean}) => (
               <TabBarIcon 
-              focused={focused}
-              icon={icons.shelter}
+                focused={focused}
+                icon={icons.shelter}
               />
             ),
           }}
@@ -87,10 +86,10 @@ const TabsLayout = () => {
           sceneStyle: {
             backgroundColor
           },
-          tabBarIcon: ({focused}) => (
+          tabBarIcon: ({focused}: {focused: boolean}) => (
             <TabBarIcon 
-            focused={focused}
-            icon={icons.settings}
+              focused={focused}
+              icon={icons.settings}
             />
           ),
         }}

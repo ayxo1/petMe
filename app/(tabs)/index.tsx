@@ -2,7 +2,7 @@ import ProfileCard from "@/components/ProfileCard";
 import { images } from "@/constants";
 import type { ProfileCardProps } from "@/types/components";
 import { useState } from "react";
-import { TouchableOpacity } from "react-native";
+import { Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const dummyProfiles: ProfileCardProps[] = [
@@ -42,19 +42,29 @@ return (
     <SafeAreaView
       className="flex-1"
     >
-      <TouchableOpacity
+      <Pressable
         className="mt-3"
-        style={{
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 10 },
-          shadowOpacity: 0.3,
-          shadowRadius: 20,
-          elevation: 15
-        }}
+        style={
+          {
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 10 },
+            shadowOpacity: 0.3,
+            shadowRadius: 20,
+            elevation: 15,
+          }
+        }
         onPress={() => setNewProfile(dummyFetch)}
       >
-        <ProfileCard {...profile}/>
-      </TouchableOpacity>
+        {({ pressed }) => (
+          <View 
+            style={
+                { transform: [{ scale: pressed ? 0.98 : 1 }] }
+              }>
+            <ProfileCard {...profile}/>
+          </View>
+        )}
+        {/* <ProfileCard {...profile}/> */}
+      </Pressable>
     </SafeAreaView>
   );
 }
