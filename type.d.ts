@@ -1,12 +1,5 @@
-export interface TabBarIconProps {
-    focused: boolean;
-    icon: ImageSourcePropType
-}
 
-interface ProfileCardProps {
-  profileImage: ImageSourcePropType;
-  profileName: string;
-  profileDescription: string;
+declare global {
 }
 
 interface InputComponentProps {
@@ -18,7 +11,7 @@ interface InputComponentProps {
   keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
 }
 
-interface FormInputControllerProps extends InputComponentProps {
+export interface FormInputControllerProps extends InputComponentProps {
   control: Control<FieldValues>;
   errors?: FieldErrors<FieldValues>;
   name: string;

@@ -1,10 +1,12 @@
 import ButtonComponent from '@/components/ButtonComponent';
 import InputController from '@/components/controllers/InputController';
 import { authSignInSchema } from '@/constants/schemas/authSchemas';
-import { FormInputData, SignInFormData } from '@/type';
+import { useAuthStore } from '@/stores/authStore';
+import { SignInFormData } from '@/types/auth';
+import { FormInputData } from '@/types/components';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Link, router } from 'expo-router';
-import { Fragment, useState } from 'react';
+import { Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
 
@@ -25,7 +27,7 @@ const formInputData: FormInputData[] = [
 
 const SignIn = () => {
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { signIn, isLoading, setLoading } = useAuthStore();
 
   const {
     control,
@@ -37,13 +39,27 @@ const SignIn = () => {
     resolver: yupResolver(authSignInSchema)
   })
 
-  const submit = (data: SignInFormData) => {
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-    }, 1000);
+  const submit = async (data: SignInFormData) => {
+    try {
+      setLoading(true);
+
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      const userData = {
+        id: Math.random().toString(),
+        email: data.email,
+        username: data.email.split('@')[0],
+        createdAt: new Date().toISOString()
+      }
+
+      signIn(userData);
+      router.replace('/');
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false)
+    }
     console.log(data);
-    // router.replace('/');
   }
 
   return (
@@ -67,7 +83,7 @@ const SignIn = () => {
         <ButtonComponent 
           title='submit' 
           onPress={handleSubmit(submit)}
-          isLoading={isSubmitting}
+          isLoading={isLoading}
         />
       </View>
       <View

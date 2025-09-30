@@ -1,6 +1,6 @@
 import ProfileCard from "@/components/ProfileCard";
 import { images } from "@/constants";
-import type { ProfileCardProps } from "@/type";
+import type { ProfileCardProps } from "@/types/components";
 import { useState } from "react";
 import { TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -39,22 +39,22 @@ export default function Index() {
     )
 
 return (
-  <SafeAreaView
-    className="flex-1"
-  >
-    <TouchableOpacity
-      className="mt-3"
-      style={{
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.3,
-        shadowRadius: 20,
-        elevation: 15
-      }}
-      onPress={() => setNewProfile(dummyFetch)}
+    <SafeAreaView
+      className="flex-1"
     >
-      <ProfileCard {...profile}/>
-    </TouchableOpacity>
+      <TouchableOpacity
+        className="mt-3"
+        style={{
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 10 },
+          shadowOpacity: 0.3,
+          shadowRadius: 20,
+          elevation: 15
+        }}
+        onPress={() => setNewProfile(dummyFetch)}
+      >
+        <ProfileCard {...profile}/>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }

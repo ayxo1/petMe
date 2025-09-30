@@ -1,4 +1,4 @@
-import type { ProfileCardProps } from "@/type";
+import type { ProfileCardProps } from "@/types/components";
 import { LinearGradient } from 'expo-linear-gradient';
 import { ImageBackground, Text, View } from "react-native";
 

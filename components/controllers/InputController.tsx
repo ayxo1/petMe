@@ -1,11 +1,12 @@
+// import { FormInputControllerProps } from '@/types/components';
 import { FormInputControllerProps } from '@/type';
-import React, { FC } from 'react';
+import React from 'react';
 import { Controller } from 'react-hook-form';
 import { Text } from 'react-native';
 
 import InputComponent from '../InputComponent';
 
-const InputController: FC<FormInputControllerProps> = (
+const InputController = (
   { control, 
     errors, 
     name, 
@@ -13,7 +14,7 @@ const InputController: FC<FormInputControllerProps> = (
     label, 
     keyboardType, 
     secureTextEntry = false 
-  }) => {
+  }: FormInputControllerProps) => {
 
   return (
     <>
@@ -36,7 +37,7 @@ const InputController: FC<FormInputControllerProps> = (
       />
       {errors && errors[name] && (
         <Text className='text-red-500 text-center'>
-          {errors[name]?.message}
+          {errors[name]?.message?.toString() || 'Invalid data'}
         </Text>
       )}
     </>

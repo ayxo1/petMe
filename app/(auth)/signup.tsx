@@ -1,9 +1,11 @@
 import ButtonComponent from '@/components/ButtonComponent';
 import InputController from '@/components/controllers/InputController';
 import { authSignUpSchema } from '@/constants/schemas/authSchemas';
-import { FormInputData, SignUpFormData } from '@/type';
+import { useAuthStore } from '@/stores/authStore';
+import { SignUpFormData } from '@/types/auth';
+import { FormInputData } from '@/types/components';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
@@ -31,6 +33,9 @@ const formInputData: FormInputData[] = [
 ];
 
 const SignUp = () => {
+
+  const { signUp, isLoading } = useAuthStore();
+
   const {
     control,
     handleSubmit,
@@ -41,7 +46,13 @@ const SignUp = () => {
     resolver: yupResolver(authSignUpSchema)
   })
 
-  const submit = (data: SignUpFormData) => {
+  const submit = async (data: SignUpFormData) => {
+    try {
+      await signUp(data);
+      router.replace('/');
+    } catch (error) {
+      console.log(error);
+    }
     console.log(data);
   }
 
@@ -63,7 +74,11 @@ const SignUp = () => {
             />
           </Fragment>
         ))}
-        <ButtonComponent title='submit' onPress={handleSubmit(submit)}/>
+        <ButtonComponent 
+        title='submit' 
+        onPress={handleSubmit(submit)}
+        isLoading={isLoading}
+        />
       </View>
     <View
         className='flex justify-center flex-row mt-5 gap-2 border-t border-primary p-3'
