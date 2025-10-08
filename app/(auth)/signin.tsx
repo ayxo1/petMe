@@ -39,17 +39,16 @@ const SignIn = () => {
     resolver: yupResolver(authSignInSchema)
   })
 
-  const submit = async (data: SignInFormData) => {
+  const submit = async ({email, password}: SignInFormData) => {
     try {
       setLoading(true);
 
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
       const userData = {
         id: Math.random().toString(),
-        email: data.email,
-        username: data.email.split('@')[0],
-        createdAt: new Date().toISOString()
+        email,
+        password,
+        username: email.split('@')[0],
+        createdAt: new Date().toISOString(),
       }
 
       signIn(userData);
@@ -59,7 +58,7 @@ const SignIn = () => {
     } finally {
       setLoading(false)
     }
-    console.log(data);
+    console.log(email);
   }
 
   return (

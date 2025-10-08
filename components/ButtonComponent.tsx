@@ -7,13 +7,14 @@ const ButtonComponent = ({
   style,
   textStyle,
   leftIcon,
-  isLoading = false
+  isLoading = false,
+  disabled = false
 } : ButtonComponentProps) => {
   return (
     <TouchableOpacity
       className={`custom-btn ${style}`}
       onPress={onPress} 
-      disabled={isLoading}
+      disabled={isLoading || disabled}
     >
       {leftIcon}
       <View

@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { AuthState, SignUpFormData, User } from '../types/auth';
+import { AuthState, SignInFormData, SignUpFormData, User } from '../types/auth';
 
 const authAPI = {
-  signIn: async (email: string, password: string): Promise<User> => {
+  signIn: async ({email, password}: SignInFormData): Promise<User> => {
 
     await new Promise(resolve => setTimeout(resolve, 1000))
     
@@ -12,22 +12,40 @@ const authAPI = {
       id: Math.random().toString(),
       email,
       username: email.split('@')[0],
+      accountType: 'owner',
       createdAt: new Date().toISOString(),
     }
   },
 
-  signUp: async (data: SignUpFormData): Promise<User> => {
+  signUp: async ({email, username}: SignUpFormData): Promise<User> => {
 
     await new Promise(resolve => setTimeout(resolve, 1000))
     
     return {
       id: Math.random().toString(),
-      email: data.email,
-      username: data.username,
+      email,
+      username,
       createdAt: new Date().toISOString(),
     }
+  },
+
+  updateProfile: async (userId: string, profileData: Partial<User>): Promise<User> => {
+    
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    const currentUser = useAuthStore.getState().user;
+
+    if(!currentUser || currentUser.id !== userId) throw new Error('user not found');
+
+    const updatedUser: User = {
+      ...currentUser,
+      ...profileData,
+      updatedAt: new Date().toISOString(),
+    };
+
+    return updatedUser;
   }
-}
+};
 
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -37,12 +55,19 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       isLoading: false,
 
-      signIn: (userData: User) => {
-        set({ 
-          isAuthenticated: true, 
-          user: userData,
-          isLoading: false
-        })
+      signIn: async (userData: SignInFormData) => {
+        try {
+          set({ isLoading: true });
+          const user = await authAPI.signIn(userData);
+          set({ 
+            isAuthenticated: true, 
+            user,
+            isLoading: false
+          })
+        } catch (error) {
+          set({ isLoading: false });
+          throw error;
+        }
       },
 
       signUp: async (userData: SignUpFormData) => {
@@ -68,6 +93,25 @@ export const useAuthStore = create<AuthState>()(
           user: null,
           isLoading: false
         })
+      },
+
+      updateProfile: async (profileData: Partial<User>) => {
+        try {
+          set({ isLoading: true});
+
+          const currentUser = get().user;
+          if(!currentUser) throw new Error('no user is logged in');
+
+          const updatedUser = await authAPI.updateProfile(currentUser.id, profileData);
+
+          set({
+            user: updatedUser,
+            isLoading: false
+          });
+        } catch (error) {
+          set({ isLoading: false });
+          throw error;
+        }
       },
 
       setLoading: (loading: boolean) => {

@@ -35,4 +35,5 @@ interface ButtonComponentProps {
   textStyle?: string;
   leftIcon?: React.ReactNode;
   isLoading?: boolean;
+  disabled?: boolean;
 }
