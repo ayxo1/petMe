@@ -49,7 +49,7 @@ const SignUp = () => {
   const submit = async (data: SignUpFormData) => {
     try {
       await signUp(data);
-      router.replace('/');
+      router.replace('/(auth)/profile-setup');
     } catch (error) {
       console.log(error);
     }

@@ -1,12 +1,17 @@
 
 export interface User {
-  id: string
-  email: string
-  username: string
-  createdAt?: string
-  profileImage?: string
-  bio?: string
-  location?: string
+  id: string;
+  email: string;
+  username: string;
+  profileImage?: string;
+  bio?: string;
+  location?: {
+    city: string;
+    coordinates?: { lat: number; lng: number; };
+  }
+  accountType?: 'owner' | 'seeker' | 'shelter';
+  createdAt: string;
+  updatedAt?: string;
 }
 
 export interface SignInFormData {
@@ -18,13 +23,28 @@ export interface SignUpFormData extends SignInFormData {
   username: string;
 }
 
-export interface AuthState {
-  isAuthenticated: boolean
-  user: User | null
-  isLoading: boolean
+export interface ProfileSetupFormData {
+  city: string;
+  bio?: string;
+  accountType: 'owner' | 'seeker' | 'shelter';
   
-  signIn: (userData: User) => void
-  signOut: () => void
-  signUp: (userData: SignUpFormData) => Promise<void>
-  setLoading: (loading: boolean) => void
+}
+
+export interface ProfileSetupSubmitData extends ProfileSetupFormData {
+  coordinates?: {
+    lat: number;
+    lng: number;
+  };
+}
+
+export interface AuthState {
+  isAuthenticated: boolean;
+  user: User | null;
+  isLoading: boolean;
+  
+  signIn: (userData: SignInFormData) => Promise<void>;
+  signUp: (userData: SignUpFormData) => Promise<void>;
+  signOut: () => void;
+  updateProfile: (userId: string, profileData: Partial<User>) => Promise<void>;
+  setLoading: (loading: boolean) => void;
 }
