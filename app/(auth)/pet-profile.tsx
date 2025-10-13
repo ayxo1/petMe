@@ -2,10 +2,10 @@ import ButtonComponent from '@/components/ButtonComponent';
 import InputController from '@/components/controllers/InputController';
 import { authSignInSchema } from '@/constants/schemas/authSchemas';
 import { useAuthStore } from '@/stores/authStore';
-import { SignInFormData } from '@/types/auth';
+import { PetProfile } from '@/types/auth';
 import { FormInputData } from '@/types/components';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Link, router } from 'expo-router';
+import { router } from 'expo-router';
 import { Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 import { Text, View } from 'react-native';
@@ -25,9 +25,9 @@ const formInputData: FormInputData[] = [
   },
 ];
 
-const SignIn = () => {
+const PetProfile = () => {
 
-  const { signIn, isLoading, setLoading } = useAuthStore();
+  const { isLoading, setLoading } = useAuthStore();
 
   const {
     control,
@@ -39,26 +39,8 @@ const SignIn = () => {
     resolver: yupResolver(authSignInSchema)
   })
 
-  const submit = async ({email, password}: SignInFormData) => {
-    try {
-      setLoading(true);
-
-      const userData = {
-        id: Math.random().toString(),
-        email,
-        password,
-        username: email.split('@')[0],
-        createdAt: new Date().toISOString(),
-      }
-
-      signIn(userData);
-      router.replace('/');
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false)
-    }
-    console.log(email);
+  const submit = async (data: Partial<PetProfile>) => {
+    router.replace('/');
   }
 
   return (
@@ -80,26 +62,13 @@ const SignIn = () => {
           </Fragment>
         ))}
         <ButtonComponent 
-          title='submit'
+          title='save'
           onPress={handleSubmit(submit)}
           isLoading={isLoading}
         />
-      </View>
-      <View
-        className='flex justify-center flex-row mt-5 gap-2 border-t border-primary p-3'
-      >
-        <Text>
-          no account?
-        </Text>
-        <Link 
-          href={'/(auth)/signup'}
-          className='text-primary'
-        >
-          sign up
-        </Link>
       </View>
     </Fragment>
   )
 }
 
-export default SignIn;
+export default PetProfile;

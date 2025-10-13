@@ -6,19 +6,22 @@ import { Dimensions, KeyboardAvoidingView, Platform, ScrollView, View } from 're
 const AuthLayout = () => {
   return (
     <KeyboardAvoidingView 
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}    
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={0}
     >
       <ScrollView
         keyboardShouldPersistTaps='handled'
         className='h-full bg-white'
+        contentContainerStyle={{ flexGrow: 1 }}
       >
         <View
             className='w-full relative'
             style={{
-                height: Dimensions.get('screen').height / 2.25
+              // height: Dimensions.get('screen').height / 2.25
+              height: Dimensions.get('screen').height / 2.55
             }}
         >
-
         </View>
         <Slot />
       </ScrollView>
@@ -26,4 +29,4 @@ const AuthLayout = () => {
   )
 }
 
-export default AuthLayout
+export default AuthLayout;

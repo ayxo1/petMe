@@ -27,13 +27,35 @@ export interface ProfileSetupFormData {
   city: string;
   bio?: string;
   accountType: 'owner' | 'seeker' | 'shelter';
-  
 }
 
 export interface ProfileSetupSubmitData extends ProfileSetupFormData {
   coordinates?: {
     lat: number;
     lng: number;
+  };
+}
+
+export type PetProfile = DomesticPet | AdoptablePet;
+
+interface BasePet {
+  id: string;
+  ownerId: string;
+  name: string;
+  breed: string;
+  age: number;
+}
+
+interface DomesticPet extends BasePet {
+  isAvailableForAdoption: false;
+}
+
+interface AdoptablePet extends BasePet {
+  isAvailableForAdoption: true;
+  adoptionStatus: 'available' | 'pending' | 'adopted';
+  adoptionDetails?: {
+    requirements?: string;
+    reason?: string;
   };
 }
 
@@ -45,6 +67,6 @@ export interface AuthState {
   signIn: (userData: SignInFormData) => Promise<void>;
   signUp: (userData: SignUpFormData) => Promise<void>;
   signOut: () => void;
-  updateProfile: (userId: string, profileData: Partial<User>) => Promise<void>;
+  updateProfile: (profileData: Partial<User>) => Promise<void>;
   setLoading: (loading: boolean) => void;
 }

@@ -92,7 +92,7 @@ const ProfileSetup = () => {
 
       const userId = user?.id;
       if(!userId) throw new Error('user not found');
-      await updateProfile(userId as string ,userUpdate);
+      await updateProfile(userUpdate);
 
       if(submitData.accountType === 'owner' || submitData.accountType === 'shelter') {
         Alert.alert(
@@ -104,13 +104,14 @@ const ProfileSetup = () => {
     } catch (error) {
       console.log(error, 'profile setup error');
       Alert.alert('error', 'failed to create profile, please try again')
-    }
+    }    
+    
   };
 
   return (
     <View>
         <View
-            className='flex justify-center flex-row mt-5 gap-2 border-t border-primary p-3'
+            className='flex justify-center flex-row mt-5 gap-2 p-3 font-bold'
         >
             <Text>
                 tell more about yourself
