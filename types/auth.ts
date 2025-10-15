@@ -36,29 +36,6 @@ export interface ProfileSetupSubmitData extends ProfileSetupFormData {
   };
 }
 
-export type PetProfile = DomesticPet | AdoptablePet;
-
-interface BasePet {
-  id: string;
-  ownerId: string;
-  name: string;
-  breed: string;
-  age: number;
-}
-
-interface DomesticPet extends BasePet {
-  isAvailableForAdoption: false;
-}
-
-interface AdoptablePet extends BasePet {
-  isAvailableForAdoption: true;
-  adoptionStatus: 'available' | 'pending' | 'adopted';
-  adoptionDetails?: {
-    requirements?: string;
-    reason?: string;
-  };
-}
-
 export interface AuthState {
   isAuthenticated: boolean;
   user: User | null;
