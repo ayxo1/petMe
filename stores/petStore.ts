@@ -86,7 +86,7 @@ export const usePetStore = create<PetStoreState>()(
                 }
             },
 
-            addPet: async (petData: PetProfile) => {
+            addPet: async (petData: PetFormData) => {
                 try {
                     set({ isLoading: true });
 
