@@ -12,7 +12,7 @@ export interface PetProfile {
   createdAt: string;
   updatedAt?: string;
   isAvailableForAdoption: boolean;
-  adoptionStatus: 'available' | 'pending' | 'adopted' | undefined;
+  adoptionStatus?: 'available' | 'pending' | 'adopted';
   adoptionDetails?: {
     requirements?: string;
     reason?: string;
@@ -27,7 +27,7 @@ export interface PetFormData {
   bio: string;
   images?: string[];
   isAvailableForAdoption: boolean;
-  adoptionStatus: 'available' | 'pending' | 'adopted' | undefined;
+  adoptionStatus?: 'available' | 'pending' | 'adopted' | undefined;
   adoptionRequirements?: string;
   adoptionReason?: string;
 }
