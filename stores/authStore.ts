@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { AuthState, SignInFormData, SignUpFormData, User } from '../types/auth';
+import { usePetStore } from './petStore';
 
 const authAPI = {
   signIn: async ({email, password}: SignInFormData): Promise<User> => {
@@ -63,7 +64,10 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true, 
             user,
             isLoading: false
-          })
+          });
+
+          await usePetStore.getState().hydratePets(user.id);
+
         } catch (error) {
           set({ isLoading: false });
           throw error;
@@ -80,7 +84,9 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true, 
             user: newUser,
             isLoading: false
-          })
+          });
+          
+          await usePetStore.setState({ pets: [], isHydrated: true });
         } catch (error) {
           set({ isLoading: false })
           throw error;

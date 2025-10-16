@@ -98,7 +98,7 @@ const ProfileSetup = () => {
         Alert.alert(
           'profile created!',
           'now you can add your pets',
-          [{text: 'ok', onPress: () => router.replace('/')}]
+          [{text: 'ok', onPress: () => router.replace('/(auth)/pet-setup')}]
         );
       } else router.replace('/');
     } catch (error) {

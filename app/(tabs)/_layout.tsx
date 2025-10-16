@@ -22,7 +22,7 @@ const TabsLayout = () => {
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
 
   if(!isAuthenticated) return <Redirect href='/signin' />
-
+  // add redirect to different stages of profile creation: if pets are not added while you are an owner/shelter -> redirect to pet-setup
   return (
     <Tabs
       screenOptions={{
