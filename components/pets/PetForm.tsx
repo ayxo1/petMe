@@ -36,6 +36,7 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
 
     const species = watch('species');    
     const isAvailableForAdoption = watch('isAvailableForAdoption');
+    const adoptionStatus = watch('adoptionStatus');
 
     const speciesOptions: { 
         value: PetSpecies; 
@@ -116,12 +117,39 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
                     <InputController 
                         control={control}
                         errors={errors}
-                        name="adoptionReson"
+                        name="adoptionReason"
                         label='reason'
                         placeholder="e.g., found a stray"
                     />
+                    <View className="mb-2 flex-col">
+                        <Text className="label">adoption status</Text>
+                        <View className="flex-row gap-2 mt-2">
+                            {[
+                            { value: 'available', label: 'available' },
+                            { value: 'pending', label: 'pending' },
+                            { value: 'adopted', label: 'adopted' },
+                            ].map((option) => (
+                            <ButtonComponent
+                                key={option.value}
+                                title={option.label}
+                                onPress={() => setValue('adoptionStatus', option.value as 'available' | 'pending' | 'adopted')}
+                                style={
+                                adoptionStatus === option.value
+                                    ? 'bg-primary flex-1'
+                                    : 'bg-gray-200 flex-1'
+                                }
+                            />
+                            ))}
+                        </View>
+                        {errors.adoptionStatus && (
+                            <Text className="text-red-500 text-center mt-2">
+                                {errors.adoptionStatus.message}
+                            </Text>
+                        )}
+                    </View>
                 </View>
             )}
+
             <ButtonComponent 
                 title={isSubmitting ? 'saving...' : submitButtonText}
                 onPress={handleSubmit(onSubmit)}
