@@ -51,7 +51,7 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
     ];
 
     return (
-        <View className="flex-1 px-5">
+        <View className="flex-1 px-5 gap-3">
             {/* species  */}
             <View className="mb-6">
                 <Text className="label">
@@ -103,7 +103,7 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
                 </View>
             {/* adoption deets */}
             {isAvailableForAdoption && (
-                <View className="gap-3 border-t border-gray-300">
+                <View className="gap-3 border-t border-b border-gray-300">
                     <Text 
                         className="mt-2 text-center text-xl color-gray-400"
                     >adoption details</Text>
@@ -150,9 +150,11 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
                 </View>
             )}
 
+            
             <ButtonComponent 
                 title={isSubmitting ? 'saving...' : submitButtonText}
                 onPress={handleSubmit(onSubmit)}
+                style="mt-2"
             />
             </View>
         </View>

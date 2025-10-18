@@ -10,7 +10,7 @@ interface PetStoreState {
     isHydrated: boolean;
 
     hydratePets: (userId: string) => Promise<void>;
-    addPet: (petData: PetProfile) => Promise<void>;
+    addPet: (petData: PetFormData) => Promise<void>;
     updatePet: (petId: string, petData: Partial<PetFormData>) => Promise<void>;
     deletePet: (petId: string) => Promise<void>;
     getPetById: (petId: string) => PetProfile | undefined;
