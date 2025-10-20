@@ -94,11 +94,11 @@ export const usePetStore = create<PetStoreState>()(
                     if(!currentUser) throw new Error('no user logged in');
 
                     const newPet = await petAPI.addPet(currentUser.id, petData);
-
+                    
                     set(state => ({
                         pets: [...state.pets, newPet],
                         isLoading: false
-                    }));
+                    }));                    
                 } catch (error) {
                     console.log(error, 'error adding a pet');
                     set({ isLoading: false });

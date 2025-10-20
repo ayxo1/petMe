@@ -34,7 +34,7 @@ const formInputData: FormInputData[] = [
 
 const SignUp = () => {
 
-  const { signUp, isLoading } = useAuthStore();
+  const { signUp, isLoading, setRegistrationState } = useAuthStore();
 
   const {
     control,
@@ -49,6 +49,7 @@ const SignUp = () => {
   const submit = async (data: SignUpFormData) => {
     try {
       await signUp(data);
+      setRegistrationState('signed_up');
       router.replace('/(auth)/profile-setup');
     } catch (error) {
       console.log(error);

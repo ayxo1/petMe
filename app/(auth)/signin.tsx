@@ -27,7 +27,7 @@ const formInputData: FormInputData[] = [
 
 const SignIn = () => {
 
-  const { signIn, isLoading, setLoading } = useAuthStore();
+  const { signIn, isLoading, setRegistrationState } = useAuthStore();
 
   const {
     control,
@@ -41,8 +41,6 @@ const SignIn = () => {
 
   const submit = async ({email, password}: SignInFormData) => {
     try {
-      setLoading(true);
-
       const userData = {
         id: Math.random().toString(),
         email,
@@ -56,7 +54,7 @@ const SignIn = () => {
     } catch (error) {
       console.log(error);
     } finally {
-      setLoading(false)
+      setRegistrationState('completed');
     }
     console.log(email);
   }

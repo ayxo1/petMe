@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Profile = () => {
 
-  const signOut = useAuthStore(state => state.signOut)
+  const signOut = useAuthStore(state => state.signOut);
 
   return (
     <SafeAreaView

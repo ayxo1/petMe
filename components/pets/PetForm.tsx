@@ -1,4 +1,5 @@
 import { petFormSchema } from "@/constants/schemas/petSchemas";
+import { FormInputData } from "@/types/components";
 import { PetFormData, PetSpecies } from "@/types/pets";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Fragment } from "react";
@@ -14,10 +15,10 @@ interface PetFormProps {
     submitButtonText?: string; 
 };
 
-const formInputData = [
+const formInputData: FormInputData[] = [
     { name: 'name', label: 'pet name*', placeholder: 'e.g., mr. fluff' },
     { name: 'breed', label: 'breed (optional)', placeholder: '' },
-    { name: 'age', label: 'age (years)*', placeholder: 'e.g., 3' },
+    { name: 'age', label: 'age (years)*', placeholder: 'e.g., 3', keyboardType: 'numeric' },
     { name: 'bio', label: 'bio*', placeholder: 'describe your pet' },
 ];
 
@@ -105,7 +106,7 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
             {isAvailableForAdoption && (
                 <View className="gap-3 border-t border-b border-gray-300">
                     <Text 
-                        className="mt-2 text-center text-xl color-gray-400"
+                        className="mt-2 text-center text-xl color-gray-400 font-bold"
                     >adoption details</Text>
                     <InputController 
                         control={control}

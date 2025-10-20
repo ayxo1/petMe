@@ -36,14 +36,18 @@ export interface ProfileSetupSubmitData extends ProfileSetupFormData {
   };
 }
 
+export type RegistrationState = 'not_started' | 'signed_up' | 'profile_set_up' | 'completed';
+
 export interface AuthState {
   isAuthenticated: boolean;
   user: User | null;
   isLoading: boolean;
+  registrationState: RegistrationState;
   
   signIn: (userData: SignInFormData) => Promise<void>;
   signUp: (userData: SignUpFormData) => Promise<void>;
   signOut: () => void;
   updateProfile: (profileData: Partial<User>) => Promise<void>;
+  setRegistrationState: (state: RegistrationState) => void;
   setLoading: (loading: boolean) => void;
 }

@@ -28,7 +28,7 @@ const formInputData: FormInputData[] = [
 
 const ProfileSetup = () => {
 
-  const { updateProfile, user, isLoading } = useAuthStore();
+  const { updateProfile, user, isLoading, setRegistrationState } = useAuthStore();
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [coordinates, setCoordinates] = useState<Coordinates | undefined>();
 
@@ -61,7 +61,7 @@ const ProfileSetup = () => {
         Alert.alert(`location detected: ${locationData.city}`);
       } else {
         Alert.alert('coordinates are retrieved, however, the city is not determined. Please enter it manually');
-      }
+      };
 
     } catch (error) {
       if (error instanceof Error && error.message === 'Location permission denied') {
@@ -70,9 +70,10 @@ const ProfileSetup = () => {
         Alert.alert('Error retrieving location, please enter the city manually');
       };
     } finally {
+      setRegistrationState('profile_set_up');
       setIsLoadingLocation(false);
-    }
-  }
+    };
+  };
 
   const submit = async (formData: ProfileSetupFormData) => {
     try {

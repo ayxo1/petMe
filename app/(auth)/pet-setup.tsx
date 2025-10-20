@@ -1,34 +1,39 @@
 import PetForm from '@/components/pets/PetForm';
+import { useAuthStore } from '@/stores/authStore';
 import { usePetStore } from '@/stores/petStore';
 import { PetFormData } from '@/types/pets';
 import { router } from 'expo-router';
 import React from 'react';
-import { Alert, Text, View } from 'react-native';
+import { Alert, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const PetSetup = () => {
 
   const { addPet } = usePetStore();
+  const { setRegistrationState } = useAuthStore();
 
   const onSubmit = async (data: PetFormData) => {
-    console.log(data);
+    // console.log(data);
     try {
       await addPet(data);
+
+      console.log(usePetStore.getState().pets);
+      
 
       Alert.alert(
         'success!',
         `${data.name} is successfully added!`,
         [
-          {text: 'add another', onPress: () => {
-            // redirect to profile settings
-          }},
+          {text: 'add another', onPress: () => router.replace('/(tabs)/profile')},
           {text: 'done', onPress: () => router.replace('/')}
         ]
       );
     } catch (error) {
       Alert.alert('error', 'failed to add pet, try again');
       console.log(error, 'error adding pet');
-    }
+    } finally {
+      setRegistrationState('completed');
+    };
     
   };
 

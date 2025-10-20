@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { AuthState, SignInFormData, SignUpFormData, User } from '../types/auth';
+import { AuthState, RegistrationState, SignInFormData, SignUpFormData, User } from '../types/auth';
 import { usePetStore } from './petStore';
 
 const authAPI = {
@@ -55,6 +55,7 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
       user: null,
       isLoading: false,
+      registrationState: 'not_started',
 
       signIn: async (userData: SignInFormData) => {
         try {
@@ -63,7 +64,7 @@ export const useAuthStore = create<AuthState>()(
           set({ 
             isAuthenticated: true, 
             user,
-            isLoading: false
+            isLoading: false,
           });
 
           await usePetStore.getState().hydratePets(user.id);
@@ -83,7 +84,7 @@ export const useAuthStore = create<AuthState>()(
           set({ 
             isAuthenticated: true, 
             user: newUser,
-            isLoading: false
+            isLoading: false,
           });
           
           await usePetStore.setState({ pets: [], isHydrated: true });
@@ -97,7 +98,7 @@ export const useAuthStore = create<AuthState>()(
         set({ 
           isAuthenticated: false, 
           user: null,
-          isLoading: false
+          isLoading: false,
         })
       },
 
@@ -120,16 +121,22 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
+      setRegistrationState: (state: RegistrationState) => {
+        set({ registrationState: state });
+      },
+
       setLoading: (loading: boolean) => {
         set({ isLoading: loading })
       },
+
     }),
     {
       name: 'auth-storage',
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => ({ 
         isAuthenticated: state.isAuthenticated, 
-        user: state.user 
+        user: state.user,
+        registrationState: state.registrationState
       }),
     }
   )

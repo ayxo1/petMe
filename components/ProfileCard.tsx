@@ -13,7 +13,7 @@ const ProfileCard = ({ profileImage, profileName, profileDescription }: ProfileC
             className="size-full"
           >
             <LinearGradient 
-                colors={['transparent', 'rgba(40, 40, 40, .8)']}
+                colors={['transparent', 'rgba(40, 40, 40, .9)']}
                 start={{ x: 0, y: 0.7 }}
                 end={{ x: 0, y: 1 }}
                 style={{

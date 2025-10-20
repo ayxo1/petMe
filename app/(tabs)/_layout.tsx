@@ -1,7 +1,9 @@
 import { icons } from '@/constants';
 import { useAuthStore } from '@/stores/authStore';
 import { TabBarIconProps } from '@/types/components';
-import { Redirect, Tabs } from 'expo-router';
+import { getRegistrationStateRoute } from '@/utils/routingHelper';
+import { Redirect, router, Tabs, useRootNavigationState } from 'expo-router';
+import { useEffect } from 'react';
 import { Image, View } from 'react-native';
 
 const TabBarIcon = ({focused, icon}: TabBarIconProps) => (
@@ -20,9 +22,9 @@ const TabsLayout = () => {
   const backgroundColor = '#f5c66e';
 
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
-
+  
   if(!isAuthenticated) return <Redirect href='/signin' />
-  // add redirect to different stages of profile creation: if pets are not added while you are an owner/shelter -> redirect to pet-setup
+
   return (
     <Tabs
       screenOptions={{
