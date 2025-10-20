@@ -13,21 +13,13 @@ export default function RootLayout() {
   const rootNavigationState = useRootNavigationState();
 
   useEffect(() => {
-    // if (!rootNavigationState?.key) {
-    //   return;
-    // }
-    console.log(rootNavigationState.key);
-    
-    // setTimeout(() => {
-
-    // }, 1)
     if (isAuthenticated) {
       const targetRoute = getRegistrationStateRoute(registrationState, user);
       
-      router.replace(targetRoute);
-
-      console.log(rootNavigationState.key);
-    }
+      requestAnimationFrame(() => {
+        router.replace(targetRoute);
+      });
+    };
     
   }, [isAuthenticated, registrationState, user]);
 
