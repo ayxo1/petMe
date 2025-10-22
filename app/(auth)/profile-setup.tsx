@@ -45,7 +45,6 @@ const ProfileSetup = () => {
   });
 
   const accountType = watch('accountType');
-  const city = watch('city');
 
   const handleCurrentLocation = async () => {
     try {
@@ -70,7 +69,6 @@ const ProfileSetup = () => {
         Alert.alert('Error retrieving location, please enter the city manually');
       };
     } finally {
-      setRegistrationState('profile_set_up');
       setIsLoadingLocation(false);
     };
   };
@@ -105,7 +103,9 @@ const ProfileSetup = () => {
     } catch (error) {
       console.log(error, 'profile setup error');
       Alert.alert('error', 'failed to create profile, please try again')
-    }    
+    } finally {
+      setRegistrationState('profile_set_up');
+    };
     
   };
 

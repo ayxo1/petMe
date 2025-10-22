@@ -11,27 +11,31 @@ const ButtonComponent = ({
   disabled = false
 } : ButtonComponentProps) => {
   return (
-    <TouchableOpacity
-      className={`custom-btn ${style}`}
-      onPress={onPress} 
-      disabled={isLoading || disabled}
+    <View
+      className='self-center'
     >
-      {leftIcon}
-      <View
-        // className='flex-center flex-row'
+      <TouchableOpacity
+        className={`custom-btn ${style}`}
+        onPress={onPress} 
+        disabled={isLoading || disabled}
       >
-        {isLoading ? (
-          <ActivityIndicator
-          size='small'
-          color='white'
-          />
-        ) : (
-          <Text
-            className={`text-black text-base ${textStyle}`}
-          >{title}</Text>
-        )}
-      </View>
-    </TouchableOpacity>
+        {leftIcon}
+        <View
+          // className='flex-center flex-row'
+        >
+          {isLoading ? (
+            <ActivityIndicator
+            size='small'
+            color='white'
+            />
+          ) : (
+            <Text
+              className={`text-black text-base ${textStyle}`}
+            >{title}</Text>
+          )}
+        </View>
+      </TouchableOpacity>
+    </View>
   )
 }
 

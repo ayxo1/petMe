@@ -2,12 +2,14 @@ import { petFormSchema } from "@/constants/schemas/petSchemas";
 import { FormInputData } from "@/types/components";
 import { PetFormData, PetSpecies } from "@/types/pets";
 import { yupResolver } from "@hookform/resolvers/yup";
+import * as ImagePicker from 'expo-image-picker';
 import { Fragment } from "react";
 import { useForm } from "react-hook-form";
 import { FlatList, Switch, Text, TouchableOpacity, View } from "react-native";
 import ButtonComponent from "../ButtonComponent";
 import InputController from "../controllers/InputController";
 
+// if adoptionStatus is switched back to Off - remove adoption form data
 
 interface PetFormProps {
     initialData?: Partial<PetFormData>;

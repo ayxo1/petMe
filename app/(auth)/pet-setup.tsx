@@ -1,3 +1,4 @@
+import ButtonComponent from '@/components/ButtonComponent';
 import PetForm from '@/components/pets/PetForm';
 import { useAuthStore } from '@/stores/authStore';
 import { usePetStore } from '@/stores/petStore';
@@ -10,7 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const PetSetup = () => {
 
   const { addPet } = usePetStore();
-  const { setRegistrationState } = useAuthStore();
+  const { setRegistrationState, registrationState } = useAuthStore();
 
   const onSubmit = async (data: PetFormData) => {
     // console.log(data);
@@ -32,18 +33,32 @@ const PetSetup = () => {
       Alert.alert('error', 'failed to add pet, try again');
       console.log(error, 'error adding pet');
     } finally {
-      setRegistrationState('completed');
+      if(registrationState !== 'completed') setRegistrationState('completed');
     };
     
   };
 
   return (
-    <SafeAreaView className='flex gap-2'>
-      <Text className='font-bold text-xl color-gray-400 text-center'>now it is time to add a profile for your pet!</Text>
-      <Text className='text-base text-center text-gray-400 font-light'>(you will be able to add more pets from your profile)</Text>
+    <SafeAreaView className='flex-1 gap-2'>
+      {registrationState !== 'completed' ? (
+        <>
+          <Text className='font-bold text-xl color-gray-400 text-center'>now it is time to add a profile for your pet!</Text>
+          <Text className='text-base text-center text-gray-400 font-light'>(you will be able to add more pets from your profile)</Text>
+        </>
+      ) : (
+        <Text className='font-bold text-xl color-gray-400 text-center'>
+          add a new pet
+        </Text>
+      )}
       <PetForm 
         onSubmit={onSubmit}
       />
+      {registrationState === 'completed' && (
+        <ButtonComponent 
+          title='back'
+          onPress={() => router.replace('/(tabs)/profile')}
+        />
+      )}
     </SafeAreaView>
   )
 }

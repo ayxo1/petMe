@@ -19,7 +19,7 @@ const AuthLayout = () => {
             className='w-full relative'
             style={{
               // height: Dimensions.get('screen').height / 2.25
-              height: Dimensions.get('screen').height / 3
+              height: Dimensions.get('screen').height / 4
             }}
         >
         </View>
