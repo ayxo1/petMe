@@ -38,33 +38,42 @@ export default function Index() {
       }
     )
 
+
+
 return (
-    <SafeAreaView
+    <View
       className="flex-1"
     >
-      <Pressable
-        className="mt-3"
-        style={
-          {
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 10 },
-            shadowOpacity: 0.3,
-            shadowRadius: 20,
-            elevation: 15,
+      {dummyProfiles.map((profile, index) => (
+        <View key={index}>
+          <ProfileCard {...profile}/>
+        </View>
+      ))}
+      {/* {dummyProfiles.map((profile) => (
+        <Pressable
+          key={profile.profileName}
+          style={
+            {
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 10 },
+              shadowOpacity: 0.3,
+              shadowRadius: 20,
+              elevation: 15,
+            }
           }
-        }
-        onPress={() => setNewProfile(dummyFetch)}
-      >
-        {({ pressed }) => (
-          <View 
-            style={
-                { transform: [{ scale: pressed ? 0.98 : 1 }] }
-              }>
-            <ProfileCard {...profile}/>
-          </View>
-        )}
-        {/* <ProfileCard {...profile}/> */}
-      </Pressable>
-    </SafeAreaView>
+          onPress={() => {}}
+        >
+          {({ pressed }) => (
+            <View 
+              style={
+                  { transform: [{ scale: pressed ? 0.98 : 1 }] }
+                }
+            >
+              <ProfileCard {...profile}/>
+            </View>
+          )}
+        </Pressable>
+      ))} */}
+    </View>
   );
 }

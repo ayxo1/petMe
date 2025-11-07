@@ -126,8 +126,8 @@ const ProfileSetup = () => {
           <Text className="label">I am a...</Text>
           <View className="flex-row gap-2 mt-2">
             {[
-              { value: 'owner', label: '🐾 Pet Owner' },
-              { value: 'seeker', label: '💝 Pet Seeker' },
+              { value: 'owner', label: '🐾 Owner' },
+              { value: 'seeker', label: '💝 Seeker' },
               { value: 'shelter', label: '🏠 Shelter' },
             ].map((option) => (
               <ButtonComponent
@@ -136,8 +136,8 @@ const ProfileSetup = () => {
                 onPress={() => setValue('accountType', option.value as 'owner' | 'seeker' | 'shelter')}
                 style={
                   accountType === option.value
-                    ? 'bg-primary flex-1'
-                    : 'bg-gray-200 flex-1'
+                    ? 'bg-primary'
+                    : 'bg-gray-200'
                 }
               />
             ))}
@@ -157,7 +157,7 @@ const ProfileSetup = () => {
             title={isLoadingLocation ? 'detecting location...' : '📍'}
             onPress={handleCurrentLocation}
             isLoading={isLoadingLocation}
-            style="bg-blue-200 w-[12%]"
+            style="bg-blue-200"
             textStyle="text-white"
             disabled={coordinates ? true : false}
           />

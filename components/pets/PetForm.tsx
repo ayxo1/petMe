@@ -2,8 +2,9 @@ import { petFormSchema } from "@/constants/schemas/petSchemas";
 import { FormInputData } from "@/types/components";
 import { PetFormData, PetSpecies } from "@/types/pets";
 import { yupResolver } from "@hookform/resolvers/yup";
+import ExpoImageCropTool from 'expo-image-crop-tool';
 import * as ImagePicker from 'expo-image-picker';
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FlatList, Switch, Text, TouchableOpacity, View } from "react-native";
 import ButtonComponent from "../ButtonComponent";
@@ -26,6 +27,8 @@ const formInputData: FormInputData[] = [
 
 const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormProps) => {
 
+    const [currentImage, setCurrentImage] = useState('');
+
     const {
         control,
         handleSubmit,
@@ -37,9 +40,43 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
         defaultValues: initialData ? { ...initialData } : { isAvailableForAdoption: false }
     });
 
-    const species = watch('species');    
+    const species = watch('species');
+    const images = watch('images');
     const isAvailableForAdoption = watch('isAvailableForAdoption');
     const adoptionStatus = watch('adoptionStatus');
+
+    const pickImage = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 0.6
+        });
+        if(!result.canceled) {
+
+            setCurrentImage(result.assets[0].uri)
+            console.log(result.assets[0].uri);
+            images?.push(result.assets[0].uri);
+        }
+
+        // need an apple dev account, gg
+        // const result = await ImagePicker.launchImageLibraryAsync({
+        // mediaTypes: 'images',
+        // allowsEditing: false,  // Skip iOS's locked editor
+        // quality: 1,
+        // });
+        // if (!result.assets?.[0]?.uri) return;
+        
+        // const cropped = await ExpoImageCropTool.openCropperAsync({
+        //     imageUri: result.assets[0].uri,
+        //     aspectRatio: 16 / 9,  // **Your ratio** (e.g., 1 for square)
+        //     shape: 'rectangle',
+        //     rotationEnabled: true,
+        // });
+
+        // console.log(cropped.path);
+        
+    }
 
     const speciesOptions: { 
         value: PetSpecies; 
@@ -55,6 +92,17 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
 
     return (
         <View className="flex-1 px-5 gap-3">
+            <View>
+                <TouchableOpacity 
+                    className="flex-row justify-start w-28 items-center"
+                    onPress={pickImage}
+                >
+                    <Text className="label">load a photo</Text>
+                    <Text className="text-l">(+)</Text>
+                </TouchableOpacity>
+
+
+            </View>
             {/* species  */}
             <View className="mb-6">
                 <Text className="label">
@@ -66,7 +114,7 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
                     <FlatList 
                         horizontal
                         showsHorizontalScrollIndicator={false}
-                        contentContainerClassName="gap-x-2 pb-3"
+                        contentContainerClassName="gap-x-3 pb-3"
                         data={speciesOptions}
                         keyExtractor={(item) => item.label}
                         renderItem={({ item }) => (
@@ -124,7 +172,7 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
                         label='reason'
                         placeholder="e.g., found a stray"
                     />
-                    <View className="mb-2 flex-col">
+                    <View className="mb-2 flex-col items-center">
                         <Text className="label">adoption status</Text>
                         <View className="flex-row gap-2 mt-2">
                             {[

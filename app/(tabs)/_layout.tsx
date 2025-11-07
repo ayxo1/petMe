@@ -1,9 +1,7 @@
 import { icons } from '@/constants';
 import { useAuthStore } from '@/stores/authStore';
 import { TabBarIconProps } from '@/types/components';
-import { getRegistrationStateRoute } from '@/utils/routingHelper';
-import { Redirect, router, Tabs, useRootNavigationState } from 'expo-router';
-import { useEffect } from 'react';
+import { Redirect, Tabs } from 'expo-router';
 import { Image, View } from 'react-native';
 
 const TabBarIcon = ({focused, icon}: TabBarIconProps) => (

@@ -2,6 +2,7 @@ import { useAuthStore } from "@/stores/authStore";
 import { getRegistrationStateRoute } from "@/utils/routingHelper";
 import { router, Stack, useRootNavigationState } from "expo-router";
 import { useEffect } from "react";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import './globals.css';
 
 export default function RootLayout() {
@@ -24,7 +25,11 @@ export default function RootLayout() {
   }, [isAuthenticated, registrationState, user]);
 
 
-  return <Stack
-  screenOptions={{ headerShown: false, contentStyle: {backgroundColor: '#f5c66e'}}}
-  />;
+  return (
+    <GestureHandlerRootView>
+      <Stack
+      screenOptions={{ headerShown: false, contentStyle: {backgroundColor: '#f5c66e'}}}
+      />
+    </GestureHandlerRootView>
+  );
 }

@@ -150,6 +150,9 @@ export const usePetStore = create<PetStoreState>()(
         {
         name: 'pet-storage',
         storage: createJSONStorage(() => AsyncStorage),
+        partialize: ({ pets }) => ({
+            pets
+        })
         }
     )
 )
