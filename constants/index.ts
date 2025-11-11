@@ -6,7 +6,9 @@ import buritto from "@/assets/images/buritto.png";
 import ket from '@/assets/images/ket.jpg';
 import mrEggPlant from '@/assets/images/mrEggPlant.jpg';
 import penthouseKet from '@/assets/images/penthouseKet.jpg';
-import icon from '../assets/images/icon.png';
+import catPass from '../assets/icons/catPass.png';
+import dogLike from '../assets/icons/dogLike.png';
+import appIcon from '../assets/images/icon.png';
 import profileCardBorder from '../assets/images/profileCardBorder.png';
 
 
@@ -23,5 +25,7 @@ export const icons = {
     settings,
     profile,
     shelter,
-    icon
+    appIcon,
+    catPass,
+    dogLike
 };
