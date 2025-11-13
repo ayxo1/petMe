@@ -77,11 +77,22 @@ export const usePetFeedStore = create<FeedState>()(
                     ];
                     const newPets = await petProfileFeedAPI.fetchPets(BATCH_SIZE, offset, excludeIds);
         
-                    set(state => ({
-                        petFeed: [...state.petFeed, ...newPets],
-                        isLoading: false,
-                        profilesLeft: true
-                    }));
+                    set(state => {
+                        let updatedFeed = [...state.petFeed, ...newPets];
+                        let updatedIndex = state.currentIndex;
+
+                        if (updatedFeed.length > 60 && updatedIndex > 30) {
+                            const trimAmount = 20;
+                            updatedFeed = updatedFeed.slice(trimAmount);
+                            updatedIndex -= trimAmount 
+                        };
+
+                        return {
+                            petFeed: updatedFeed,
+                            currentIndex: updatedIndex,
+                            isLoading: false
+                        };
+                    });
                 } catch (error) {
                     console.log(error, 'pet profile fetch error');
         
