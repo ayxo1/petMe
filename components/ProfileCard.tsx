@@ -27,7 +27,7 @@ const aspectRatio = 722 / 368;
 const CARD_WIDTH = wWidth - 128;
 const CARD_HEIGHT = CARD_WIDTH * aspectRatio;
 const IMAGE_WIDTH = CARD_WIDTH * 0.9;
-const DURATION = 200;
+const DURATION = 300;
 
 const END_POSITION = 0;
 
@@ -55,7 +55,7 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, 
   useEffect(() => {
     if(indexes.index === indexes.currentIndex) {
       rotateZ.value = withTiming(0, {
-        duration: 400,
+        duration: 200,
         easing: Easing.inOut(Easing.ease)
       })
     
