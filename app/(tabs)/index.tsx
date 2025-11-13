@@ -1,7 +1,9 @@
 import ProfileCard from "@/components/ProfileCard";
+import { images } from "@/constants";
 import { usePetFeedStore } from "@/stores/petFeedStore";
-import { useEffect } from "react";
-import { Text, View } from "react-native";
+import { assetPreloader, imagePreloader } from "@/utils/assetPreloader";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
@@ -18,6 +20,7 @@ export default function Index() {
     reset
   } = usePetFeedStore();
 
+  const [isPreloading, setIsPreloading] = useState(true);
   const VISIBLE_STACK_SIZE = 5;
   const currentPet = petFeed[currentIndex];
   const remaining = getRemaningPets();
@@ -25,10 +28,41 @@ export default function Index() {
 
   useEffect(() => {
     // reset();
-    if (petFeed.length === 0) {
-      fetchProfileBatch();
+    const initialize = async () => {
+      try {
+        if (petFeed.length === 0) {
+          fetchProfileBatch();
+        };
+        
+        const firstBatch = petFeed.slice(0, VISIBLE_STACK_SIZE);
+        const imageUris = firstBatch.flatMap((petProfile) => petProfile.images || []).filter(Boolean);
+
+        await Promise.all([
+          imagePreloader(imageUris),
+          assetPreloader([images.profileCardBorder])
+        ]);
+
+        setIsPreloading(false);
+      } catch (error) {
+        console.error('initialization error ', error);
+        setIsPreloading(false);
+      }
     };
+
+    initialize();
   }, []);
+
+  useEffect(() => {
+    if(remaining <= 3 && remaining > 0) {
+      const nextBatch = petFeed.slice(currentIndex + VISIBLE_STACK_SIZE, currentIndex + VISIBLE_STACK_SIZE + 5);
+      // what if there are only 3 profiles left?
+      const nextImages = nextBatch
+        .flatMap(petProfile => petProfile.images || [])
+        .filter(Boolean);
+
+        imagePreloader(nextImages);
+    }
+  }, [remaining, currentIndex, petFeed]);
   
   const onSwipeLeft = () => {
     console.log('swiping left ', currentPet.name);
@@ -48,6 +82,17 @@ export default function Index() {
 
     swipeLike(currentPet.id);
   };
+
+  console.log(isPreloading);
+
+  if (isPreloading) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" color="#f5c66e" />
+        <Text className="text-gray-600 mt-4 text-lg">Loading pets...</Text>
+      </SafeAreaView>
+    );
+  }
 
   if(!currentPet || remaining === 0) {
     return (
