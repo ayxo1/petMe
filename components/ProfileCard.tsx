@@ -2,7 +2,7 @@ import { icons, images } from "@/constants";
 import type { ProfileCardProps } from "@/types/components";
 import { Image } from "expo-image";
 import { LinearGradient } from 'expo-linear-gradient';
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Dimensions, ImageBackground, Text, View } from "react-native";
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withDelay, withTiming } from "react-native-reanimated";
@@ -13,6 +13,7 @@ interface ProfileCardPropsWithIndex extends ProfileCardProps {
   indexes: {
     index: number;
     reverseIndex: number;
+    currentIndex: number;
   };
   onSwipeLeft?: () => void;
   onSwipeRight?: () => void;
@@ -30,7 +31,7 @@ const DURATION = 200;
 
 const END_POSITION = 0;
 
-const ProfileCard = ({ profileImage, profileName, profileDescription, indexes, onSwipeLeft, onSwipeRight }: ProfileCardPropsWithIndex) => {
+const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, onSwipeLeft, onSwipeRight }: ProfileCardPropsWithIndex) => {
   console.log(indexes);
   
 
@@ -38,7 +39,7 @@ const ProfileCard = ({ profileImage, profileName, profileDescription, indexes, o
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(-height);
   const scale = useSharedValue(1);
-  const rotateZ = useSharedValue(indexes.index === 0 ? 0 : Math.random() * 10);
+  const rotateZ = useSharedValue(indexes.index === indexes.currentIndex ? 0 : Math.random() * 10);
 
   useEffect(() => {
     const delay = indexes.reverseIndex * DURATION
@@ -49,7 +50,17 @@ const ProfileCard = ({ profileImage, profileName, profileDescription, indexes, o
         easing: Easing.inOut(Easing.ease)
       })
     )
-  }, [indexes, translateY])
+  }, [indexes, translateY]);
+
+  useEffect(() => {
+    if(indexes.index === indexes.currentIndex) {
+      rotateZ.value = withTiming(0, {
+        duration: 400,
+        easing: Easing.inOut(Easing.ease)
+      })
+    
+    };
+  }, [indexes, rotateZ])
 
 
 
@@ -73,6 +84,7 @@ const ProfileCard = ({ profileImage, profileName, profileDescription, indexes, o
     if(swipedRight || swipedLeft) {
       
       translateX.value = withTiming(e.translationX + (swipedRight ? 400 : -400), { duration: 300 });
+
       scale.value = withTiming(0, { duration: 300 }, (finished) => {
         try {
           if(finished && swipedLeft && onSwipeLeft) {
@@ -168,7 +180,7 @@ const ProfileCard = ({ profileImage, profileName, profileDescription, indexes, o
               className="flex-1 relative"
             >
               <ImageBackground
-                source={profileImage}
+                source={profileImages[0]}
                 className="size-full"
                 resizeMode="cover"
               >

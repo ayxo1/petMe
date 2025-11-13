@@ -1,4 +1,5 @@
 import { PetProfile } from "@/types/pets";
+import { fetchPetsFromDB, getTotalPetCount } from "@/utils/mockPetDb";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
@@ -11,10 +12,9 @@ interface FeedState {
     likedPets: string[],
     passedPets: string[]
     matches: string[]
-    PREFETCH_THRESHOLD: number,
 
     fetchProfileBatch: () => Promise<void>;
-    swipeLike: (petId: string) => void;
+    swipeLike: (petId: string) => Promise<boolean>;
     swipePass: (petId: string) => void;
     getCurrentPet: () => PetProfile | null;
     getRemaningPets: () => number;
@@ -22,26 +22,31 @@ interface FeedState {
     reset: () => void;
 };
 
-const PREFETCH_THRESHOLD = 3;
+const PREFETCH_THRESHOLD = 2;
 const BATCH_SIZE = 20;
 
 const petProfileFeedAPI = {
-    fetchPets: async (limit: number, offset: number): Promise<PetProfile[]> => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+    fetchPets: async (limit: number, offset: number, excludeIds: string[]): Promise<PetProfile[]> => {
 
-        return Array.from({ length: limit }, (PetProfile, index) => ({
-            id: `petFeed-${offset + index}`,
-            ownerId: `user-${Math.random()}`,
-            name: `Pet ${offset + index}`,
-            species: 'cat' as const,
-            age: Math.floor(Math.random() * 10),
-            bio: 'biooooo',
-            images: [],
-            isAvailableForAdoption: false,
-            createdAt: new Date().toISOString()
-        }));
+        return await fetchPetsFromDB(limit, offset, excludeIds);
+
+        // return Array.from({ length: limit }, (PetProfile, index) => ({
+        //     id: `petFeed-${offset + index}`,
+        //     ownerId: `user-${Math.random()}`,
+        //     name: `Pet ${offset + index}`,
+        //     species: 'cat' as const,
+        //     age: Math.floor(Math.random() * 10),
+        //     bio: 'biooooo',
+        //     images: [],
+        //     isAvailableForAdoption: false,
+        //     createdAt: new Date().toISOString()
+        // }));
     },
 
+    getTotalCount: (excludeIds: string[]): number => {
+        return getTotalPetCount(excludeIds);
+    },
+ 
     checkForMatch: async (petId: string, yourPetIds: string[]): Promise<boolean> => {
         // backend inc, promise
         return Math.random() > 0.9;
@@ -49,7 +54,6 @@ const petProfileFeedAPI = {
 };
 
 export const usePetFeedStore = create<FeedState>()(
-    
     persist(
         (set, get) => ({
             petFeed: [],
@@ -58,13 +62,20 @@ export const usePetFeedStore = create<FeedState>()(
             likedPets: [],
             passedPets: [],
             matches: [],
-            PREFETCH_THRESHOLD,
         
             fetchProfileBatch: async () => {
+                const state = get();
+                if(state.isLoading) return;
+
                 try {
                     set({ isLoading: true });
-                    const offset = get().petFeed.length;
-                    const newPets = await petProfileFeedAPI.fetchPets(BATCH_SIZE, offset);
+                    
+                    const offset = state.petFeed.length;
+                    const excludeIds = [
+                        ...state.likedPets,
+                        ...state.passedPets
+                    ];
+                    const newPets = await petProfileFeedAPI.fetchPets(BATCH_SIZE, offset, excludeIds);
         
                     set(state => ({
                         petFeed: [...state.petFeed, ...newPets],
@@ -79,24 +90,33 @@ export const usePetFeedStore = create<FeedState>()(
                 }
             },
         
-            swipeLike: (petId: string) => {
-                const remainingPets = get().petFeed.length - get().currentIndex;
-                if(remainingPets < PREFETCH_THRESHOLD) get().fetchProfileBatch();
-        
+            swipeLike: async (petId: string) => {
+                const state = get();
+
+                const isMatch = await state.checkForMatch(petId);
+
                 set(state => ({ 
                     currentIndex: ++state.currentIndex,
-                    likedPets: [...state.likedPets, petId]
+                    likedPets: [...state.likedPets, petId],
+                    matches: isMatch ? [...state.matches, petId] : state.matches
                 }));
+
+                const remainingPets = state.petFeed.length - state.currentIndex;
+                if(remainingPets < PREFETCH_THRESHOLD) await state.fetchProfileBatch();
+
+                return isMatch;
             },
         
-            swipePass: (petId: string) => {
-                const remainingPets = get().petFeed.length - get().currentIndex;
-                if(remainingPets < PREFETCH_THRESHOLD) get().fetchProfileBatch();
-        
+            swipePass: async (petId: string) => {
+                const state = get();
+                
                 set(state => ({ 
                     currentIndex: ++state.currentIndex,
                     passedPets: [...state.passedPets, petId]
                 }));
+
+                const remainingPets = state.petFeed.length - state.currentIndex;
+                if(remainingPets < PREFETCH_THRESHOLD) await state.fetchProfileBatch();
             },
         
             getCurrentPet: () => {

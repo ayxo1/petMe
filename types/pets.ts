@@ -1,3 +1,5 @@
+import { ImageSourcePropType } from "react-native";
+
 export type PetSpecies = 'dog' | 'cat' | 'bird' | 'rodent' | 'other';
 
 export interface PetProfile {
@@ -8,7 +10,8 @@ export interface PetProfile {
   breed?: string;
   age: number;
   bio: string;
-  images?: string[];
+  // images?: string[];
+  images?: ImageSourcePropType[];
   createdAt: string;
   updatedAt?: string;
   isAvailableForAdoption: boolean;
