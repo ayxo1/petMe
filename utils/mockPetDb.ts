@@ -153,7 +153,7 @@ export const fetchPetsFromDB = async (
   excludeIds: string[] = []
 ): Promise<PetProfile[]> => {
 
-    await new Promise(resolve => setTimeout(resolve, 500));
+  await new Promise(resolve => setTimeout(resolve, 500));
 
   const availablePets = MOCK_PET_DATABASE.filter(
     pet => !excludeIds.includes(pet.id)

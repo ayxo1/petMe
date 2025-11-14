@@ -28,7 +28,7 @@ export interface PetFormData {
   breed?: string;
   age: number;
   bio: string;
-  images?: string[];
+  images?: ImageSourcePropType[];
   isAvailableForAdoption: boolean;
   adoptionStatus?: 'available' | 'pending' | 'adopted' | undefined;
   adoptionRequirements?: string;

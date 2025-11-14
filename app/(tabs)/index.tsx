@@ -31,7 +31,7 @@ export default function Index() {
     const initialize = async () => {
       try {
         if (petFeed.length === 0) {
-          fetchProfileBatch();
+          await fetchProfileBatch();
         };
         
         const firstBatch = petFeed.slice(0, VISIBLE_STACK_SIZE);
@@ -46,7 +46,7 @@ export default function Index() {
       } catch (error) {
         console.error('initialization error ', error);
         setIsPreloading(false);
-      }
+      };
     };
 
     initialize();
@@ -54,14 +54,15 @@ export default function Index() {
 
   useEffect(() => {
     if(remaining <= 3 && remaining > 0) {
+      
       const nextBatch = petFeed.slice(currentIndex + VISIBLE_STACK_SIZE, currentIndex + VISIBLE_STACK_SIZE + 5);
-      // what if there are only 3 profiles left?
+
       const nextImages = nextBatch
         .flatMap(petProfile => petProfile.images || [])
         .filter(Boolean);
 
         imagePreloader(nextImages);
-    }
+    };
   }, [remaining, currentIndex, petFeed]);
   
   const onSwipeLeft = () => {
@@ -88,11 +89,11 @@ export default function Index() {
   if (isPreloading) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center">
-        <ActivityIndicator size="large" color="#f5c66e" />
+        <ActivityIndicator size="large" color="#3b3a38" />
         <Text className="text-gray-600 mt-4 text-lg">Loading pets...</Text>
       </SafeAreaView>
     );
-  }
+  };
 
   if(!currentPet || remaining === 0) {
     return (
@@ -120,7 +121,7 @@ return (
         return (
           <View 
           key={profile.id}
-          className="absolute top-0 left-0 right-0 bottom-8"
+          className="absolute top-0 left-0 right-0 bottom-12"
           style={{
             zIndex,
             shadowColor: '#8c8981',

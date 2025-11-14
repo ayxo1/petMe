@@ -8,6 +8,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withDelay, withTiming } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { scheduleOnRN } from 'react-native-worklets';
+import { TiltEffect } from "./pets/holoCard/TiltEffect";
 
 interface ProfileCardPropsWithIndex extends ProfileCardProps {
   indexes: {
@@ -32,7 +33,7 @@ const DURATION = 300;
 const END_POSITION = 0;
 
 const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, onSwipeLeft, onSwipeRight }: ProfileCardPropsWithIndex) => {
-  console.log(indexes);
+  // console.log(indexes);
   
 
   const offset = useSharedValue({ x: 0, y: 0 });
@@ -50,7 +51,7 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, 
         easing: Easing.inOut(Easing.ease)
       })
     )
-  }, [indexes, translateY]);
+  }, [indexes.reverseIndex, translateY]);
 
   useEffect(() => {
     if(indexes.index === indexes.currentIndex) {
@@ -113,8 +114,8 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, 
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
-      { perspective: 1500 },
-      { rotateX: "10deg" },
+      // { perspective: 1200 },
+      // { rotateX: "10deg" },
       { translateX: translateX.value },
 
       { translateY: translateY.value },
@@ -141,7 +142,7 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, 
       <GestureDetector gesture={gesture}>
         <Animated.View
           // className="p-2 rounded-lg bg-orange-50"
-          className="p-2 rounded-lg "
+          // className="p-2 rounded-lg"
           style={animatedStyle}
         >
 
@@ -156,7 +157,7 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, 
                 // backgroundColor: 'rgba(34, 197, 94, 0.9)',
                 // paddingHorizontal: 20,
                 // paddingVertical: 10,
-                borderRadius: 8,
+                // borderRadius: 8,
                 // transform: [{ rotate: '-15deg' }],
               },
           ]}
@@ -172,13 +173,20 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, 
             </View>
         </Animated.View>
 
+        <TiltEffect>
+
           <View
-            className="h-[97.5%] overflow-hidden rounded-lg p-2 mt-2"
+            className="h-[98%] overflow-hidden rounded-lg p-2 mt-2"
           >
 
             <View 
               className="flex-1 relative"
             >
+              {/* <ImageBackground
+                source={profileImages[0]}
+                className="size-full"
+                resizeMode="cover"
+              > */}
               <ImageBackground
                 source={profileImages[0]}
                 className="size-full"
@@ -227,6 +235,8 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, 
               </Text>
             </View>
           </View>
+
+        </TiltEffect>
         </Animated.View>
       </GestureDetector>
       
