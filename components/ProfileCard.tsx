@@ -8,7 +8,7 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withDelay, withTiming } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { scheduleOnRN } from 'react-native-worklets';
-import { TiltEffect } from "./pets/holoCard/TiltEffect";
+import { TiltEffect } from "./holoCard/TiltEffect";
 
 interface ProfileCardPropsWithIndex extends ProfileCardProps {
   indexes: {
@@ -114,18 +114,12 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, 
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
-      // { perspective: 1200 },
-      // { rotateX: "10deg" },
       { translateX: translateX.value },
-
       { translateY: translateY.value },
-      // { rotateY: `${rotateZ.value / 20}deg` },
-
       { rotateZ: `${rotateZ.value}deg` },
-      
       { scale: scale.value },
     ],
-  }));
+  }));  
 
   const likeOverlayStyle = useAnimatedStyle(() => ({
     opacity: interpolate(
@@ -145,7 +139,7 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, 
           // className="p-2 rounded-lg"
           style={animatedStyle}
         >
-
+          
          <Animated.View
             style={[
               likeOverlayStyle,

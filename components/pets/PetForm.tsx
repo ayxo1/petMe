@@ -57,7 +57,8 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
             setCurrentImage(result.assets[0].uri)
             console.log(result.assets[0].uri);
             images?.push(result.assets[0].uri);
-        }
+                                
+        };
 
         // need an apple dev account, gg
         // const result = await ImagePicker.launchImageLibraryAsync({
@@ -76,7 +77,7 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
 
         // console.log(cropped.path);
         
-    }
+    };
 
     const speciesOptions: { 
         value: PetSpecies; 

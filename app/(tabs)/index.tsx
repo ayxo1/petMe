@@ -7,6 +7,7 @@ import { ActivityIndicator, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 
+
 export default function Index() {
 
   const {
@@ -64,6 +65,15 @@ export default function Index() {
         imagePreloader(nextImages);
     };
   }, [remaining, currentIndex, petFeed]);
+
+  useEffect(() => {
+    const dbIp = process.env.EXPO_PUBLIC_POCKETBASE_HOST;
+
+    fetch(`http://${dbIp}:8090/api/health`)
+    .then(res => res.json())
+    .then(data => console.log('pb connected ', data))
+    .catch(error => console.error(error));
+  }, []);
   
   const onSwipeLeft = () => {
     console.log('swiping left ', currentPet.name);
@@ -132,6 +142,7 @@ return (
           }}
           pointerEvents={arrIndex === 0 ? 'auto' : 'none'}
           >
+
             <ProfileCard
               profileImages={profile.images || []}
               profileName={profile.name}

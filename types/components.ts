@@ -7,7 +7,7 @@ export interface TabBarIconProps {
 }
 
 export interface ProfileCardProps {
-  profileImages: ImageSourcePropType[];
+  profileImages: string[];
   profileName: string;
   profileDescription: string;
 }

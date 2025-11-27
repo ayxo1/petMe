@@ -11,6 +11,6 @@ export const profileSetupSchema = yup.object({
   bio: yup
     .string()
     .required('bio is required')
-    .min(24, 'don\'t be shy')
+    .min(12, 'don\'t be shy')
     .max(240, 'max length is 240 characters'),
 });

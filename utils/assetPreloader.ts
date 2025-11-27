@@ -2,7 +2,7 @@ import { Asset } from 'expo-asset';
 import { Image, ImageSourcePropType } from "react-native";
 
 // image preloader
-export const imagePreloader = async (imageUris: ImageSourcePropType[]): Promise<void> => {
+export const imagePreloader = async (imageUris: string[]): Promise<void> => {
     try {
         const promises = imageUris.map((uri) => {
             return new Promise<void>((resolve, reject) => {
