@@ -1,5 +1,5 @@
 import { SignInFormData, SignUpFormData } from '@/types/auth';
-import { PBPet, PBUser } from '@/types/pbTypes';
+import { PBMatch, PBPet, PBUser } from '@/types/pbTypes';
 import 'dotenv/config';
 import PocketBase, { type RecordModel } from 'pocketbase';
 
@@ -218,8 +218,126 @@ export const swipesAPI = {
 
     return swipes.map(swipe => swipe.pet);
   },
+
+  getSwipedProfileIds: async (userId: string): Promise<string[]> => {
+    const swipes = await pb.collection('swipes').getFullList({
+      filter: `user = "${userId}" && swipeType = "profile"`,
+      fields: 'targetUser'
+    });
+
+    return swipes.map(swipe => swipe.targetUser).filter(Boolean);
+  },
   // check if swipe => match
-  // checkForMatch: async (userId: string, petId: string): Promise<boolean> => {
+  checkForMatch: async (userId: string, petId: string): Promise<{ isMatch: boolean; matchType?: 'instant' | 'mutual' }> => {
+    // get the pet and the owner
+    const pet = await pb.collection('pets').getOne(petId);
+    const petOwnerId = pet.owner;
+
+    // get current user's account type + pets
+    const currentUser = await pb.collection('users').getOne(userId);
+    const userPets = await petsAPI.getUserPets(userId);
+
+    // scenario 1: seeker swipes on a pet
+    if (currentUser.accountType === 'seeker' || userPets.length === 0) {
+      // check if the seeker was already liked by the onwer
+      const onwerPreApproval = await pb.collection('swipes').getFullList({
+        filter: `user = "${petOwnerId}" && targetUser = "${userId}" && action = "like" && swipeType = "profile"`
+      });
+
+      if (onwerPreApproval.length > 0) {
+        return { isMatch: true, matchType: 'instant' };
+      };
+
+      return { isMatch: false };
+    };
+
+    // scenario 2: owner swiped on another owner's pet
+    if (currentUser.accountType === 'owner' && userPets,length > 0) {
+      const userPetIds = userPets.map(pet => pet.id);
+
+      // check if the owner liked any of our pets
+      const mutualLike = await pb.collection('swipes').getFullList({
+        filter: `user = "${petOwnerId}" && action = "like" && swipeType = "pet" && (${userPetIds.map(id => `targetPet = "${id}"`).join(' || ')})`
+      });
+
+      if (mutualLike.length > 0) return { isMatch: true, matchType: 'mutual' };
+    };
+
+    return { isMatch: false };
+  },
+
+  getPendingRequests: async (ownerId: string): Promise<any[]> => {
+    const ownerPets = await petsAPI.getUserPets(ownerId);
+    const petIds = ownerPets.map(pet => pet.id);
+
+    if (petIds.length === 0) return [];
     
-  // }
+    // find all likes on owner's pets by seekers
+    const requests = await pb.collection('swipes').getFullList({
+      filter: `action = "like" && swipeType = "pet" && (${petIds.map(id => `targetPet = "${id}"`).join(" || ")})`,
+      expand: 'user,targetPet',
+      sort: '-created'
+    });
+
+    // filter requests where owner already preapproved
+    const preApprovedUsers = await pb.collection('swipes').getFullList({
+      filter: `user = "${ownerId}" && action = "like" && swipeType = "profile"`,
+      fields: 'targetUser'
+    });
+
+    return requests.filter(request => !preApprovedUsers.includes(request.user));
+  },
+
+  createMatch: async (
+    user1Id: string,
+    user2Id: string,
+    pet1Id: string,
+    pet2Id?: string
+  ): Promise<PBMatch> => {
+    const match = await pb.collection('matches').create({
+      user1: user1Id,
+      user2: user2Id,
+      pet1: pet1Id,
+      pet2: pet2Id || null,
+      status: 'pending'
+    });
+
+    return match as PBMatch;
+  },
+
+  approveRequest: async (
+    ownerId: string,
+    seekerId: string,
+    petId: string
+  ): Promise<PBMatch> => {
+    return await swipesAPI.createMatch(seekerId, ownerId, petId);
+  },
+
+  getUserMatches: async (userId: string): Promise<PBMatch[]> => {
+    const matches = await pb.collection('matches').getFullList({
+      filter: `(user = ${userId} || user2 = "${userId}") && status != "declined"`,
+      expand: 'user1,user2,pet1,pet2',
+      sort: '-created'
+    });
+
+    return matches as PBMatch[];
+  }
+};
+
+export const messagesAPI = {
+  sendMessage: async (matchId: string, senderId: string, content: string) => {
+    return await pb.collection('messages').create({
+      match: matchId,
+      sender: senderId,
+      content
+    });
+  },
+
+  getMessages: async (matchId: string) => {
+    return await pb.collection('messages').getFullList({
+      filter: `match = "${matchId}"`,
+      expand: 'sender',
+      sort: '-created'
+    });
+  }
 }

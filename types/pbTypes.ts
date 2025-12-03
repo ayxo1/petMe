@@ -8,6 +8,8 @@ export interface PBUser extends RecordModel {
   profileImage?: string;
   city: string;
   coordinates?: { lat: number; lng: number };
+  created: string;
+  updated: string;
 }
 
 export interface PBPet extends RecordModel {
@@ -26,6 +28,8 @@ export interface PBPet extends RecordModel {
   expand?: {
     owner: PBUser;
   };
+  created: string;
+  updated: string;
 }
 
 export interface PBSwipe {
@@ -38,8 +42,7 @@ export interface PBSwipe {
   updated: string;
 }
 
-export interface PBMatch {
-  id: string;
+export interface PBMatch extends RecordModel {
   user1: string;
   user2: string;
   pet1: string;
