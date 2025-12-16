@@ -1,4 +1,4 @@
-import { pb } from '@/backend/config/pocketbase';
+import { pb, petsAPI } from '@/backend/config/pocketbase';
 import { PBPet } from '@/types/pbTypes';
 import { PetFormData, PetProfile } from '@/types/pets';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -99,7 +99,10 @@ export const usePetStore = create<PetStoreState>()(
             hydratePets: async (userId: string) => {
                 try {
                     set({ isLoading: true });
-                    const pets = await petAPI.fetchUserPets(userId);
+
+                    const pbPets = await petsAPI.getUserPets(userId)
+                    const pets = pbPets.map(convertPBPetToPetProfile);
+
                     set({
                         pets,
                         isLoading: false,
@@ -118,7 +121,21 @@ export const usePetStore = create<PetStoreState>()(
                     const currentUser = useAuthStore.getState().user;
                     if(!currentUser) throw new Error('no user logged in');
 
-                    const newPet = await petAPI.addPet(currentUser.id, petData);
+                    const pbPet = await petsAPI.createPet({
+                        owner: currentUser.id,
+                        name: petData.name,
+                        species: petData.species,
+                        breed: petData.breed,
+                        age: petData.age,
+                        bio: petData.bio,
+                        images: petData.images,
+                        isAvailableForAdoption: petData.isAvailableForAdoption,
+                        adoptionStatus: petData.adoptionStatus,
+                        adoptionRequirements: petData.adoptionRequirements,
+                        adoptionReason: petData.adoptionReason
+                    });
+
+                    const newPet = convertPBPetToPetProfile(pbPet);
                     
                     set(state => ({
                         pets: [...state.pets, newPet],
@@ -135,7 +152,20 @@ export const usePetStore = create<PetStoreState>()(
                 try {
                     set({ isLoading: true});
 
-                    const updatedPet = await petAPI.updatePet(petId, petData);
+                    const pbPet = await petsAPI.updatePet(petId, {
+                        name: petData.name,
+                        species: petData.species,
+                        breed: petData.breed,
+                        age: petData.age,
+                        bio: petData.bio,
+                        image: petData.images,
+                        isAvailableForAdoption: petData.isAvailableForAdoption,
+                        adoptionStatus: petData.adoptionStatus,
+                        adoptionRequirements: petData.adoptionRequirements,
+                        adoptionReason: petData.adoptionReason
+                    });
+
+                    const updatedPet = convertPBPetToPetProfile(pbPet);
 
                     set(state => ({
                         pets: state.pets.map(pet => pet.id === petId ? updatedPet : pet),
@@ -151,7 +181,8 @@ export const usePetStore = create<PetStoreState>()(
             deletePet: async (petId: string) => {
                 try {
                     set({ isLoading: true });
-                    await petAPI.deletePet(petId);
+
+                    await petsAPI.deletePet(petId);
 
                     set(state => ({
                         pets: state.pets.filter(pet => pet.id !== petId),
@@ -180,4 +211,4 @@ export const usePetStore = create<PetStoreState>()(
         })
         }
     )
-)
+);

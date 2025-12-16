@@ -89,7 +89,7 @@ export const authAPI = {
 /**
  * petsAPI
  */
-const petsAPI = {
+export const petsAPI = {
   getUserPets: async (userId: string): Promise<PBPet[]> => {
     const records = await pb.collection('pets').getFullList({
       filter: `owner = "${userId}"`,
