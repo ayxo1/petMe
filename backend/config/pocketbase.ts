@@ -1,10 +1,9 @@
 import { SignInFormData, SignUpFormData } from '@/types/auth';
 import { PBMatch, PBPet, PBUser } from '@/types/pbTypes';
-import 'dotenv/config';
 import PocketBase, { type RecordModel } from 'pocketbase';
 
 const PB_URL = __DEV__ 
-    ? process.env.POCKETBASE_HOST
+    ? process.env.EXPO_PUBLIC_POCKETBASE_HOST
     : ''
 
 export const pb = new PocketBase(PB_URL);
@@ -340,4 +339,4 @@ export const messagesAPI = {
       sort: '-created'
     });
   }
-}
+};

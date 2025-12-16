@@ -68,7 +68,8 @@ export default function Index() {
 
   useEffect(() => {
     const dbIp = process.env.EXPO_PUBLIC_POCKETBASE_HOST;
-
+    console.log(`http://${dbIp}:8090/api/health`);
+    
     fetch(`http://${dbIp}:8090/api/health`)
     .then(res => res.json())
     .then(data => console.log('pb connected ', data))

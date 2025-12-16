@@ -1,3 +1,5 @@
+import { pb } from '@/backend/config/pocketbase';
+import { PBPet } from '@/types/pbTypes';
 import { PetFormData, PetProfile } from '@/types/pets';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
@@ -17,52 +19,75 @@ interface PetStoreState {
     setLoading: (loading: boolean) => void;
 }
 
-const petAPI = {
+const convertPBPetToPetProfile = (pbPet: PBPet): PetProfile => {
+    const imageUrls = pbPet.images.map(filename => `${pb.baseURL}/api/files/pets/${pbPet.id}/${filename}`);
 
-    fetchUserPets: async (userId: string): Promise<PetProfile[]> => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+    return {
+        id: pbPet.id,
+        ownerId: pbPet.owner,
+        name: pbPet.name,
+        species: pbPet.species,
+        breed: pbPet.breed,
+        age: pbPet.age,
+        bio: pbPet.bio,
+        images: imageUrls,
+        isAvailableForAdoption: pbPet.isAvailableForAdoption,
+        adoptionStatus: pbPet.adoptionStatus,
+        adoptionDetails: pbPet.isAvailableForAdoption ? {
+            requirements: pbPet.adoptionRequirements,
+            reason: pbPet.adoptionReason
+        } : undefined,
+        createdAt: pbPet.created,
+        updatedAt: pbPet.updated
+    };
+};
 
-        const stored = await AsyncStorage.getItem('pet-storage');
-        if(stored) {
-            const data = JSON.parse(stored);
-            return data.state.pets || [];
-        }
-        return [];
-    },
+// const petAPI = {
+
+//     fetchUserPets: async (userId: string): Promise<PetProfile[]> => {
+//         await new Promise(resolve => setTimeout(resolve, 1000));
+
+//         const stored = await AsyncStorage.getItem('pet-storage');
+//         if(stored) {
+//             const data = JSON.parse(stored);
+//             return data.state.pets || [];
+//         }
+//         return [];
+//     },
     
-    addPet: async (ownerId: string, petData: PetFormData): Promise<PetProfile> => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+//     addPet: async (ownerId: string, petData: PetFormData): Promise<PetProfile> => {
+//         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        return {
-            id: Math.random().toString(),
-            ownerId,
-            ...petData,
-            adoptionDetails: petData.isAvailableForAdoption ? {
-                requirements: petData.adoptionRequirements,
-                reason: petData.adoptionReason
-            } : undefined,
-            createdAt: new Date().toISOString()
-        };
-    },
+//         return {
+//             id: Math.random().toString(),
+//             ownerId,
+//             ...petData,
+//             adoptionDetails: petData.isAvailableForAdoption ? {
+//                 requirements: petData.adoptionRequirements,
+//                 reason: petData.adoptionReason
+//             } : undefined,
+//             createdAt: new Date().toISOString()
+//         };
+//     },
 
-    updatePet: async (petId: string, petData: Partial<PetProfile>): Promise<PetProfile> => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
+//     updatePet: async (petId: string, petData: Partial<PetProfile>): Promise<PetProfile> => {
+//         await new Promise(resolve => setTimeout(resolve, 1000));
 
-        const currentPet = usePetStore.getState().pets.find(pet => petId === pet.id);
-        if(!currentPet) throw new Error('no pet found');
+//         const currentPet = usePetStore.getState().pets.find(pet => petId === pet.id);
+//         if(!currentPet) throw new Error('no pet found');
 
-        return {
-            ...currentPet,
-            ...petData,
-            updatedAt: new Date().toISOString()
-        };
-    },
+//         return {
+//             ...currentPet,
+//             ...petData,
+//             updatedAt: new Date().toISOString()
+//         };
+//     },
 
-    deletePet: async (petId: string): Promise<void> => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        // backend soon™ to make it actually functional lul
-    }
-}
+//     deletePet: async (petId: string): Promise<void> => {
+//         await new Promise(resolve => setTimeout(resolve, 1000));
+//         // backend soon™ to make it actually functional lul
+//     }
+// }
 
 export const usePetStore = create<PetStoreState>()(
     persist(

@@ -12,12 +12,12 @@ import { useForm } from 'react-hook-form';
 import { Alert, Text, View } from 'react-native';
 
 const formInputData: FormInputData[] = [
-  {
-    name: 'city',
-    placeholder: 'select your city',
-    label: 'city*',
-    keyboardType: 'default',
-  },
+  // {
+  //   name: 'city',
+  //   placeholder: 'select your city',
+  //   label: 'city*',
+  //   keyboardType: 'default',
+  // },
   {
     name: 'bio',
     placeholder: 'tell us a bit about yourself',
@@ -56,7 +56,7 @@ const ProfileSetup = () => {
       const locationData = await getCityFromCoordinates(coordinates);
 
       if(locationData) {
-        setValue('city', locationData.city);
+        // setValue('city', locationData.city);
         Alert.alert(`location detected: ${locationData.city}`);
       } else {
         Alert.alert('coordinates are retrieved, however, the city is not determined. Please enter it manually');
@@ -83,7 +83,7 @@ const ProfileSetup = () => {
       const userUpdate = {
         accountType: submitData.accountType,
         location: {
-          city: submitData.city,
+          // city: submitData.city,
           coordinates: submitData.coordinates
         },
         bio: submitData.bio
