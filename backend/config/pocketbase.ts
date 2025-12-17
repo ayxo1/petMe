@@ -3,7 +3,9 @@ import { PBMatch, PBPet, PBUser } from '@/types/pbTypes';
 import PocketBase, { type RecordModel } from 'pocketbase';
 
 const PB_URL = __DEV__ 
-    ? process.env.EXPO_PUBLIC_POCKETBASE_HOST
+    ? (process.env.EXPO_PUBLIC_POCKETBASE_HOST?.startsWith('http')
+        ? process.env.EXPO_PUBLIC_POCKETBASE_HOST 
+        : `http://${process.env.EXPO_PUBLIC_POCKETBASE_HOST}:8090`)
     : ''
 
 export const pb = new PocketBase(PB_URL);
@@ -36,7 +38,7 @@ export const getPBFileURL = (
 ): string => {
   if (!filename) return '';
   
-  const baseUrl = `${PB_URL}/api/files/${collectionName}/${recordId}/${filename}`;
+  const baseUrl = `${PB_URL}:8090/api/files/${collectionName}/${recordId}/${filename}`;
   return thumb ? `${baseUrl}?thumb=${thumb}` : baseUrl;
 };
 
@@ -60,10 +62,11 @@ export const signOut = (): void => {
  * authAPI
  */
 export const authAPI = {
-  signUp: async ({ email, password, username }: SignUpFormData): Promise<PBUser> => {
+  signUp: async ({ email, password, username, passwordConfirm }: SignUpFormData): Promise<PBUser> => {
     const user = await pb.collection('users').create({
       email,
       password,
+      passwordConfirm,
       username
     });
 

@@ -5,10 +5,11 @@ import { useAuthStore } from '@/stores/authStore';
 import { SignInFormData } from '@/types/auth';
 import { FormInputData } from '@/types/components';
 import { yupResolver } from '@hookform/resolvers/yup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Link, router } from 'expo-router';
 import { Fragment } from 'react';
 import { useForm } from 'react-hook-form';
-import { Text, View } from 'react-native';
+import { Alert, Text, View } from 'react-native';
 
 const formInputData: FormInputData[] = [
   {
@@ -81,6 +82,13 @@ const SignIn = () => {
           title='submit'
           onPress={handleSubmit(submit)}
           isLoading={isLoading}
+        />
+        <ButtonComponent 
+          title="Clear Cache (Dev Only)"
+          onPress={async () => {
+            await AsyncStorage.clear();
+            Alert.alert('Cache cleared', 'Restart the app');
+          }}
         />
       </View>
       <View

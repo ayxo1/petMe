@@ -20,6 +20,7 @@ export interface SignInFormData {
 
 export interface SignUpFormData extends SignInFormData {
   username: string;
+  passwordConfirm: string;
 }
 
 export interface ProfileSetupFormData {

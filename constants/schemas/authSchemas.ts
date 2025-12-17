@@ -13,6 +13,12 @@ export const authSignUpSchema = yup.object({
     .string()
     .required('password is required')
     .min(8, 'password should include more than 8 characters')
+    .matches(/[A-Z]/, 'Must contain at least one uppercase letter')
+    .matches(/[0-9]/, 'Must contain at least one number'),
+  passwordConfirm: yup
+    .string()
+    .required('please confirm your password')
+    .oneOf([yup.ref('password')], 'passwords must match')
 });
 
 export const authSignInSchema = yup.object({

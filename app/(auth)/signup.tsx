@@ -8,7 +8,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { Link, router } from 'expo-router';
 import { Fragment } from 'react';
 import { useForm } from 'react-hook-form';
-import { Text, View } from 'react-native';
+import { Alert, Text, View } from 'react-native';
 
 const formInputData: FormInputData[] = [
   {
@@ -27,6 +27,13 @@ const formInputData: FormInputData[] = [
     name: 'password',
     placeholder: 'enter your password',
     label: 'password',
+    keyboardType: "default",
+    secureTextEntry: true
+  },
+  {
+    name: 'confirm password',
+    placeholder: 'confirm your password',
+    label: 'confirm password',
     keyboardType: "default",
     secureTextEntry: true
   },
@@ -49,10 +56,12 @@ const SignUp = () => {
   const submit = async (data: SignUpFormData) => {
     try {
       await signUp(data);
+
       setRegistrationState('signed_up');
       router.replace('/(auth)/profile-setup');
     } catch (error) {
-      console.log(error);
+      console.log(error, ' signup error');
+      Alert.alert('something went wrong, please try again');
     }
     console.log(data);
   }

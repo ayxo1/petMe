@@ -108,6 +108,7 @@ export const useAuthStore = create<AuthState>()(
           const pbUser = await authAPI.signUp({
             email: userData.email,
             password: userData.password,
+            passwordConfirm: userData.passwordConfirm,
             username: userData.username
           });
 
@@ -122,6 +123,7 @@ export const useAuthStore = create<AuthState>()(
           // await usePetStore.setState({ pets: [], isHydrated: true });
         } catch (error) {
           set({ isLoading: false })
+          console.log(JSON.stringify(error, null, 2), ' signup error AuthStore');
           throw error;
         }
       },
