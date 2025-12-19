@@ -27,7 +27,7 @@ const formInputData: FormInputData[] = [
 
 const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormProps) => {
 
-    const [currentImage, setCurrentImage] = useState('');
+    // const [currentImage, setCurrentImage] = useState('');
 
     const {
         control,
@@ -41,7 +41,6 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
     });
 
     const species = watch('species');
-    const images = watch('images');
     const isAvailableForAdoption = watch('isAvailableForAdoption');
     const adoptionStatus = watch('adoptionStatus');
 
@@ -53,11 +52,10 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
             quality: 0.6
         });
         if(!result.canceled) {
-
-            setCurrentImage(result.assets[0].uri)
-            console.log(result.assets[0].uri);
-            images?.push(result.assets[0].uri);
-                                
+            // setCurrentImage(result.assets[0].uri);
+            // console.log(result.assets[0].uri);
+            const currentImages = watch('images') || [];
+            setValue('images', [...currentImages, result.assets[0].uri])
         };
 
         // need an apple dev account, gg

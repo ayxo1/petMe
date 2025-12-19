@@ -120,7 +120,11 @@ export const petsAPI = {
     });
 
     data.images?.forEach(image => (
-      formData.append('images', image)
+      formData.append('images', {
+        uri: image,
+        name: image,
+        type: 'image/jpeg'
+      } as any)
     ));
 
     const pet = await pb.collection('pets').create(formData);
