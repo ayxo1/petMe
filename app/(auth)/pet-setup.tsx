@@ -29,13 +29,12 @@ const PetSetup = () => {
           {text: 'done', onPress: () => router.replace('/')}
         ]
       );
+
+      if(registrationState !== 'completed') setRegistrationState('completed');
     } catch (error) {
       Alert.alert('error', 'failed to add pet, try again');
       console.log(error, 'error adding pet');
-    } finally {
-      if(registrationState !== 'completed') setRegistrationState('completed');
     };
-    
   };
 
   return (

@@ -31,7 +31,7 @@ const formInputData: FormInputData[] = [
     secureTextEntry: true
   },
   {
-    name: 'confirm password',
+    name: 'passwordConfirm',
     placeholder: 'confirm your password',
     label: 'confirm password',
     keyboardType: "default",
@@ -54,6 +54,8 @@ const SignUp = () => {
   })
 
   const submit = async (data: SignUpFormData) => {
+    console.log('submit pressed');
+    
     try {
       await signUp(data);
 
@@ -80,7 +82,7 @@ const SignUp = () => {
               placeholder={inputController.placeholder}
               label={inputController.label}
               keyboardType={inputController?.keyboardType}
-              secureTextEntry={inputController.name === 'password'}
+              secureTextEntry={inputController.name === 'password' || inputController.name === 'passwordConfirm'}
             />
           </Fragment>
         ))}

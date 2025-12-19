@@ -1,6 +1,7 @@
 import { SignInFormData, SignUpFormData } from '@/types/auth';
 import { PBMatch, PBPet, PBUser } from '@/types/pbTypes';
-import PocketBase, { type RecordModel } from 'pocketbase';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import PocketBase, { AsyncAuthStore, type RecordModel } from 'pocketbase';
 
 const PB_URL = __DEV__ 
     ? (process.env.EXPO_PUBLIC_POCKETBASE_HOST?.startsWith('http')
@@ -8,7 +9,13 @@ const PB_URL = __DEV__
         : `http://${process.env.EXPO_PUBLIC_POCKETBASE_HOST}:8090`)
     : ''
 
-export const pb = new PocketBase(PB_URL);
+const store = new AsyncAuthStore({
+  save: async (serialized) => AsyncStorage.setItem('pb_auth', serialized),
+  initial: AsyncStorage.getItem('pb_auth'),
+  clear: async () => AsyncStorage.removeItem('pb_auth'),
+});
+
+export const pb = new PocketBase(PB_URL, store);
 
 // allow all requests - test it later
 // pb.autoCancellation(false);

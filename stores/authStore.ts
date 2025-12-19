@@ -1,4 +1,4 @@
-import { authAPI, signOut as pbSignOut } from '@/backend/config/pocketbase';
+import { authAPI, pb, signOut as pbSignOut } from '@/backend/config/pocketbase';
 import { PBUser } from '@/types/pbTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
@@ -74,6 +74,12 @@ export const useAuthStore = create<AuthState>()(
       user: null,
       isLoading: false,
       registrationState: 'not_started',
+      
+      init: () => {
+        if (!pb.authStore.isValid && get().isAuthenticated) {
+          get().signOut(); 
+        };
+      },
 
       signIn: async (userData: SignInFormData) => {
         try {
@@ -169,6 +175,7 @@ export const useAuthStore = create<AuthState>()(
           
         } catch (error) {
           set({ isLoading: false });
+          console.log('authStore updateuser error ', error);
           throw error;
         }
       },

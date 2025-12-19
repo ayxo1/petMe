@@ -43,7 +43,8 @@ export interface AuthState {
   user: User | null;
   isLoading: boolean;
   registrationState: RegistrationState;
-  
+
+  init: () => void;  
   signIn: (userData: SignInFormData) => Promise<void>;
   signUp: (userData: SignUpFormData) => Promise<void>;
   signOut: () => void;
