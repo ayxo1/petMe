@@ -6,8 +6,6 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-
-
 export default function Index() {
 
   const {
@@ -17,8 +15,6 @@ export default function Index() {
     swipePass,
     fetchProfileBatch,
     getRemaningPets,
-    checkForMatch,
-    reset
   } = usePetFeedStore();
 
   const [isPreloading, setIsPreloading] = useState(true);
@@ -28,7 +24,6 @@ export default function Index() {
   const visibleCards = petFeed.slice(currentIndex, currentIndex + VISIBLE_STACK_SIZE);
 
   useEffect(() => {
-    // reset();
     const initialize = async () => {
       try {
         if (petFeed.length === 0) {
@@ -87,12 +82,10 @@ export default function Index() {
     console.log('swiping right ', currentPet.name);
     if(!currentPet) return;
 
-    const isMatch = await checkForMatch(currentPet.id);
+    const isMatch = await swipeLike(currentPet.id);
     if(isMatch) {
       console.log('it\'s a match ');
     };
-
-    swipeLike(currentPet.id);
   };
 
   console.log(isPreloading);

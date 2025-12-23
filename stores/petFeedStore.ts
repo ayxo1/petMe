@@ -1,5 +1,6 @@
+import { getCurrentUser, pb, petsAPI, swipesAPI } from "@/backend/config/pocketbase";
+import { PBPet } from "@/types/pbTypes";
 import { PetProfile } from "@/types/pets";
-import { fetchPetsFromDB, getTotalPetCount } from "@/utils/mockPetDb";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
@@ -9,174 +10,162 @@ interface FeedState {
     petFeed: PetProfile[];
     currentIndex: number;
     isLoading: boolean;
-    likedPets: string[],
-    passedPets: string[]
-    matches: string[]
 
     fetchProfileBatch: () => Promise<void>;
     swipeLike: (petId: string) => Promise<boolean>;
     swipePass: (petId: string) => void;
     getCurrentPet: () => PetProfile | null;
     getRemaningPets: () => number;
-    checkForMatch: (petId: string) => Promise<boolean>;
     reset: () => void;
 };
 
-const PREFETCH_THRESHOLD = 2;
-const BATCH_SIZE = 20;
+const convertPBPetToPetProfile = (pbPet: PBPet): PetProfile => {
+    const imageUrls = pbPet.images.map(filename => 
+        `${pb.baseURL}/api/files/pets/${pbPet.id}/${filename}`
+    );
 
-const petProfileFeedAPI = {
-    fetchPets: async (limit: number, offset: number, excludeIds: string[]): Promise<PetProfile[]> => {
-
-        return await fetchPetsFromDB(limit, offset, excludeIds);
-
-        // return Array.from({ length: limit }, (PetProfile, index) => ({
-        //     id: `petFeed-${offset + index}`,
-        //     ownerId: `user-${Math.random()}`,
-        //     name: `Pet ${offset + index}`,
-        //     species: 'cat' as const,
-        //     age: Math.floor(Math.random() * 10),
-        //     bio: 'biooooo',
-        //     images: [],
-        //     isAvailableForAdoption: false,
-        //     createdAt: new Date().toISOString()
-        // }));
-    },
-
-    getTotalCount: (excludeIds: string[]): number => {
-        return getTotalPetCount(excludeIds);
-    },
- 
-    checkForMatch: async (petId: string, yourPetIds: string[]): Promise<boolean> => {
-        // backend inc, promise
-        return Math.random() > 0.9;
-    }
+    return {
+        id: pbPet.id,
+        ownerId: pbPet.owner,
+        name: pbPet.name,
+        species: pbPet.species,
+        breed: pbPet.breed,
+        age: pbPet.age,
+        bio: pbPet.bio,
+        images: imageUrls,
+        isAvailableForAdoption: pbPet.isAvailableForAdoption,
+        adoptionStatus: pbPet.adoptionStatus,
+        adoptionDetails: pbPet.isAvailableForAdoption ? {
+            requirements: pbPet.adoptionRequirements,
+            reason: pbPet.adoptionReason
+        } : undefined,
+        createdAt: pbPet.created,
+        updatedAt: pbPet.updated
+    };
 };
 
-export const usePetFeedStore = create<FeedState>()(
-    persist(
-        (set, get) => ({
-            petFeed: [],
-            currentIndex: 0,
-            isLoading: false,
-            likedPets: [],
-            passedPets: [],
-            matches: [],
-        
-            fetchProfileBatch: async () => {
-                const state = get();
-                if(state.isLoading) return;
+const PREFETCH_THRESHOLD = 3;
+const BATCH_SIZE = 20;
 
-                try {
-                    set({ isLoading: true });
-                    
-                    const offset = state.petFeed.length;
-                    const excludeIds = [
-                        ...state.likedPets,
-                        ...state.passedPets
-                    ];
-                    const newPets = await petProfileFeedAPI.fetchPets(BATCH_SIZE, offset, excludeIds);
-        
-                    set(state => {
-                        let updatedFeed = [...state.petFeed, ...newPets];
-                        let updatedIndex = state.currentIndex;
+export const usePetFeedStore = create<FeedState>(
+    (set, get) => ({
+        petFeed: [],
+        currentIndex: 0,
+        isLoading: false,
+    
+        fetchProfileBatch: async () => {
+            const state = get();
+            if(state.isLoading) {
+                console.log('a batch is already loading');
+                return;
+            };
 
-                        if (updatedFeed.length > 60 && updatedIndex > 30) {
-                            const trimAmount = 20;
-                            updatedFeed = updatedFeed.slice(trimAmount);
-                            updatedIndex -= trimAmount 
-                        };
+            const currentUser = getCurrentUser();
+            console.log('Sending request with token:', pb.authStore.token);
+            console.log('Is valid?', pb.authStore.isValid);
+            console.log('User ID:', currentUser?.id);
+            if(!currentUser) {
+                console.error('no user is logged in');
+                set({ isLoading: false });
+                return;
+            };
 
-                        return {
-                            petFeed: updatedFeed,
-                            currentIndex: updatedIndex,
-                            isLoading: false
-                        };
-                    });
-                } catch (error) {
-                    console.log(error, 'pet profile fetch error');
-        
-                    set({ isLoading: false });
-                    throw error;
-                }
-            },
-        
-            swipeLike: async (petId: string) => {
-                const state = get();
-
-                const isMatch = await state.checkForMatch(petId);
-
-                set(state => ({ 
-                    currentIndex: ++state.currentIndex,
-                    likedPets: [...state.likedPets, petId],
-                    matches: isMatch ? [...state.matches, petId] : state.matches
-                }));
-
-                const remainingPets = state.petFeed.length - state.currentIndex;
-                if(remainingPets < PREFETCH_THRESHOLD) await state.fetchProfileBatch();
-
-                return isMatch;
-            },
-        
-            swipePass: async (petId: string) => {
-                const state = get();
+            try {
+                set({ isLoading: true });
                 
-                set(state => ({ 
-                    currentIndex: ++state.currentIndex,
-                    passedPets: [...state.passedPets, petId]
-                }));
+                const page = 1 // offset for profile pagination
 
-                const remainingPets = state.petFeed.length - state.currentIndex;
-                if(remainingPets < PREFETCH_THRESHOLD) await state.fetchProfileBatch();
-            },
-        
-            getCurrentPet: () => {
-                const { petFeed, currentIndex } = get();
-                return petFeed[currentIndex];
-            },
-        
-            getRemaningPets: () => {
-                const { petFeed, currentIndex } = get();
-                return petFeed.length - currentIndex;
-            },
-        
-            checkForMatch: async (petId: string) => {
-                const yourPetIds = usePetStore.getState().pets.map(pet => pet.id);
+                const result = await pb.send<{ items: PBPet[]}>("/api/pet-feed", {
+                    params: {
+                        page: page.toString(),
+                        perPage: BATCH_SIZE.toString()
+                    },
+                    headers: {
+                        "Authorization": "Bearer " + pb.authStore.token
+                    }
+                });
+
+                const newPets = result.items.map(convertPBPetToPetProfile);
+
+                set(state => ({
+                    petFeed: [...state.petFeed, ...newPets],
+                    isLoading: false
+                }));
                 
-                try {
-                    const isMatch = await petProfileFeedAPI.checkForMatch(petId, yourPetIds);
-                    if(isMatch) {
-                        set(state => ({
-                            matches: [...state.matches, petId]
-                        }));
-                        return isMatch;
-                    };
-                    return false;
-                } catch (error) {
-                    console.log(error, 'checkForMatch error');
-                    throw error;
-                };
-            },
-        
-            reset: () => {
-                set({
-                    petFeed: [],
-                    likedPets: [],
-                    passedPets: [],
-                    currentIndex: 0,
-                    matches: []
-                })
+            } catch (error) {
+                console.log('pet profile fetch error:', error);
+                set({ isLoading: false });
+                throw error;
             }
-        
-        }),
-        {
-            name: 'petfeed-storage',
-            storage: createJSONStorage(() => AsyncStorage),
-            partialize: ({ likedPets, passedPets, matches }) => ({
-                likedPets,
-                passedPets,
-                matches
+        },
+    
+        swipeLike: async (petId: string) => {
+            const state = get();
+            const currentUser = getCurrentUser();
+            if(!currentUser) {
+                console.error('no user is logged in (swipeLike)');
+                return false;
+            };
+            
+            try {
+                // add a record to the pb db (swipes collection) - optimistic ui.. almost
+                await swipesAPI.recordPetSwipe(currentUser.id, petId, 'like');
+
+                // check if it's a matchhh
+                const matchResult = await swipesAPI.checkForMatch(currentUser.id, petId);
+
+                // advance feed
+                set(state => ({ currentIndex: state.currentIndex + 1}));
+
+                // prefetch check
+                const remaining = get().petFeed.length - get().currentIndex;
+                if (remaining < PREFETCH_THRESHOLD) {
+                    get().fetchProfileBatch();
+                }
+                
+                return matchResult.isMatch;
+
+            } catch (error) {
+                console.error('swipeLike error:', error);
+                return false;
+            }
+        },
+    
+        swipePass: async (petId: string) => {
+            const currentUser = getCurrentUser();
+            if(!currentUser) {
+                console.error('no user is logged in');
+                return;
+            };
+            
+            try {
+                await swipesAPI.recordPetSwipe(currentUser.id, petId, 'pass');
+
+                set(state => ({ currentIndex: state.currentIndex + 1 }));
+
+                const remainingPets = get().petFeed.length - get().currentIndex;
+                if(remainingPets < PREFETCH_THRESHOLD) get().fetchProfileBatch();
+            } catch (error) {
+                console.error('swipePass error:', error);
+            }
+        },
+    
+        getCurrentPet: () => {
+            const { petFeed, currentIndex } = get();
+            return petFeed[currentIndex] || null;
+        },
+    
+        getRemaningPets: () => {
+            const { petFeed, currentIndex } = get();
+            return Math.max(0, petFeed.length - currentIndex);
+        },
+    
+        reset: () => {
+            set({
+                petFeed: [],
+                currentIndex: 0,
+                isLoading: false
             })
         }
-    )
+    })
 );
