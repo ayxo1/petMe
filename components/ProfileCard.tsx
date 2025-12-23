@@ -3,7 +3,7 @@ import type { ProfileCardProps } from "@/types/components";
 import { Image } from "expo-image";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect } from "react";
-import { Dimensions, ImageBackground, Text, View } from "react-native";
+import { Dimensions, ImageBackground, ImageSourcePropType, Text, View } from "react-native";
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withDelay, withTiming } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -34,7 +34,8 @@ const END_POSITION = 0;
 
 const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, onSwipeLeft, onSwipeRight }: ProfileCardPropsWithIndex) => {
   // console.log(indexes);
-  
+
+  const profileCover: ImageSourcePropType = { uri: profileImages[0] }
 
   const offset = useSharedValue({ x: 0, y: 0 });
   const translateX = useSharedValue(0);
@@ -182,7 +183,7 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, 
                 resizeMode="cover"
               > */}
               <ImageBackground
-                source={profileImages[0]}
+                source={profileCover}
                 className="size-full"
                 resizeMode="cover"
               >

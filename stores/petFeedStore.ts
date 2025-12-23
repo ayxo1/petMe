@@ -23,6 +23,7 @@ const convertPBPetToPetProfile = (pbPet: PBPet): PetProfile => {
     const imageUrls = pbPet.images.map(filename => 
         `${pb.baseURL}/api/files/pets/${pbPet.id}/${filename}`
     );
+    console.log(imageUrls)
 
     return {
         id: pbPet.id,
@@ -61,9 +62,6 @@ export const usePetFeedStore = create<FeedState>(
             };
 
             const currentUser = getCurrentUser();
-            console.log('Sending request with token:', pb.authStore.token);
-            console.log('Is valid?', pb.authStore.isValid);
-            console.log('User ID:', currentUser?.id);
             if(!currentUser) {
                 console.error('no user is logged in');
                 set({ isLoading: false });
@@ -79,18 +77,20 @@ export const usePetFeedStore = create<FeedState>(
                     params: {
                         page: page.toString(),
                         perPage: BATCH_SIZE.toString()
-                    },
-                    headers: {
-                        "Authorization": "Bearer " + pb.authStore.token
                     }
                 });
 
                 const newPets = result.items.map(convertPBPetToPetProfile);
 
-                set(state => ({
-                    petFeed: [...state.petFeed, ...newPets],
-                    isLoading: false
-                }));
+                set(state => {
+                    // idempotency life
+                    const uniqueNewPets = newPets.filter(newPet => !state.petFeed.some(existing => existing.id === newPet.id));
+
+                    return {
+                        petFeed: [...state.petFeed, ...uniqueNewPets],
+                        isLoading: false
+                    };
+                });
                 
             } catch (error) {
                 console.log('pet profile fetch error:', error);
@@ -119,6 +119,7 @@ export const usePetFeedStore = create<FeedState>(
 
                 // prefetch check
                 const remaining = get().petFeed.length - get().currentIndex;
+                
                 if (remaining < PREFETCH_THRESHOLD) {
                     get().fetchProfileBatch();
                 }

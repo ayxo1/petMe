@@ -265,7 +265,7 @@ export const swipesAPI = {
     };
 
     // scenario 2: owner swiped on another owner's pet
-    if (currentUser.accountType === 'owner' && userPets,length > 0) {
+    if (currentUser.accountType === 'owner' && userPets.length > 0) {
       const userPetIds = userPets.map(pet => pet.id);
 
       // check if the owner liked any of our pets
