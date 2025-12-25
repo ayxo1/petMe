@@ -100,7 +100,10 @@ const ProfileSetup = () => {
           [{text: 'ok', onPress: () => router.replace('/(auth)/pet-setup')}]
         );
         setRegistrationState('profile_set_up');
-      } else router.replace('/');
+      } else {
+        router.replace('/');
+        setRegistrationState('completed');
+      }
     } catch (error) {
       console.log(error, 'profile setup error');
       Alert.alert('error', 'failed to create profile, please try again')

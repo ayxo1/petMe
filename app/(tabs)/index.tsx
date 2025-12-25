@@ -63,7 +63,6 @@ export default function Index() {
 
   useEffect(() => {
     const dbIp = process.env.EXPO_PUBLIC_POCKETBASE_HOST;
-    console.log(`http://${dbIp}:8090/api/health`);
     
     fetch(`http://${dbIp}:8090/api/health`)
     .then(res => res.json())
@@ -80,15 +79,17 @@ export default function Index() {
 
   const onSwipeRight = async () => {
     console.log('swiping right ', currentPet.name);
+    console.log(currentPet, 'logging currentPet');
+    
     if(!currentPet) return;
 
     const isMatch = await swipeLike(currentPet.id);
     if(isMatch) {
-      console.log('it\'s a match ');
+      console.log(isMatch, ' logging isMatch');
     };
   };
 
-  console.log(isPreloading);
+  // console.log(isPreloading);
 
   if (isPreloading) {
     return (

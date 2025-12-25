@@ -23,12 +23,12 @@ export const pb = new PocketBase(PB_URL, store);
 // logger
 if (__DEV__) {
   pb.beforeSend = function (url, options) {
-    console.log('pb request:', url);
+    console.log('pb request:', JSON.stringify(url, null, 2));
     return { url, options };
   };
   
   pb.afterSend = function (response, data) {
-    console.log('pb response:', data, response);
+    console.log('pb response:', JSON.stringify(data, null, 2), JSON.stringify(response, null, 2));
     return data;
   };
 };
@@ -251,7 +251,12 @@ export const swipesAPI = {
     const userPets = await petsAPI.getUserPets(userId);
 
     // scenario 1: seeker swipes on a pet
-    if (currentUser.accountType === 'seeker' || userPets.length === 0) {
+    // type check: handle both string 'seeker' and array ['seeker']
+    const isSeeker = Array.isArray(currentUser.accountType) 
+        ? currentUser.accountType.includes('seeker') 
+        : currentUser.accountType === 'seeker';
+
+    if (isSeeker || userPets.length === 0) {
       // check if the seeker was already liked by the onwer
       const onwerPreApproval = await pb.collection('swipes').getFullList({
         filter: `user = "${petOwnerId}" && targetUser = "${userId}" && action = "like" && swipeType = "profile"`
@@ -259,22 +264,43 @@ export const swipesAPI = {
 
       if (onwerPreApproval.length > 0) {
         return { isMatch: true, matchType: 'instant' };
-      };
+      }
 
       return { isMatch: false };
-    };
+    }
 
     // scenario 2: owner swiped on another owner's pet
-    if (currentUser.accountType === 'owner' && userPets.length > 0) {
+    const isOwner = Array.isArray(currentUser.accountType) 
+        ? currentUser.accountType.includes('owner') 
+        : currentUser.accountType === 'owner';
+
+    if (isOwner && userPets.length > 0) {
       const userPetIds = userPets.map(pet => pet.id);
 
+      console.log('--- checking for match (owner scenario) ---');
+      console.log('User ID:', userId);
+      console.log('Swiped Pet Owner:', petOwnerId);
+      console.log('My Pets:', userPetIds);
+      
       // check if the owner liked any of our pets
+      const filterQuery = `user = "${petOwnerId}" && action = "like" && swipeType = "pet" && (${userPetIds.map(id => `targetPet = "${id}"`).join(' || ')})`;
+      console.log('Filter Query:', filterQuery);
+
+      // DEBUG: See what they actually liked
+      const debugLikes = await pb.collection('swipes').getList(1, 50, {
+          filter: `user = "${petOwnerId}" && action = "like" && swipeType = "pet"`
+      });
+      console.log("DEBUG: The other user has liked these pets:", debugLikes.items.map(i => i.targetPet));
+      console.log("DEBUG: Checking against my pets:", userPetIds);
+
       const mutualLike = await pb.collection('swipes').getFullList({
-        filter: `user = "${petOwnerId}" && action = "like" && swipeType = "pet" && (${userPetIds.map(id => `targetPet = "${id}"`).join(' || ')})`
+        filter: filterQuery
       });
 
+      console.log('Mutual Likes Found:', mutualLike.length);
+
       if (mutualLike.length > 0) return { isMatch: true, matchType: 'mutual' };
-    };
+    }
 
     return { isMatch: false };
   },

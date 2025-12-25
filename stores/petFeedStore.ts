@@ -1,4 +1,4 @@
-import { getCurrentUser, pb, petsAPI, swipesAPI } from "@/backend/config/pocketbase";
+import { getCurrentUser, pb } from "@/backend/config/pocketbase";
 import { PBPet } from "@/types/pbTypes";
 import { PetProfile } from "@/types/pets";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -23,7 +23,7 @@ const convertPBPetToPetProfile = (pbPet: PBPet): PetProfile => {
     const imageUrls = pbPet.images.map(filename => 
         `${pb.baseURL}/api/files/pets/${pbPet.id}/${filename}`
     );
-    console.log(imageUrls)
+    // console.log(imageUrls)
 
     return {
         id: pbPet.id,
@@ -107,15 +107,18 @@ export const usePetFeedStore = create<FeedState>(
                 return false;
             };
             
+            // advance feed
+            set(state => ({ currentIndex: state.currentIndex + 1}));
+
             try {
-                // add a record to the pb db (swipes collection) - optimistic ui.. almost
-                await swipesAPI.recordPetSwipe(currentUser.id, petId, 'like');
-
-                // check if it's a matchhh
-                const matchResult = await swipesAPI.checkForMatch(currentUser.id, petId);
-
-                // advance feed
-                set(state => ({ currentIndex: state.currentIndex + 1}));
+                // Call the server-side endpoint
+                const response = await pb.send<{ isMatch: boolean; matchId?: string }>("/api/swipe", {
+                    method: "POST",
+                    body: {
+                        targetPet: petId,
+                        action: "like"
+                    }
+                });
 
                 // prefetch check
                 const remaining = get().petFeed.length - get().currentIndex;
@@ -124,7 +127,9 @@ export const usePetFeedStore = create<FeedState>(
                     get().fetchProfileBatch();
                 }
                 
-                return matchResult.isMatch;
+                console.log('match result issss ', response.isMatch);
+                
+                return response.isMatch;
 
             } catch (error) {
                 console.error('swipeLike error:', error);
@@ -140,7 +145,13 @@ export const usePetFeedStore = create<FeedState>(
             };
             
             try {
-                await swipesAPI.recordPetSwipe(currentUser.id, petId, 'pass');
+                await pb.send("/api/swipe", {
+                    method: "POST",
+                    body: {
+                        targetPet: petId,
+                        action: "pass"
+                    }
+                });
 
                 set(state => ({ currentIndex: state.currentIndex + 1 }));
 
