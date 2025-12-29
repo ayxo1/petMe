@@ -73,7 +73,7 @@ const TabsLayout = () => {
         }}
       />
         <Tabs.Screen
-          name='shelter'
+          name='rescue'
           options={{
             sceneStyle: {
               backgroundColor

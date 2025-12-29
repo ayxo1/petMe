@@ -201,7 +201,7 @@ export const swipesAPI = {
     action: 'like' | 'pass'): Promise<void> => {
     await pb.collection('swipes').create({
       user: userId,
-      targetPet: petId,
+      targetId: petId,
       targetUser: null,
       action,
       swipeType: 'pet'
@@ -217,7 +217,7 @@ export const swipesAPI = {
     await pb.collection('swipes').create({
       user: ownerId,
       targetUser: seekerId,
-      targetPet: null,
+      targetId: null,
       action,
       swipeType: 'profile'
     });
@@ -283,14 +283,14 @@ export const swipesAPI = {
       console.log('My Pets:', userPetIds);
       
       // check if the owner liked any of our pets
-      const filterQuery = `user = "${petOwnerId}" && action = "like" && swipeType = "pet" && (${userPetIds.map(id => `targetPet = "${id}"`).join(' || ')})`;
+      const filterQuery = `user = "${petOwnerId}" && action = "like" && swipeType = "pet" && (${userPetIds.map(id => `targetId = "${id}"`).join(' || ')})`;
       console.log('Filter Query:', filterQuery);
 
       // DEBUG: See what they actually liked
       const debugLikes = await pb.collection('swipes').getList(1, 50, {
           filter: `user = "${petOwnerId}" && action = "like" && swipeType = "pet"`
       });
-      console.log("DEBUG: The other user has liked these pets:", debugLikes.items.map(i => i.targetPet));
+      console.log("DEBUG: The other user has liked these pets:", debugLikes.items.map(i => i.targetId));
       console.log("DEBUG: Checking against my pets:", userPetIds);
 
       const mutualLike = await pb.collection('swipes').getFullList({
@@ -313,8 +313,8 @@ export const swipesAPI = {
     
     // find all likes on owner's pets by seekers
     const requests = await pb.collection('swipes').getFullList({
-      filter: `action = "like" && swipeType = "pet" && (${petIds.map(id => `targetPet = "${id}"`).join(" || ")})`,
-      expand: 'user,targetPet',
+      filter: `action = "like" && swipeType = "pet" && (${petIds.map(id => `targetId = "${id}"`).join(" || ")})`,
+      expand: 'user,targetId',
       sort: '-created'
     });
 

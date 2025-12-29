@@ -3,7 +3,7 @@ export interface User {
   id: string;
   email: string;
   username: string;
-  profileImage?: string;
+  profileImage: string;
   bio?: string;
   location?: {
     coordinates?: { lat: number; lng: number; };

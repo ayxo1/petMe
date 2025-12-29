@@ -4,8 +4,8 @@ export interface PBUser extends RecordModel {
   email: string;
   username: string;
   accountType: 'owner' | 'seeker' | 'shelter';
-  bio?: string;
-  profileImage?: string;
+  bio: string;
+  images: string[];
   coordinates?: { lat: number; lng: number };
   created: string;
   updated: string;
@@ -35,7 +35,7 @@ export interface PBSwipe {
   id: string;
   action: 'like' | 'pass';
   targetUser: string; // User ID
-  targetPet: string; // Pet ID
+  targetId: string; // Pet ID
   swipeType: 'pet' | 'profile';
   created: string;
   updated: string;
@@ -49,4 +49,25 @@ export interface PBMatch extends RecordModel {
   status: 'pending' | 'accepted' | 'declined' | 'expired';
   created: string;
   updated: string;
+}
+
+export interface PBFeedRecord {
+    id: string;
+    name: string;
+    type: 'pet' | 'seeker' | 'owner' | 'shelter';
+    ownerId: string;
+    images: string[];
+    bio: string;
+    age: number;
+    created: string;
+    updated: string;
+
+    species?: string;
+    breed?: string;
+    isAvailableForAdoption: boolean;
+    adoptionStatus?: 'available' | 'pending' | 'adopted';
+    adoptionRequirements?: string;
+    adoptionReason?: string;
+
+    location?: string;
 }

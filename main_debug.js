@@ -1,4 +1,4 @@
-/// <reference path="../pb_data/types.d.ts" />
+﻿/// <reference path="../pb_data/types.d.ts" />
 
 //pet-feed endpoint
 routerAdd("GET", "/api/feed", (c) => {
@@ -31,11 +31,11 @@ routerAdd("GET", "/api/feed", (c) => {
     const isAvailableForAdoption = types.includes('rescue') ? true : false;
 
     let queries = [];
-    let bindParams = { userId: user.id, limit, offset };
+    let bindParams = { userId: user, limit, offset };
 
     if (types.includes('pets')) {
         queries.push(`
-            SELECT id, name, bio, images, 'pet' as type, owner as ownerId, age, created
+            SELECT id, name, bio, 'pet' as type, owner as ownerId, age, created
             FROM pets
             WHERE owner != {:userId} AND isAvailableForAdoption = ${isAvailableForAdoption}
             AND id NOT IN (SELECT targetId FROM swipes WHERE user = {:userId} AND swipeType = 'pet')
@@ -45,20 +45,18 @@ routerAdd("GET", "/api/feed", (c) => {
     let accountPatterns = [];
     if (types.includes('seekers')) accountPatterns.push('seeker');
     if (types.includes('shelters')) accountPatterns.push('shelter');
-    // if (types.includes('owners')) accountPatterns.push('owner');
+    if (types.includes('owners')) accountPatterns.push('owner');
 
     const accountFilter = accountPatterns.map(pattern => `accountType LIKE '%${pattern}%'`).join(' OR ');
 
-    if (types.includes('users')) {
-        queries.push(`
-            SELECT id, username as name, bio, images, 'profile' as type, id as ownerId, 0 as age, created
-            FROM users
-            WHERE id != {:userId}
-                AND isHidden = FALSE
-                AND (${accountFilter})
-                AND id NOT IN (SELECT targetId FROM swipes WHERE user = {:userId} AND swipeType = 'profile')
-        `);
-    }
+    queries.push(`
+        SELECT id, username as name, bio, profileImage as images, 'profile' as type, id as ownerId, 0 as age, created
+        FROM users
+        WHERE id != {:userId}
+            AND isHidden = FALSE
+            AND (${accountFilter})
+            AND id NOT IN (SELECT targetId FROM swipes WHERE user = {:userId} AND swipeType = 'profile')
+    `);
 
     const finalQuery = `
         ${queries.join(' UNION ')}
@@ -76,9 +74,47 @@ routerAdd("GET", "/api/feed", (c) => {
         'age': 0
     }));
 
-    if (queries.length > 0) {
-        $app.db().newQuery(finalQuery).bind(bindParams).all(result);
-    }
+    $app.db().newQuery(finalQuery).bind(bindParams).all(result);
+
+    // const result = arrayOf(new DynamicModel({
+    //     "id": "",
+    //     "created": "",
+    //     "updated": "",
+    //     "collectionId": "",
+    //     "collectionName": "",
+    //     "owner": "",
+    //     "name": "",
+    //     "species": "",
+    //     "breed": "",
+    //     "age": 0,
+    //     "bio": "",
+    //     "images": [],
+    //     "isAvailableForAdoption": false,
+    //     "adoptionStatus": ""
+    // }));
+
+    // $app.db()
+    //     .newQuery(`
+    //         SELECT pets.* 
+    //         FROM pets
+    //         WHERE 
+    //             pets.owner != {:userId}
+    //             AND pets.isAvailableForAdoption = FALSE
+    //             AND pets.id NOT IN (
+    //                 SELECT targetPet 
+    //                 FROM swipes 
+    //                 WHERE user = {:userId} 
+    //                 AND swipeType = 'pet'
+    //             )
+    //         ORDER BY pets.created DESC
+    //         LIMIT {:limit} OFFSET {:offset}
+    //     `)
+    //     .bind({
+    //         "userId": user.id,
+    //         "limit": limit,
+    //         "offset": offset
+    //     })
+    //     .all(result);
 
     return c.json(200, {
         "items": result,
@@ -146,14 +182,13 @@ routerAdd("POST", "/api/swipe", (c) => {
             filter, 
             '-created',
             1,
-            0,
             {
                 otherUser: petOwnerId,
                 myId: user.id
             }
         );
 
-        if (mutualLikes.length > 0) {
+        if (mutualLikes > 0) {
             const matches = $app.findCollectionByNameOrId('matches');
 
             const match = new Record(matches);

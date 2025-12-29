@@ -1,6 +1,6 @@
 import ProfileCard from "@/components/ProfileCard";
 import { images } from "@/constants";
-import { usePetFeedStore } from "@/stores/petFeedStore";
+import { useFeedStore } from "@/stores/useFeedStore";
 import { assetPreloader, imagePreloader } from "@/utils/assetPreloader";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
@@ -9,28 +9,28 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function Index() {
 
   const {
-    petFeed,
+    feed,
     currentIndex,
     swipeLike,
     swipePass,
     fetchProfileBatch,
-    getRemaningPets,
-  } = usePetFeedStore();
+    getRemaningProfiles,
+  } = useFeedStore();
 
   const [isPreloading, setIsPreloading] = useState(true);
   const VISIBLE_STACK_SIZE = 5;
-  const currentPet = petFeed[currentIndex];
-  const remaining = getRemaningPets();
-  const visibleCards = petFeed.slice(currentIndex, currentIndex + VISIBLE_STACK_SIZE);
+  const currentProfile = feed[currentIndex];
+  const remaining = getRemaningProfiles();
+  const visibleCards = feed.slice(currentIndex, currentIndex + VISIBLE_STACK_SIZE);
 
   useEffect(() => {
     const initialize = async () => {
       try {
-        if (petFeed.length === 0) {
+        if (feed.length === 0) {
           await fetchProfileBatch();
         };
         
-        const firstBatch = petFeed.slice(0, VISIBLE_STACK_SIZE);
+        const firstBatch = feed.slice(0, VISIBLE_STACK_SIZE);
         const imageUris = firstBatch.flatMap((petProfile) => petProfile.images || []).filter(Boolean);
 
         await Promise.all([
@@ -51,7 +51,7 @@ export default function Index() {
   useEffect(() => {
     if(remaining <= 3 && remaining > 0) {
       
-      const nextBatch = petFeed.slice(currentIndex + VISIBLE_STACK_SIZE, currentIndex + VISIBLE_STACK_SIZE + 5);
+      const nextBatch = feed.slice(currentIndex + VISIBLE_STACK_SIZE, currentIndex + VISIBLE_STACK_SIZE + 5);
 
       const nextImages = nextBatch
         .flatMap(petProfile => petProfile.images || [])
@@ -59,7 +59,7 @@ export default function Index() {
 
         imagePreloader(nextImages);
     };
-  }, [remaining, currentIndex, petFeed]);
+  }, [remaining, currentIndex, feed]);
 
   useEffect(() => {
     const dbIp = process.env.EXPO_PUBLIC_POCKETBASE_HOST;
@@ -71,19 +71,19 @@ export default function Index() {
   }, []);
   
   const onSwipeLeft = () => {
-    console.log('swiping left ', currentPet.name);
-    if(!currentPet) return;
+    console.log('swiping left ', currentProfile.name);
+    if(!currentProfile) return;
 
-    swipePass(currentPet.id);
+    swipePass(currentProfile.id);
   };
 
   const onSwipeRight = async () => {
-    console.log('swiping right ', currentPet.name);
-    console.log(currentPet, 'logging currentPet');
+    console.log('swiping right ', currentProfile.name);
+    console.log(currentProfile, 'logging currentProfile');
     
-    if(!currentPet) return;
+    if(!currentProfile) return;
 
-    const isMatch = await swipeLike(currentPet.id);
+    const isMatch = await swipeLike(currentProfile.id);
     if(isMatch) {
       console.log(isMatch, ' logging isMatch');
     };
@@ -100,7 +100,7 @@ export default function Index() {
     );
   };
 
-  if(!currentPet || remaining === 0) {
+  if(!currentProfile || remaining === 0) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center">
         <Text className="text-2xl font-bold text-gray-600">
@@ -142,7 +142,7 @@ return (
               profileImages={profile.images || []}
               profileName={profile.name}
               profileDescription={profile.bio}
-              indexes={{ index: cardIndex, reverseIndex: petFeed.length - cardIndex - 1, currentIndex }}
+              indexes={{ index: cardIndex, reverseIndex: feed.length - cardIndex - 1, currentIndex }}
               onSwipeLeft={arrIndex === 0 ? onSwipeLeft : undefined}
               onSwipeRight={arrIndex === 0 ? onSwipeRight : undefined}
             />
