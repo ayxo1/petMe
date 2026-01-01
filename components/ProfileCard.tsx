@@ -171,7 +171,7 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, 
         <TiltEffect>
 
           <View
-            className="h-[98%] overflow-hidden rounded-lg p-2 mt-2"
+            className="h-[99.5%] overflow-hidden rounded-lg p-2 mt-2"
           >
 
             <View 

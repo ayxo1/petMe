@@ -58,20 +58,6 @@ const TabsLayout = () => {
           ),
         }}
       />
-      <Tabs.Screen
-        name='index'
-        options={{
-          sceneStyle: {
-            backgroundColor
-          },
-          tabBarIcon: ({focused}: {focused: boolean}) => (
-            <TabBarIcon 
-              focused={focused}
-              icon={icons.search}
-            />
-          ),
-        }}
-      />
         <Tabs.Screen
           name='rescue'
           options={{
@@ -82,6 +68,34 @@ const TabsLayout = () => {
               <TabBarIcon 
                 focused={focused}
                 icon={icons.shelter}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name='index'
+          options={{
+            sceneStyle: {
+              backgroundColor
+            },
+            tabBarIcon: ({focused}: {focused: boolean}) => (
+              <TabBarIcon 
+                focused={focused}
+                icon={icons.search}
+              />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name='connect'
+          options={{
+            sceneStyle: {
+              backgroundColor
+            },
+            tabBarIcon: ({focused}: {focused: boolean}) => (
+              <TabBarIcon 
+                focused={focused}
+                icon={icons.catPass}
               />
             ),
           }}

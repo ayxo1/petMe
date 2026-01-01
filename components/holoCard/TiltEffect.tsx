@@ -31,7 +31,7 @@ export const TiltEffect = ({ children }: { children: React.ReactNode }) => {
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
-      { perspective: 1000 },
+      { perspective: 1200 },
       { rotateX: `${rotateX.value + 5}deg` },
       { rotateY: `${rotateY.value}deg` },
     ],
