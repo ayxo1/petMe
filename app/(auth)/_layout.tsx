@@ -2,7 +2,6 @@ import { Slot } from 'expo-router';
 import React from 'react';
 import { Dimensions, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
 
-
 const AuthLayout = () => {
   return (
     <KeyboardAvoidingView 

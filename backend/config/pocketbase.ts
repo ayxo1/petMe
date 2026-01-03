@@ -195,33 +195,33 @@ export const petsAPI = {
  * swipes + matches API
  */
 export const swipesAPI = {
-  recordPetSwipe: async (
-    userId: string, 
-    petId: string, 
-    action: 'like' | 'pass'): Promise<void> => {
-    await pb.collection('swipes').create({
-      user: userId,
-      targetId: petId,
-      targetUser: null,
-      action,
-      swipeType: 'pet'
-    });
+  // recordPetSwipe: async (
+  //   userId: string, 
+  //   petId: string, 
+  //   action: 'like' | 'pass'): Promise<void> => {
+  //   await pb.collection('swipes').create({
+  //     user: userId,
+  //     targetId: petId,
+  //     targetUser: null,
+  //     action,
+  //     swipeType: 'pet'
+  //   });
 
-  },
+  // },
 
-  recordProfileSwipe: async (
-    ownerId: string,
-    seekerId: string,
-    action: 'like' | 'pass'
-  ): Promise<void> => {
-    await pb.collection('swipes').create({
-      user: ownerId,
-      targetUser: seekerId,
-      targetId: null,
-      action,
-      swipeType: 'profile'
-    });
-  },
+  // recordProfileSwipe: async (
+  //   ownerId: string,
+  //   seekerId: string,
+  //   action: 'like' | 'pass'
+  // ): Promise<void> => {
+  //   await pb.collection('swipes').create({
+  //     user: ownerId,
+  //     targetUser: seekerId,
+  //     targetId: null,
+  //     action,
+  //     swipeType: 'profile'
+  //   });
+  // },
   // user's list of pets they swiped on
   getSwipedPetIds: async (userId: string): Promise<string[]> => {
     const swipes = await pb.collection('swipes').getFullList({
@@ -241,69 +241,69 @@ export const swipesAPI = {
     return swipes.map(swipe => swipe.targetUser).filter(Boolean);
   },
   // check if swipe => match
-  checkForMatch: async (userId: string, petId: string): Promise<{ isMatch: boolean; matchType?: 'instant' | 'mutual' }> => {
-    // get the pet and the owner
-    const pet = await pb.collection('pets').getOne(petId);
-    const petOwnerId = pet.owner;
+  // checkForMatch: async (userId: string, petId: string): Promise<{ isMatch: boolean; matchType?: 'instant' | 'mutual' }> => {
+  //   // get the pet and the owner
+  //   const pet = await pb.collection('pets').getOne(petId);
+  //   const petOwnerId = pet.owner;
 
-    // get current user's account type + pets
-    const currentUser = await pb.collection('users').getOne(userId);
-    const userPets = await petsAPI.getUserPets(userId);
+  //   // get current user's account type + pets
+  //   const currentUser = await pb.collection('users').getOne(userId);
+  //   const userPets = await petsAPI.getUserPets(userId);
 
-    // scenario 1: seeker swipes on a pet
-    // type check: handle both string 'seeker' and array ['seeker']
-    const isSeeker = Array.isArray(currentUser.accountType) 
-        ? currentUser.accountType.includes('seeker') 
-        : currentUser.accountType === 'seeker';
+  //   // scenario 1: seeker swipes on a pet
+  //   // type check: handle both string 'seeker' and array ['seeker']
+  //   const isSeeker = Array.isArray(currentUser.accountType) 
+  //       ? currentUser.accountType.includes('seeker') 
+  //       : currentUser.accountType === 'seeker';
 
-    if (isSeeker || userPets.length === 0) {
-      // check if the seeker was already liked by the onwer
-      const onwerPreApproval = await pb.collection('swipes').getFullList({
-        filter: `user = "${petOwnerId}" && targetUser = "${userId}" && action = "like" && swipeType = "profile"`
-      });
+  //   if (isSeeker || userPets.length === 0) {
+  //     // check if the seeker was already liked by the onwer
+  //     const onwerPreApproval = await pb.collection('swipes').getFullList({
+  //       filter: `user = "${petOwnerId}" && targetUser = "${userId}" && action = "like" && swipeType = "profile"`
+  //     });
 
-      if (onwerPreApproval.length > 0) {
-        return { isMatch: true, matchType: 'instant' };
-      }
+  //     if (onwerPreApproval.length > 0) {
+  //       return { isMatch: true, matchType: 'instant' };
+  //     }
 
-      return { isMatch: false };
-    }
+  //     return { isMatch: false };
+  //   }
 
-    // scenario 2: owner swiped on another owner's pet
-    const isOwner = Array.isArray(currentUser.accountType) 
-        ? currentUser.accountType.includes('owner') 
-        : currentUser.accountType === 'owner';
+  //   // scenario 2: owner swiped on another owner's pet
+  //   const isOwner = Array.isArray(currentUser.accountType) 
+  //       ? currentUser.accountType.includes('owner') 
+  //       : currentUser.accountType === 'owner';
 
-    if (isOwner && userPets.length > 0) {
-      const userPetIds = userPets.map(pet => pet.id);
+  //   if (isOwner && userPets.length > 0) {
+  //     const userPetIds = userPets.map(pet => pet.id);
 
-      console.log('--- checking for match (owner scenario) ---');
-      console.log('User ID:', userId);
-      console.log('Swiped Pet Owner:', petOwnerId);
-      console.log('My Pets:', userPetIds);
+  //     console.log('--- checking for match (owner scenario) ---');
+  //     console.log('User ID:', userId);
+  //     console.log('Swiped Pet Owner:', petOwnerId);
+  //     console.log('My Pets:', userPetIds);
       
-      // check if the owner liked any of our pets
-      const filterQuery = `user = "${petOwnerId}" && action = "like" && swipeType = "pet" && (${userPetIds.map(id => `targetId = "${id}"`).join(' || ')})`;
-      console.log('Filter Query:', filterQuery);
+  //     // check if the owner liked any of our pets
+  //     const filterQuery = `user = "${petOwnerId}" && action = "like" && swipeType = "pet" && (${userPetIds.map(id => `targetId = "${id}"`).join(' || ')})`;
+  //     console.log('Filter Query:', filterQuery);
 
-      // DEBUG: See what they actually liked
-      const debugLikes = await pb.collection('swipes').getList(1, 50, {
-          filter: `user = "${petOwnerId}" && action = "like" && swipeType = "pet"`
-      });
-      console.log("DEBUG: The other user has liked these pets:", debugLikes.items.map(i => i.targetId));
-      console.log("DEBUG: Checking against my pets:", userPetIds);
+  //     // DEBUG: See what they actually liked
+  //     const debugLikes = await pb.collection('swipes').getList(1, 50, {
+  //         filter: `user = "${petOwnerId}" && action = "like" && swipeType = "pet"`
+  //     });
+  //     console.log("DEBUG: The other user has liked these pets:", debugLikes.items.map(i => i.targetId));
+  //     console.log("DEBUG: Checking against my pets:", userPetIds);
 
-      const mutualLike = await pb.collection('swipes').getFullList({
-        filter: filterQuery
-      });
+  //     const mutualLike = await pb.collection('swipes').getFullList({
+  //       filter: filterQuery
+  //     });
 
-      console.log('Mutual Likes Found:', mutualLike.length);
+  //     console.log('Mutual Likes Found:', mutualLike.length);
 
-      if (mutualLike.length > 0) return { isMatch: true, matchType: 'mutual' };
-    }
+  //     if (mutualLike.length > 0) return { isMatch: true, matchType: 'mutual' };
+  //   }
 
-    return { isMatch: false };
-  },
+  //   return { isMatch: false };
+  // },
 
   getPendingRequests: async (ownerId: string): Promise<any[]> => {
     const ownerPets = await petsAPI.getUserPets(ownerId);
@@ -327,34 +327,34 @@ export const swipesAPI = {
     return requests.filter(request => !preApprovedUsers.includes(request.user));
   },
 
-  createMatch: async (
-    user1Id: string,
-    user2Id: string,
-    pet1Id: string,
-    pet2Id?: string
-  ): Promise<PBMatch> => {
-    const match = await pb.collection('matches').create({
-      user1: user1Id,
-      user2: user2Id,
-      pet1: pet1Id,
-      pet2: pet2Id || null,
-      status: 'pending'
-    });
+  // createMatch: async (
+  //   user1Id: string,
+  //   user2Id: string,
+  //   pet1Id: string,
+  //   pet2Id?: string
+  // ): Promise<PBMatch> => {
+  //   const match = await pb.collection('matches').create({
+  //     user1: user1Id,
+  //     user2: user2Id,
+  //     pet1: pet1Id,
+  //     pet2: pet2Id || null,
+  //     status: 'pending'
+  //   });
 
-    return match as PBMatch;
-  },
+  //   return match as PBMatch;
+  // },
 
-  approveRequest: async (
-    ownerId: string,
-    seekerId: string,
-    petId: string
-  ): Promise<PBMatch> => {
-    return await swipesAPI.createMatch(seekerId, ownerId, petId);
-  },
+  // approveRequest: async (
+  //   ownerId: string,
+  //   seekerId: string,
+  //   petId: string
+  // ): Promise<PBMatch> => {
+  //   return await swipesAPI.createMatch(seekerId, ownerId, petId);
+  // },
 
   getUserMatches: async (userId: string): Promise<PBMatch[]> => {
     const matches = await pb.collection('matches').getFullList({
-      filter: `(user = ${userId} || user2 = "${userId}") && status != "declined"`,
+      filter: `(user1 = "${userId}" || user2 = "${userId}") && status != "declined"`,
       expand: 'user1,user2,pet1,pet2',
       sort: '-created'
     });

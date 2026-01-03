@@ -1,4 +1,5 @@
 import { icons } from '@/constants';
+import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
 import { TabBarIconProps } from '@/types/components';
 import { Redirect, Tabs } from 'expo-router';
@@ -9,7 +10,7 @@ const TabBarIcon = ({focused, icon}: TabBarIconProps) => (
   <View>
     <Image 
       source={icon}
-      className='size-10'
+      className='size-9'
       resizeMode='contain'
       tintColor={focused ? '#ffffff' : '#000000'}
     />
@@ -17,8 +18,6 @@ const TabBarIcon = ({focused, icon}: TabBarIconProps) => (
 );
 
 const TabsLayout = () => {
-
-  const backgroundColor = '#f5c66e';
 
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const initAuth = useAuthStore(state => state.init);
@@ -33,14 +32,14 @@ const TabsLayout = () => {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarShowLabel: false,
+        // tabBarShowLabel: false,
         tabBarStyle: {
           borderTopWidth: 0,
           backgroundColor: 'transparent',
           marginHorizontal: 30,
           height: 70,
           position: 'absolute',
-          
+          paddingBottom: 10,
         },
       }}
     >
@@ -48,7 +47,7 @@ const TabsLayout = () => {
         name='profile'
         options={{
           sceneStyle: {
-            backgroundColor
+            backgroundColor: Colors.primary
           },
           tabBarIcon: ({focused}: {focused: boolean}) => (
             <TabBarIcon 
@@ -62,7 +61,7 @@ const TabsLayout = () => {
           name='rescue'
           options={{
             sceneStyle: {
-              backgroundColor
+              backgroundColor: Colors.primary
             },
             tabBarIcon: ({focused}: {focused: boolean}) => (
               <TabBarIcon 
@@ -76,7 +75,7 @@ const TabsLayout = () => {
           name='index'
           options={{
             sceneStyle: {
-              backgroundColor
+              backgroundColor: Colors.primary
             },
             tabBarIcon: ({focused}: {focused: boolean}) => (
               <TabBarIcon 
@@ -90,7 +89,7 @@ const TabsLayout = () => {
           name='connect'
           options={{
             sceneStyle: {
-              backgroundColor
+              backgroundColor: Colors.primary
             },
             tabBarIcon: ({focused}: {focused: boolean}) => (
               <TabBarIcon 
@@ -104,7 +103,7 @@ const TabsLayout = () => {
         name='settings'
         options={{
           sceneStyle: {
-            backgroundColor
+            backgroundColor: Colors.primary
           },
           tabBarIcon: ({focused}: {focused: boolean}) => (
             <TabBarIcon 

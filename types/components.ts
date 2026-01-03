@@ -1,5 +1,6 @@
 import { Control, FieldErrors, FieldValues } from "react-hook-form";
 import { ImageSourcePropType } from "react-native";
+import { PBUser } from "./pbTypes";
 
 export interface TabBarIconProps {
     focused: boolean;
@@ -38,4 +39,10 @@ export interface ButtonComponentProps {
   textStyle?: string;
   leftIcon?: React.ReactNode;
   isLoading?: boolean;
+}
+
+export interface MatchRowData {
+  matchId: string;
+  matchedUser: PBUser;
+  petName: string;
 }
