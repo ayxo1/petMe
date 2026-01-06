@@ -1,10 +1,10 @@
 import { messagesAPI } from '@/backend/config/pocketbase';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
-import { useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
-import { Bubble, Composer, GiftedChat, IMessage, InputToolbar } from 'react-native-gifted-chat';
+import { Image, Platform, Text, View } from 'react-native';
+import { Bubble, GiftedChat, IMessage, InputToolbar } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const ChatPage = () => {
@@ -16,7 +16,7 @@ const ChatPage = () => {
   const keyboardVerticalOffset = insets.bottom + tabbarHeight + keyboardTopToolbarHeight;
 
   const params = useLocalSearchParams();
-  const { id: matchId } = params;
+  const { id: matchId, otherUserName, otherUserImage } = params;
   const userId = useAuthStore(state => state.user?.id);
   if (!userId) return; 
 
@@ -68,6 +68,25 @@ const ChatPage = () => {
 
   return (
     <View className={`flex-1 mb-6`}>
+      <Stack.Screen 
+        options={{
+          headerTitle: () => (
+            <View className='flex-row items-center gap-2 pb-2'>
+              <Image 
+                source={{ uri: otherUserImage as string }}
+                style={{ 
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20
+                }}
+              />
+              <Text className='text-xl font-bold text-primary'>
+                {otherUserName}
+              </Text>
+            </View>
+          )
+        }}
+      />
       <GiftedChat
         user={{ _id: userId }}
         messages={messages}

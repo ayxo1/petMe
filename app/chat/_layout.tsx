@@ -30,14 +30,6 @@ const ChatLayout = () => {
                                 <Text>report</Text>
                             </TouchableOpacity>
                         </View>
-                    ),
-                    headerTitle: () => (
-                        <View
-                            className="flex-row gap-4 pb-4 items-center"
-                        >
-                            <Image />
-                            <Text className="text-primary text-2xl">dudeski</Text>
-                        </View>
                     )
                 }}
             />
