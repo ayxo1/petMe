@@ -11,7 +11,7 @@ const AuthLayout = () => {
     >
       <ScrollView
         keyboardShouldPersistTaps='handled'
-        className='h-full bg-white'
+        className='h-full bg-authPrimary'
         contentContainerStyle={{ flexGrow: 1 }}
       >
         <View

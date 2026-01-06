@@ -52,13 +52,12 @@ const SignIn = () => {
 
       signIn(userData);
       router.replace('/');
+      setRegistrationState('completed');
     } catch (error) {
       console.log(error);
-    } finally {
-      setRegistrationState('completed');
     }
     console.log(email);
-  }
+  };
 
   return (
     <Fragment>

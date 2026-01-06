@@ -9,7 +9,7 @@ const ChatRow = ({ matchId, matchedUser, petName }: MatchRowData) => {
   const profilePic: ImageSourcePropType = { uri: `${pb.baseURL}/api/files/users/${matchedUser.id}/${matchedUser.images}`};
     
   return (
-    <Link href={`/chat/[id]?${matchId}`} asChild>
+    <Link href={`/chat/${matchId}`} asChild>
       <TouchableHighlight underlayColor={Colors.secondary}>
         <View className='flex-row items-center p-2'>
           <Image
