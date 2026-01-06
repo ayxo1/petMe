@@ -1,8 +1,12 @@
+import Modal from "@/components/Modal";
 import Colors from "@/constants/Colors";
 import { Stack } from "expo-router";
-import { Text, TouchableOpacity } from "react-native";
+import { useState } from "react";
+import { Image, Text, TouchableOpacity, View } from "react-native";
 
 const ConnectLayout = () => {
+    const [isModal, toggleIsModal] = useState(false);
+
     return (
         <Stack>
             <Stack.Screen
@@ -11,23 +15,22 @@ const ConnectLayout = () => {
                     {
                     title: 'connect',
                     headerLargeTitle: true,
-                    headerTransparent: true,
-                    headerBlurEffect: 'regular',
-                    headerShadowVisible: false,
+                    // headerTransparent: true,
+                    // headerBlurEffect: 'regular',
+                    // headerShadowVisible: false,
                     contentStyle: {
                         backgroundColor: Colors.primary,
                     },
                     headerStyle: {
-                        backgroundColor: '#e6c5c5'
+                        backgroundColor: Colors.secondary
                     },
                     headerSearchBarOptions: {
                     },
-                    headerTintColor: Colors.primary
+                    headerTintColor: Colors.primary,
                     }
                 }
                 
-            >
-            </Stack.Screen>
+            />
         </Stack>
     )
 };

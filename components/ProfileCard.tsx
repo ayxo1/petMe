@@ -213,7 +213,7 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, 
 
               <View className="absolute bottom-28 left-0 right-0">
                 <Text
-                  className="font-bold text-3xl text-primary text-center"
+                  className="font-bold text-3xl text-secondary text-center"
                   numberOfLines={1}
                 >
                   {profileName}

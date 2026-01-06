@@ -2,7 +2,7 @@ import { icons } from '@/constants';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
 import { TabBarIconProps } from '@/types/components';
-import { Redirect, Tabs } from 'expo-router';
+import { Redirect, Tabs, useSegments } from 'expo-router';
 import { useEffect } from 'react';
 import { Image, View } from 'react-native';
 
@@ -12,7 +12,7 @@ const TabBarIcon = ({focused, icon}: TabBarIconProps) => (
       source={icon}
       className='size-9'
       resizeMode='contain'
-      tintColor={focused ? '#ffffff' : '#000000'}
+      tintColor={focused ? Colors.secondary : '#000000'}
     />
   </View>
 );
@@ -21,6 +21,16 @@ const TabsLayout = () => {
 
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const initAuth = useAuthStore(state => state.init);
+
+  const segments = useSegments();
+
+  const isTabBarVisible = () => {
+    
+    if (segments[1] === 'connect' && segments.length > 2) {
+        return false; 
+    }
+    return true; 
+};
 
   useEffect(() => {
     initAuth();
@@ -41,6 +51,8 @@ const TabsLayout = () => {
           position: 'absolute',
           paddingBottom: 10,
         },
+        tabBarInactiveTintColor: '#000000',
+        tabBarActiveTintColor: Colors.secondary,
       }}
     >
       <Tabs.Screen

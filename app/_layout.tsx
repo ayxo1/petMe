@@ -1,3 +1,4 @@
+import Colors from "@/constants/Colors";
 import { useAuthStore } from "@/stores/authStore";
 import { getRegistrationStateRoute } from "@/utils/routingHelper";
 import { router, Stack, useRootNavigationState } from "expo-router";
@@ -28,7 +29,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView>
       <Stack
-      screenOptions={{ headerShown: false, contentStyle: {backgroundColor: '#f5c66e'}}}
+      screenOptions={{ headerShown: false, contentStyle: {backgroundColor: Colors.primary}}}
       />
     </GestureHandlerRootView>
   );

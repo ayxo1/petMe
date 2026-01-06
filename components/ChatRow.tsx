@@ -7,9 +7,9 @@ import { Image, ImageSourcePropType, Text, TouchableHighlight, View } from 'reac
 const ChatRow = ({ matchId, matchedUser, petName }: MatchRowData) => {  
   
   const profilePic: ImageSourcePropType = { uri: `${pb.baseURL}/api/files/users/${matchedUser.id}/${matchedUser.images}`};
-  
+    
   return (
-    <Link href={'/'} asChild>
+    <Link href={`/chat/[id]?${matchId}`} asChild>
       <TouchableHighlight underlayColor={Colors.secondary}>
         <View className='flex-row items-center p-2'>
           <Image
@@ -21,11 +21,11 @@ const ChatRow = ({ matchId, matchedUser, petName }: MatchRowData) => {
               <Text className='text-xl'>
                 {matchedUser.username}
               </Text>
-              <Text className='text-base text-slate-500'>
+              <Text className='text-base text-secondary'>
                 {petName!=='seeker' ? `(${petName}'s owner)` : '(seeker)'}
               </Text>
             </View>
-            <Text className='text-base text-slate-400' numberOfLines={2}>text msg</Text>
+            <Text className='text-base text-secondary' numberOfLines={2}>text msg</Text>
           </View>
         </View>
       </TouchableHighlight>
