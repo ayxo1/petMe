@@ -71,3 +71,13 @@ export interface PBFeedRecord {
 
     location?: string;
 }
+
+export interface PBMessage extends RecordModel {
+  id: string;
+  match: string;
+  sender: string;
+  content: string;
+  readAt: string;
+  created: string;
+  updated: string;
+}

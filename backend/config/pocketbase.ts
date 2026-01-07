@@ -1,7 +1,13 @@
+import EventSource from "react-native-sse";
+// @ts-ignore
+global.EventSource = EventSource;
+
 import { SignInFormData, SignUpFormData } from '@/types/auth';
-import { PBMatch, PBPet, PBUser } from '@/types/pbTypes';
+import { PBMatch, PBMessage, PBPet, PBUser } from '@/types/pbTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PocketBase, { AsyncAuthStore, type RecordModel } from 'pocketbase';
+import { IMessage } from 'react-native-gifted-chat';
+
 
 const PB_URL = __DEV__ 
     ? (process.env.EXPO_PUBLIC_POCKETBASE_HOST?.startsWith('http')
@@ -372,11 +378,31 @@ export const messagesAPI = {
     });
   },
 
-  getMessages: async (matchId: string) => {
+  getMessages: async (matchId: string): Promise<PBMessage[]> => {
     return await pb.collection('messages').getFullList({
       filter: `match = "${matchId}"`,
       expand: 'sender',
       sort: '-created'
+    });
+  },
+
+  subscribe: async (matchId: string, userId: string, onNewMessage: (msg: IMessage) => void) => {
+    return await pb.collection('messages').subscribe('*', e => {
+      if (e.record.match !== matchId) return;
+
+      if (e.record.sender === userId) return;
+
+      const newMsg: IMessage = {
+        _id: e.record.id,
+        text: e.record.content,
+        createdAt: new Date(e.record.created),
+        user: {
+          _id: e.record.sender,
+          name: 'match'
+        }
+      };
+
+      onNewMessage(newMsg);
     });
   }
 };

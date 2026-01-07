@@ -1,7 +1,7 @@
 import Colors from "@/constants/Colors";
 import { useAuthStore } from "@/stores/authStore";
 import { getRegistrationStateRoute } from "@/utils/routingHelper";
-import { router, Stack, useRootNavigationState } from "expo-router";
+import { router, Stack } from "expo-router";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import './globals.css';
@@ -11,9 +11,8 @@ export default function RootLayout() {
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const registrationState = useAuthStore(state => state.registrationState);
   const user = useAuthStore(state => state.user);
+  if (!user) router.replace('/(auth)/signin');
   
-  const rootNavigationState = useRootNavigationState();
-
   useEffect(() => {
     if (isAuthenticated) {
       const targetRoute = getRegistrationStateRoute(registrationState, user);

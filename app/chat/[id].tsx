@@ -1,6 +1,7 @@
 import { messagesAPI } from '@/backend/config/pocketbase';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
+import { PBMessage } from '@/types/pbTypes';
 import { Stack, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from 'react';
 import { Image, Platform, Text, View } from 'react-native';
@@ -21,22 +22,28 @@ const ChatPage = () => {
   if (!userId) return; 
 
   useEffect(() => {
+    const formatChatMessages = (messages: PBMessage[]): IMessage[] => {
+      const formattedChatMessages = messages.map(message => {
+        return {
+          _id: message.id,
+          text: message.content,
+          createdAt: new Date(message.created),
+          user: {
+            _id: message.sender,
+            // name: 'John Doe',
+            // avatar: 'https://placeimg.com/140/140/any',
+          },
+        }
+      });
+
+      return formattedChatMessages;
+    };
+
     const retrieveChatMessages = async () => {
       try {
-        const chatMessages = await messagesAPI.getMessages(matchId as string);
-  
-        const formattedChatMessages: IMessage[] = chatMessages.map(message => {
-          return {
-            _id: message.id,
-            text: message.content,
-            createdAt: new Date(message.created),
-            user: {
-              _id: message.sender,
-              // name: 'John Doe',
-              // avatar: 'https://placeimg.com/140/140/any',
-            },
-          }
-      })
+        const chatMessages: PBMessage[] = await messagesAPI.getMessages(matchId as string);
+
+        const formattedChatMessages: IMessage[] = formatChatMessages(chatMessages);
   
         setMessages(formattedChatMessages);
           
@@ -45,8 +52,30 @@ const ChatPage = () => {
       }
 
     };
+
     retrieveChatMessages();
-  }, []);
+
+    let unsubscribe: () => void;
+
+    const trackMessages = async () => {
+      try {
+        unsubscribe = await messagesAPI.subscribe(
+          matchId as string, 
+          userId, 
+          (incMsg) => {
+          setMessages(prev => GiftedChat.append(prev, [incMsg]))
+          });
+      } catch (error) {
+        console.log('trackMessages error:', error);
+      }
+    };
+
+    trackMessages();
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    }
+  }, [matchId]);
 
   const onSend = useCallback((messages: IMessage[] = []) => {
     try {
