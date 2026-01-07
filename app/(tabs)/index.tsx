@@ -4,9 +4,8 @@ import ProfileCard from "@/components/ProfileCard";
 import { images } from "@/constants";
 import { useFeedStore } from "@/stores/useFeedStore";
 import { assetPreloader, imagePreloader } from "@/utils/assetPreloader";
-import { Link } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Pressable, Text, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
