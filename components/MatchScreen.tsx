@@ -1,20 +1,29 @@
+import { FeedProfile } from "@/types/feed";
 import { Link } from "expo-router";
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-interface MatchScreenProps {
-    modalClose: (isOpen: boolean) => void;
+interface MatchScreenPageProps {
+    modalOpen: (isOpen: boolean) => void;
+    matchedProfile: FeedProfile;
+    matchScreenProps: {
+        matchId: string;
+        username: string;
+        image: string;
+    }
 }
 
-const MatchScreen = ({modalClose} : MatchScreenProps) => {
+const MatchScreen = ({modalOpen, matchScreenProps} : MatchScreenPageProps) => {
+    console.log('matchedProfile prop: ', matchScreenProps);
+    
   return (
         <View className="items-center justify-center">
             
             <View className="relative left-44 bottom-28">
                 <Pressable
-                onPress={() => modalClose(false)}
+                onPress={() => modalOpen(false)}
                 >
-                <Text className="text-3xl">x</Text>
+                    <Text className="text-3xl">x</Text>
                 </Pressable>
             </View>
             
@@ -27,19 +36,29 @@ const MatchScreen = ({modalClose} : MatchScreenProps) => {
             >
             <View
             className="border rounded-xl p-2"
-            >
-                <Link 
-                    href={'/(tabs)/connect'}
-                    className='text-black'
+            >   
+                <Link href={{
+                    pathname: '/chat/[id]',
+                    params: {
+                        id: matchScreenProps.matchId,
+                        otherUserName: matchScreenProps.username,
+                        otherUserImage: matchScreenProps.image
+                    }
+                    }}
+                    asChild
                 >
-                    message them!
+                    <Pressable
+                        onPress={() => modalOpen(false)}
+                    >
+                        <Text>message them!</Text>
+                    </Pressable>
                 </Link>
             </View>
             <View
             className="border rounded-xl p-2"
             >
                 <Pressable
-                onPress={() => modalClose(false)}
+                onPress={() => modalOpen(false)}
                 >
                     <Text>continue exploring</Text>
                 </Pressable>

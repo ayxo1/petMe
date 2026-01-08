@@ -18,6 +18,8 @@ const ChatPage = () => {
 
   const params = useLocalSearchParams();
   const { id: matchId, otherUserName, otherUserImage } = params;
+  console.log('params log: ', params);
+  
   const userId = useAuthStore(state => state.user?.id);
   if (!userId) return; 
 

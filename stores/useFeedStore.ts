@@ -10,7 +10,7 @@ interface FeedState {
     feedType: string;
 
     fetchProfileBatch: (type?: string) => Promise<void>;
-    swipeLike: (id: string) => Promise<boolean>;
+    swipeLike: (id: string) => Promise<{ isMatch: boolean; matchId?: string }>;
     swipePass: (id: string) => void;
     getCurrentProfile: () => FeedProfile | null;
     getRemaningProfiles: () => number;
@@ -104,7 +104,7 @@ export const useFeedStore = create<FeedState>(
             const currentUser = getCurrentUser();
             if(!currentUser) {
                 console.error('no user is logged in (swipeLike)');
-                return false;
+                return {isMatch: false};
             };
             
             // advance feed
@@ -129,11 +129,14 @@ export const useFeedStore = create<FeedState>(
                 
                 console.log('match result issss ', response.isMatch);
                 
-                return response.isMatch;
+                return {
+                    isMatch: response.isMatch,
+                    matchId: response.matchId
+                };
 
             } catch (error) {
                 console.error('swipeLike error:', error);
-                return false;
+                return {isMatch: false};
             }
         },
     

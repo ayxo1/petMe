@@ -21,6 +21,7 @@ export default function Index() {
 
   const [isPreloading, setIsPreloading] = useState(true);
   const [isModal, setIsModal] = useState(false);
+  const [matchScreenProps, setmatchScreenProps] = useState<{ matchId: string; username: string; image: string; }>();
   const VISIBLE_STACK_SIZE = 5;
   const currentProfile = feed[currentIndex];
   const remaining = getRemaningProfiles();
@@ -86,10 +87,15 @@ export default function Index() {
     
     if(!currentProfile) return;
 
-    const isMatch = await swipeLike(currentProfile.id);
-    if(isMatch) {
+    const isMatch = (await swipeLike(currentProfile.id));
+    if(isMatch.isMatch && isMatch.matchId) {
       console.log(isMatch, ' logging isMatch');
       setIsModal(true);
+      setmatchScreenProps({
+        matchId: isMatch.matchId, 
+        username: currentProfile.name,
+        image: currentProfile.images[0]
+      })
     };
   };
 
@@ -102,9 +108,13 @@ return (
         onRequestClose={() => setIsModal(false)}
         toggleModal={setIsModal}
       > 
-        <MatchScreen 
-          modalClose={setIsModal}
-      />
+        {matchScreenProps && (
+            <MatchScreen
+              modalOpen={setIsModal}
+              matchScreenProps={matchScreenProps}
+              matchedProfile={currentProfile}
+          />
+        )}
       </Modal>
       {isPreloading ? (
         <SafeAreaView className="flex-1 items-center justify-center">

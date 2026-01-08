@@ -2,7 +2,6 @@ import Modal from "@/components/Modal";
 import Colors from "@/constants/Colors";
 import { Stack } from "expo-router";
 import { useState } from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
 
 const ConnectLayout = () => {
     const [isModal, toggleIsModal] = useState(false);
