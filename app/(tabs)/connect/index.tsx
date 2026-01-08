@@ -4,9 +4,8 @@ import { useAuthStore } from '@/stores/authStore';
 import { MatchRowData } from '@/types/components';
 import { PBPet, PBUser } from '@/types/pbTypes';
 import { useFocusEffect } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, ScrollView, View } from 'react-native';
-
+import React, { useCallback, useState } from 'react';
+import { FlatList, ScrollView } from 'react-native';
 
 const Index = () => {
   

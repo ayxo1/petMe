@@ -93,31 +93,6 @@ export default function Index() {
     };
   };
 
-  // console.log(isPreloading);
-
-  // if (isPreloading) {
-  //   return (
-  //     <SafeAreaView className="flex-1 items-center justify-center">
-  //       <ActivityIndicator size="large" color="#3b3a38" />
-  //       <Text className="text-gray-600 mt-4 text-lg">Loading pets...</Text>
-  //     </SafeAreaView>
-  //   );
-  // };
-
-  // if(!currentProfile || remaining === 0) {
-  //   return (
-  //     <SafeAreaView className="flex-1 items-center justify-center">
-  //       <Text className="text-2xl font-bold text-gray-600">
-  //         No more profiles! 🐾
-  //       </Text>
-  //       <Text className="text-gray-500 mt-2">
-  //         Check back later for more pets
-  //       </Text>
-  //     </SafeAreaView>
-  //   );
-  // };
-
-
 return (
     <View
       className="flex-1"

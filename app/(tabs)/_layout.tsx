@@ -69,50 +69,8 @@ const TabsLayout = () => {
           ),
         }}
       />
-        <Tabs.Screen
-          name='rescue'
-          options={{
-            sceneStyle: {
-              backgroundColor: Colors.primary
-            },
-            tabBarIcon: ({focused}: {focused: boolean}) => (
-              <TabBarIcon 
-                focused={focused}
-                icon={icons.shelter}
-              />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name='index'
-          options={{
-            sceneStyle: {
-              backgroundColor: Colors.primary
-            },
-            tabBarIcon: ({focused}: {focused: boolean}) => (
-              <TabBarIcon 
-                focused={focused}
-                icon={icons.search}
-              />
-            ),
-          }}
-        />
-        <Tabs.Screen
-          name='connect'
-          options={{
-            sceneStyle: {
-              backgroundColor: Colors.primary
-            },
-            tabBarIcon: ({focused}: {focused: boolean}) => (
-              <TabBarIcon 
-                focused={focused}
-                icon={icons.catPass}
-              />
-            ),
-          }}
-        />
       <Tabs.Screen
-        name='settings'
+        name='likes'
         options={{
           sceneStyle: {
             backgroundColor: Colors.primary
@@ -120,7 +78,50 @@ const TabsLayout = () => {
           tabBarIcon: ({focused}: {focused: boolean}) => (
             <TabBarIcon 
               focused={focused}
-              icon={icons.settings}
+              icon={icons.pawLike}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name='index'
+        options={{
+          title: 'explore',
+          sceneStyle: {
+            backgroundColor: Colors.primary
+          },
+          tabBarIcon: ({focused}: {focused: boolean}) => (
+            <TabBarIcon 
+              focused={focused}
+              icon={icons.search}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name='connect'
+        options={{
+          sceneStyle: {
+            backgroundColor: Colors.primary
+          },
+          tabBarIcon: ({focused}: {focused: boolean}) => (
+            <TabBarIcon 
+              focused={focused}
+              icon={icons.catPass}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name='rescue'
+        options={{
+          sceneStyle: {
+            backgroundColor: Colors.primary
+          },
+          tabBarIcon: ({focused}: {focused: boolean}) => (
+            <TabBarIcon 
+              focused={focused}
+              icon={icons.shelter}
             />
           ),
         }}

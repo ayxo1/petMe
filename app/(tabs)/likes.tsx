@@ -1,11 +1,11 @@
 import { Text, View } from 'react-native';
 
-const Settings = () => {
+const Likes = () => {
   return (
     <View>
-      <Text>Settings</Text>
+      <Text>Likes</Text>
     </View>
   )
 }
 
-export default Settings;
+export default Likes;

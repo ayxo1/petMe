@@ -24,8 +24,8 @@ const ConnectLayout = () => {
                     headerStyle: {
                         backgroundColor: Colors.secondary
                     },
-                    headerSearchBarOptions: {
-                    },
+                    // headerSearchBarOptions: {
+                    // },
                     headerTintColor: Colors.primary,
                     }
                 }

@@ -21,7 +21,7 @@ interface ProfileCardPropsWithIndex extends ProfileCardProps {
 };
 
 const { width: wWidth, height } = Dimensions.get("window");
-const SWIPE_THRESHOLD = wWidth * 0.4;
+const SWIPE_THRESHOLD = wWidth * 0.15;
 
 const SNAP_POINTS = [-wWidth, 0, wWidth];
 const aspectRatio = 722 / 368;
@@ -131,7 +131,7 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, 
   }));
 
   return (
-    <SafeAreaView
+    <View
       className="p-3 pb-4 px-5"
     >
       <GestureDetector gesture={gesture}>
@@ -171,7 +171,7 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, 
         <TiltEffect>
 
           <View
-            className="h-[99.5%] overflow-hidden rounded-lg p-2 mt-2"
+            className="h-[96.5%] overflow-hidden rounded-lg p-2 mt-6"
           >
 
             <View 
@@ -235,7 +235,7 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, 
         </Animated.View>
       </GestureDetector>
       
-    </SafeAreaView>
+    </View>
   );
 }
 
