@@ -244,7 +244,7 @@ export const swipesAPI = {
 
   getUserMatches: async (userId: string): Promise<PBMatch[]> => {
     const matches = await pb.collection('matches').getFullList({
-      filter: `(user1 = "${userId}" || user2 = "${userId}") && status != "declined"`,
+      filter: `(user1 = "${userId}" || user2 = "${userId}") && status = "active"`,
       expand: 'user1,user2,pet1,pet2',
       sort: '-created'
     });
@@ -267,6 +267,15 @@ export const messagesAPI = {
       filter: `match = "${matchId}"`,
       expand: 'sender',
       sort: '-created'
+    });
+  },
+
+  unmatchProfile: async (matchId: string): Promise<void> => {
+    await pb.send("/api/unmatch", {
+      method: "POST",
+      body: {
+          matchId
+      }
     });
   },
 

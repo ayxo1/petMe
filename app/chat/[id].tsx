@@ -2,9 +2,9 @@ import { messagesAPI } from '@/backend/config/pocketbase';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
 import { PBMessage } from '@/types/pbTypes';
-import { Stack, useLocalSearchParams } from "expo-router";
+import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from 'react';
-import { Image, Platform, Text, View } from 'react-native';
+import { Image, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { Bubble, GiftedChat, IMessage, InputToolbar } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -18,7 +18,15 @@ const ChatPage = () => {
 
   const params = useLocalSearchParams();
   const { id: matchId, otherUserName, otherUserImage } = params;
-  console.log('params log: ', params);
+
+  const unmatch = async () => {
+    try {
+      await messagesAPI.unmatchProfile(matchId as string);
+      router.push('/(tabs)/connect');
+    } catch (error) {
+      console.log('unmatch error: ', error);
+    }
+  }
   
   const userId = useAuthStore(state => state.user?.id);
   if (!userId) return; 
@@ -99,6 +107,13 @@ const ChatPage = () => {
 
   return (
     <View className={`flex-1 mb-6`}>
+      <View className='justify-center items-center p-2'>
+        <TouchableOpacity
+          onPress={unmatch}
+        >
+          <Text>unmatch</Text>
+        </TouchableOpacity>
+      </View>
       <Stack.Screen 
         options={{
           headerTitle: () => (

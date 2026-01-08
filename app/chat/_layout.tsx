@@ -7,6 +7,7 @@ import { Image, Text, TouchableOpacity, View } from "react-native";
 
 const ChatLayout = () => {
     const [isModal, toggleIsModal] = useState(false);
+     
 
     return (
         <Stack>
@@ -21,7 +22,7 @@ const ChatLayout = () => {
                     },
                     headerTintColor: Colors.primary,
                     headerRight: () => (
-                        <View>
+                        <View className="flex-row gap-2">
                             <TouchableOpacity
                                 onPress={() => toggleIsModal(!isModal)}
                             >

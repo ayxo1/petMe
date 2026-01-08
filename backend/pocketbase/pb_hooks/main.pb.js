@@ -161,7 +161,7 @@ routerAdd("POST", "/api/swipe", (c) => {
             match.set('user2', petOwnerId);
             match.set('pet1', myPetIds[0]);
             match.set('pet2', targetId);
-            match.set('status', 'pending');
+            match.set('status', 'active');
 
             $app.save(match);
 
@@ -172,4 +172,31 @@ routerAdd("POST", "/api/swipe", (c) => {
     }
 
     return c.json(200, { isMatch: false });
+}, $apis.requireAuth('users'));
+
+routerAdd("POST", "/api/unmatch", (c) => {
+    const data = new DynamicModel({
+        'matchId': '',
+    });
+    c.bindBody(data);
+
+    console.log(data);
+    
+
+    const { matchId } = data;
+
+    try {
+        const match = $app.findRecordById('matches', matchId);        
+    
+        match.set('status', 'unmatched');
+    
+        $app.save(match);
+    } catch (error) {
+        console.log('api/unmatch error:', error);   
+    }
+
+    
+    return c.json(200, { "unmatchedUser": matchId });
+
+
 }, $apis.requireAuth('users'));

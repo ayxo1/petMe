@@ -46,7 +46,7 @@ export interface PBMatch extends RecordModel {
   user2: string;
   pet1: string;
   pet2?: string;
-  status: 'pending' | 'accepted' | 'declined' | 'expired';
+  status: 'pending' | 'active' | 'declined' | 'unmatched' | 'blocked';
   created: string;
   updated: string;
 }
