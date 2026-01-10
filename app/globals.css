@@ -17,9 +17,6 @@
         @apply rounded-lg p-3 w-full text-base border-b leading-5;
     }
 
-    /* .custom-btn {
-        @apply rounded-full p-3 w-full flex flex-row justify-center bg-primary;
-    } */
     .custom-btn {
         @apply rounded-full px-7 py-1 items-center bg-primary;
     }

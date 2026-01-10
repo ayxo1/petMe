@@ -9,6 +9,8 @@ interface InputComponentProps {
   label: string;
   secureTextEntry?: boolean;
   keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
+  labelStyling?: string;
+  multiline?: boolean;
 }
 
 export interface FormInputControllerProps extends InputComponentProps {

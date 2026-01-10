@@ -299,3 +299,14 @@ export const messagesAPI = {
     });
   }
 };
+
+export const reportsAPI = {
+  createReport: async (userId: string, reportedProfile: string, reason: string, reportDescription: string) => {
+    await pb.collection('reports').create({
+      reporter: userId,
+      reportedUser: reportedProfile,
+      reason,
+      description: reportDescription
+    });
+  }
+};

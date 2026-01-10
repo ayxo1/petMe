@@ -8,19 +8,24 @@ const InputComponent = ({
     onChangeText,
     label,
     secureTextEntry = false,
-    keyboardType = 'default'
+    keyboardType = 'default',
+    labelStyling = '',
+    multiline = false
 }: InputComponentProps) => {
 
     const [isFocused, setIsFocused] = useState(false);
 
   return (
     <View
-        className='w-full'
+        className='w-full items-start'
     >
-      <Text className='label'>
+      <Text className={`label ${labelStyling}`}>
         {label}
       </Text>
-      <TextInput 
+      <TextInput
+        numberOfLines={4}
+        multiline={multiline}
+        maxLength={240}
         autoCapitalize='none'
         autoCorrect={false}
         value={value}

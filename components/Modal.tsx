@@ -37,7 +37,7 @@ const Modal = ({ isOpen, withInput, children, toggleModal, ...props }: ModalComp
             onPress={() => toggleModal(!isOpen)}
         >
             <Pressable 
-                className="w-[90%] bg-white/50 rounded-3xl p-4"
+                className="w-[90%] bg-white/80 rounded-3xl p-4"
                 onPress={e => e.stopPropagation()}
             >
                 {content}

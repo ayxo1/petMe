@@ -1,14 +1,30 @@
+import InputController from "@/components/controllers/InputController";
 import Modal from "@/components/Modal";
 import { icons } from "@/constants";
 import Colors from "@/constants/Colors";
+import { FormInputData } from "@/types/components";
 import { router, Stack } from "expo-router";
-import { useState } from "react";
+import { Fragment, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 
-const ChatLayout = () => {
-    const [isModal, toggleIsModal] = useState(false);
-     
+const formInputData: FormInputData[] = [
+  {
+    name: 'email',
+    placeholder: 'enter your email',
+    label: 'email',
+    keyboardType: "email-address",
+  },
+  {
+    name: 'password',
+    placeholder: 'enter your password',
+    label: 'password',
+    keyboardType: "default",
+  },
+];
 
+const ChatLayout = () => {
+     
     return (
         <Stack>
             <Stack.Screen 
@@ -21,28 +37,6 @@ const ChatLayout = () => {
                         backgroundColor: Colors.secondary
                     },
                     headerTintColor: Colors.primary,
-                    headerRight: () => (
-                        <View className="flex-row gap-2">
-                            <TouchableOpacity
-                                onPress={() => toggleIsModal(!isModal)}
-                            >
-                                <Modal isOpen={isModal} toggleModal={toggleIsModal}/>
-                                <Text className="text-red-900">report</Text>
-                            </TouchableOpacity>
-                        </View>
-                    ),
-                    headerLeft: () => (
-                        <TouchableOpacity
-                            onPress={() => router.back()}
-                        >
-                            <Image
-                                source={icons.backIcon}
-                                className='size-9'
-                                resizeMode='contain'
-                                tintColor={Colors.primary}
-                            />
-                        </TouchableOpacity>
-                    )
                 }}
             />
         </Stack>

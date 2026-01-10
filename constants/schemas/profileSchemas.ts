@@ -14,3 +14,13 @@ export const profileSetupSchema = yup.object({
     .min(12, 'don\'t be shy')
     .max(240, 'max length is 240 characters'),
 });
+
+export const reportProfile = yup.object({
+  description: yup
+    .string()
+    .required(),
+  reason: yup
+    .string()
+    .oneOf(['inappropriate', 'fake', 'spam', 'harassment', 'other'])
+    .required()
+});

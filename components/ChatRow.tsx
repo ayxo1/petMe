@@ -14,7 +14,8 @@ const ChatRow = ({ matchId, matchedUser, petName }: MatchRowData) => {
         params: {
           id: matchId,
           otherUserName: matchedUser.username,
-          otherUserImage: profilePic.uri
+          otherUserImage: profilePic.uri,
+          otherUserId: matchedUser.id
         }
       }} asChild
     >

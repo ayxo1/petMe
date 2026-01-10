@@ -1,15 +1,26 @@
 import { messagesAPI } from '@/backend/config/pocketbase';
+import ButtonComponent from '@/components/ButtonComponent';
+import InputController from '@/components/controllers/InputController';
+import Modal from '@/components/Modal';
+import ReportForm from '@/components/ReportForm';
+import { icons } from '@/constants';
 import Colors from '@/constants/Colors';
+import { reportProfile } from '@/constants/schemas/profileSchemas';
 import { useAuthStore } from '@/stores/authStore';
 import { PBMessage } from '@/types/pbTypes';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from 'react';
-import { Image, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { useForm } from 'react-hook-form';
+import { Image, KeyboardAvoidingView, Platform, Text, TouchableOpacity, View } from 'react-native';
+import DropDownPicker from 'react-native-dropdown-picker';
 import { Bubble, GiftedChat, IMessage, InputToolbar } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const ChatPage = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
+
+  const [isModal, toggleIsModal] = useState(false);
   
   const insets = useSafeAreaInsets();
   const tabbarHeight = 14;
@@ -17,7 +28,7 @@ const ChatPage = () => {
   const keyboardVerticalOffset = insets.bottom + tabbarHeight + keyboardTopToolbarHeight;
 
   const params = useLocalSearchParams();
-  const { id: matchId, otherUserName, otherUserImage } = params;
+  const { id: matchId, otherUserName, otherUserImage, otherUserId } = params;
 
   const unmatch = async () => {
     try {
@@ -73,7 +84,7 @@ const ChatPage = () => {
           matchId as string, 
           userId, 
           (incMsg) => {
-          setMessages(prev => GiftedChat.append(prev, [incMsg]))
+            setMessages(prev => GiftedChat.append(prev, [incMsg]));
           });
       } catch (error) {
         console.log('trackMessages error:', error);
@@ -107,13 +118,6 @@ const ChatPage = () => {
 
   return (
     <View className={`flex-1 mb-6`}>
-      <View className='justify-center items-center p-2'>
-        <TouchableOpacity
-          onPress={unmatch}
-        >
-          <Text>unmatch</Text>
-        </TouchableOpacity>
-      </View>
       <Stack.Screen 
         options={{
           headerTitle: () => (
@@ -130,7 +134,50 @@ const ChatPage = () => {
                 {otherUserName}
               </Text>
             </View>
-          )
+          ),
+          headerLeft: () => (
+            <View className="flex-row gap-5">
+                <View>
+                    <TouchableOpacity
+                        onPress={() => router.back()}
+                    >
+                        <Image
+                            source={icons.backIcon}
+                            className='size-9'
+                            resizeMode='contain'
+                            tintColor={Colors.primary}
+                        />
+                    </TouchableOpacity>
+                </View>
+                <View className='justify-center items-center'>
+                    <TouchableOpacity
+                        onPress={unmatch}
+                        >
+                        <Text>unmatch</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        ),
+        headerRight: () => (
+          <View className="flex-row gap-2">
+              <TouchableOpacity
+                  onPress={() => toggleIsModal(!isModal)}
+              >
+                  <Modal
+                      isOpen={isModal} 
+                      toggleModal={toggleIsModal}
+                  >
+                      <ReportForm
+                        toggleModal={toggleIsModal}
+                        userId={userId}
+                        reportedProfileName={otherUserName as string}
+                        reportedProfileId={otherUserId as string}
+                      />
+                  </Modal> 
+                  <Text className="text-red-900">report</Text>
+              </TouchableOpacity>
+          </View>
+        ),
         }}
       />
       <GiftedChat

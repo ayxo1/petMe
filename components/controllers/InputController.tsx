@@ -2,7 +2,7 @@
 import { FormInputControllerProps } from '@/type';
 import React from 'react';
 import { Controller } from 'react-hook-form';
-import { Text } from 'react-native';
+import { Text, View } from 'react-native';
 
 import InputComponent from '../InputComponent';
 
@@ -13,7 +13,9 @@ const InputController = (
     placeholder, 
     label, 
     keyboardType, 
-    secureTextEntry = false 
+    secureTextEntry = false,
+    labelStyling = '',
+    multiline = false
   }: FormInputControllerProps) => {
 
   return (
@@ -23,23 +25,27 @@ const InputController = (
         control={control}
         render={({field: {onChange, onBlur, value}}) => {
           return (
-            <InputComponent 
+            <InputComponent
+              multiline={multiline}
               placeholder={placeholder}
               value={value}
               onChangeText={onChange}
               label={label}
               keyboardType={keyboardType}
               secureTextEntry={secureTextEntry}
+              labelStyling={labelStyling}
               // onBlur={onBlur}
             />
           )
         }}
       />
-      {errors && errors[name] && (
-        <Text className='text-red-500 text-center'>
-          {errors[name]?.message?.toString() || 'Invalid data'}
-        </Text>
-      )}
+      <View className='h-5'>
+        {errors && errors[name] && (
+          <Text className='text-red-500 text-center'>
+            {errors[name]?.message?.toString() || 'Invalid data'}
+          </Text>
+        )}
+      </View>
     </>
   )
 }
