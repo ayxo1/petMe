@@ -10,7 +10,7 @@
 
 @layer components {
     .label {
-        @apply text-base text-start w-full text-primary pl-2 font-bold;
+        @apply text-base text-start w-full text-black pl-2 font-bold;
     }
 
     .input {

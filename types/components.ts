@@ -4,7 +4,8 @@ import { PBUser } from "./pbTypes";
 
 export interface TabBarIconProps {
     focused: boolean;
-    icon: ImageSourcePropType
+    icon: ImageSourcePropType;
+    red?: boolean;
 }
 
 export interface ProfileCardProps {

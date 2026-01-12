@@ -6,13 +6,13 @@ import { Redirect, Tabs, useSegments } from 'expo-router';
 import { useEffect } from 'react';
 import { Image, View } from 'react-native';
 
-const TabBarIcon = ({focused, icon}: TabBarIconProps) => (
-  <View>
+const TabBarIcon = ({focused, icon, red = false}: TabBarIconProps) => (
+  <View className='mb-2'>
     <Image 
       source={icon}
       className='size-9'
       resizeMode='contain'
-      tintColor={focused ? Colors.secondary : '#000000'}
+      tintColor={focused ? (red ? 'red' : Colors.secondary) : '#000000'}
     />
   </View>
 );
@@ -21,16 +21,6 @@ const TabsLayout = () => {
 
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const initAuth = useAuthStore(state => state.init);
-
-  const segments = useSegments();
-
-  const isTabBarVisible = () => {
-    
-    if (segments[1] === 'connect' && segments.length > 2) {
-        return false; 
-    }
-    return true; 
-};
 
   useEffect(() => {
     initAuth();
@@ -61,7 +51,7 @@ const TabsLayout = () => {
           sceneStyle: {
             backgroundColor: Colors.primary
           },
-          tabBarIcon: ({focused}: {focused: boolean}) => (
+          tabBarIcon: ({focused}) => (
             <TabBarIcon 
               focused={focused}
               icon={icons.profile}
@@ -75,10 +65,11 @@ const TabsLayout = () => {
           sceneStyle: {
             backgroundColor: Colors.primary
           },
-          tabBarIcon: ({focused}: {focused: boolean}) => (
+          tabBarIcon: ({focused}) => (
             <TabBarIcon 
               focused={focused}
               icon={icons.pawLike}
+              red
             />
           ),
         }}
@@ -90,7 +81,7 @@ const TabsLayout = () => {
           sceneStyle: {
             backgroundColor: Colors.primary
           },
-          tabBarIcon: ({focused}: {focused: boolean}) => (
+          tabBarIcon: ({focused}) => (
             <TabBarIcon 
               focused={focused}
               icon={icons.search}
@@ -104,7 +95,7 @@ const TabsLayout = () => {
           sceneStyle: {
             backgroundColor: Colors.primary
           },
-          tabBarIcon: ({focused}: {focused: boolean}) => (
+          tabBarIcon: ({focused}) => (
             <TabBarIcon 
               focused={focused}
               icon={icons.catPass}
@@ -118,7 +109,7 @@ const TabsLayout = () => {
           sceneStyle: {
             backgroundColor: Colors.primary
           },
-          tabBarIcon: ({focused}: {focused: boolean}) => (
+          tabBarIcon: ({focused}) => (
             <TabBarIcon 
               focused={focused}
               icon={icons.shelter}

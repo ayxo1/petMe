@@ -11,7 +11,6 @@ export default function RootLayout() {
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const registrationState = useAuthStore(state => state.registrationState);
   const user = useAuthStore(state => state.user);
-  if (!user) router.replace('/(auth)/signin');
   
   useEffect(() => {
     if (isAuthenticated) {

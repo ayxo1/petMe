@@ -17,7 +17,7 @@ interface FeedState {
     reset: () => void;
 };
 
-const convertPBFeedRecordToFeedProfile = (record: PBFeedRecord): FeedProfile => {
+const convertPBFeedRecordToFeedProfile = (record: PBFeedRecord): FeedProfile => {    
     const collectionName = record.type === 'pet' ? 'pets' : 'users';
     let imageUrls: string[] = [];
     imageUrls = record.images.map(filename => `${pb.baseURL}/api/files/${collectionName}/${record.id}/${filename}`);
@@ -32,6 +32,8 @@ const convertPBFeedRecordToFeedProfile = (record: PBFeedRecord): FeedProfile => 
         age: record.age,
         bio: record.bio,
         images: imageUrls,
+        ownerName: record.ownerName,
+        ownerImage: record.ownerImage,
         isAvailableForAdoption: record.isAvailableForAdoption,
         adoptionStatus: record.adoptionStatus,
         adoptionDetails: record.isAvailableForAdoption ? {
@@ -79,7 +81,7 @@ export const useFeedStore = create<FeedState>(
                         perPage: BATCH_SIZE.toString()
                     }
                 });
-
+                
                 const newPets = result.items.map(convertPBFeedRecordToFeedProfile);
 
                 set(state => {

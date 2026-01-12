@@ -34,18 +34,28 @@ routerAdd("GET", "/api/feed", (c) => {
     let bindParams = { userId: user.id, limit, offset };
 
     if (types.includes('pets')) {
-        queries.push(`
-            SELECT id, name, bio, images, 'pet' as type, owner as ownerId, age, created
-            FROM pets
-            WHERE owner != {:userId} AND isAvailableForAdoption = ${isAvailableForAdoption}
+    queries.push(`
+        SELECT 
+            id, 
+            name, 
+            bio, 
+            images, 
+            'pet' as type, 
+            owner as ownerId, 
+            age, 
+            created,
+            (SELECT username FROM users WHERE id = pets.owner) as ownerName,
+            (SELECT images FROM users WHERE id = pets.owner) as ownerImage
+        FROM pets
+        WHERE owner != {:userId} 
+            AND isAvailableForAdoption = ${isAvailableForAdoption}
             AND id NOT IN (SELECT targetId FROM swipes WHERE user = {:userId} AND swipeType = 'pet')
-            `);
+        `);
     }
 
     let accountPatterns = [];
     if (types.includes('seekers')) accountPatterns.push('seeker');
     if (types.includes('shelters')) accountPatterns.push('shelter');
-    // if (types.includes('owners')) accountPatterns.push('owner');
 
     const accountFilter = accountPatterns.map(pattern => `accountType LIKE '%${pattern}%'`).join(' OR ');
 
@@ -72,6 +82,8 @@ routerAdd("GET", "/api/feed", (c) => {
         'bio': '',
         'images': [],
         'type': '',
+        'ownerName': '',
+        'ownerImage': '',
         'ownerId': '',
         'age': 0
     }));

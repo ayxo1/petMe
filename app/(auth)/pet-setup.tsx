@@ -19,7 +19,6 @@ const PetSetup = () => {
       await addPet(data);
 
       console.log(usePetStore.getState().pets);
-      
 
       Alert.alert(
         'success!',

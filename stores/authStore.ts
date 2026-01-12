@@ -22,50 +22,6 @@ const convertPBUserToUser = (pbUser: PBUser): User => {
   };
 };
 
-// const authAPI = {
-//   signIn: async ({email, password}: SignInFormData): Promise<User> => {
-
-//     await new Promise(resolve => setTimeout(resolve, 1000))
-    
-//     return {
-//       id: Math.random().toString(),
-//       email,
-//       username: email.split('@')[0],
-//       accountType: 'owner',
-//       createdAt: new Date().toISOString(),
-//     }
-//   },
-
-//   signUp: async ({email, username}: SignUpFormData): Promise<User> => {
-
-//     await new Promise(resolve => setTimeout(resolve, 1000))
-    
-//     return {
-//       id: Math.random().toString(),
-//       email,
-//       username,
-//       createdAt: new Date().toISOString(),
-//     }
-//   },
-
-//   updateProfile: async (userId: string, profileData: Partial<User>): Promise<User> => {
-    
-//     await new Promise(resolve => setTimeout(resolve, 1000));
-
-//     const currentUser = useAuthStore.getState().user;
-
-//     if(!currentUser || currentUser.id !== userId) throw new Error('user not found');
-
-//     const updatedUser: User = {
-//       ...currentUser,
-//       ...profileData,
-//       updatedAt: new Date().toISOString(),
-//     };
-
-//     return updatedUser;
-//   }
-// };
-
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
@@ -96,9 +52,6 @@ export const useAuthStore = create<AuthState>()(
             user,
             isLoading: false,
           });
-
-          // not sure if needed anymore if we gon load pets from backend anyways
-          // await usePetStore.getState().hydratePets(user.id);
 
         } catch (error) {
           set({ isLoading: false });

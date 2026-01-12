@@ -1,7 +1,8 @@
+import { pb } from "@/backend/config/pocketbase";
 import { FeedProfile } from "@/types/feed";
 import { Link } from "expo-router";
 import React from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { ImageSourcePropType, Pressable, Text, View } from 'react-native';
 
 interface MatchScreenPageProps {
     modalOpen: (isOpen: boolean) => void;
@@ -13,7 +14,7 @@ interface MatchScreenPageProps {
     }
 }
 
-const MatchScreen = ({modalOpen, matchScreenProps} : MatchScreenPageProps) => {
+const MatchScreen = ({modalOpen, matchScreenProps, matchedProfile} : MatchScreenPageProps) => {
     console.log('matchedProfile prop: ', matchScreenProps);
     
   return (

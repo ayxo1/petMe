@@ -1,5 +1,5 @@
 import React from 'react';
-import { KeyboardAvoidingView, ModalProps, Platform, Pressable, Modal as RNModal, TouchableWithoutFeedback, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, ModalProps, Platform, Pressable, Modal as RNModal, TouchableWithoutFeedback, View } from 'react-native';
 
 interface ModalComponentProps extends ModalProps {
     isOpen: boolean;
@@ -38,7 +38,10 @@ const Modal = ({ isOpen, withInput, children, toggleModal, ...props }: ModalComp
         >
             <Pressable 
                 className="w-[90%] bg-white/80 rounded-3xl p-4"
-                onPress={e => e.stopPropagation()}
+                onPress={e => {
+                    e.stopPropagation();
+                    Keyboard.dismiss();
+                }}
             >
                 {content}
             </Pressable>

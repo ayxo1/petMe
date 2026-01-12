@@ -1,3 +1,4 @@
+import { pb } from "@/backend/config/pocketbase";
 import MatchScreen from "@/components/MatchScreen";
 import Modal from "@/components/Modal";
 import ProfileCard from "@/components/ProfileCard";
@@ -72,8 +73,8 @@ export default function Index() {
     .then(res => res.json())
     .then(data => console.log('pb connected ', data))
     .catch(error => console.error(error));
-  }, []);
-  
+  }, []);  
+
   const onSwipeLeft = () => {
     console.log('swiping left ', currentProfile.name);
     if(!currentProfile) return;
@@ -90,12 +91,14 @@ export default function Index() {
     const isMatch = (await swipeLike(currentProfile.id));
     if(isMatch.isMatch && isMatch.matchId) {
       console.log(isMatch, ' logging isMatch');
-      setIsModal(true);
       setmatchScreenProps({
         matchId: isMatch.matchId, 
-        username: currentProfile.name,
-        image: currentProfile.images[0]
-      })
+        username: currentProfile.type === 'pet' ? currentProfile.ownerName as string : currentProfile.name,
+        image: currentProfile.type === 'pet' 
+          ? `${pb.baseURL}/api/files/users/${currentProfile.ownerId}/${currentProfile.ownerImage}`
+          : currentProfile.images[0],
+      });
+      setIsModal(true);
     };
   };
 

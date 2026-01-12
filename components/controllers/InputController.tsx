@@ -35,6 +35,7 @@ const InputController = (
               secureTextEntry={secureTextEntry}
               labelStyling={labelStyling}
               // onBlur={onBlur}
+              
             />
           )
         }}

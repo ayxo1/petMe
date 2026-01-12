@@ -59,6 +59,8 @@ export interface PBFeedRecord {
     images: string[];
     bio: string;
     age: number;
+    ownerName?: string;
+    ownerImage?: string;
     created: string;
     updated: string;
 
