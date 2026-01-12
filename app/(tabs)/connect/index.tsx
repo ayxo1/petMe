@@ -5,7 +5,8 @@ import { MatchRowData } from '@/types/components';
 import { PBPet, PBUser } from '@/types/pbTypes';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { FlatList, ScrollView } from 'react-native';
+import { FlatList, ScrollView, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Index = () => {
   
@@ -44,6 +45,16 @@ const Index = () => {
       contentInsetAdjustmentBehavior='automatic'
       contentContainerStyle={{ paddingBottom: 40 }}
     > 
+      {matchRows?.length === 0 && (
+        <SafeAreaView className="flex-1 p-6 items-center mt-10 justify-center">
+          <Text className="text-2xl font-bold text-gray-600 text-center max-w-96">
+            Swipe on profiles to connect with more pets!
+            {"\n"}
+            {"\n"}
+            You will be able to talk to their owners on this page 🐾
+          </Text>
+        </SafeAreaView>
+      )}
       <FlatList 
         scrollEnabled={false}
         data={matchRows}

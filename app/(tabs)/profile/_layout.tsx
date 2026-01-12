@@ -15,7 +15,7 @@ const ProfileLayout = () => {
                 options={
                     {
                     title: `${user?.username}'s profile`,
-                    // headerLargeTitle: true,
+                    headerLargeTitle: true,
                     // headerTransparent: true,
                     // headerBlurEffect: 'regular',
                     // headerShadowVisible: false,

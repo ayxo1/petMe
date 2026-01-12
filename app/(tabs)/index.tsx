@@ -22,7 +22,7 @@ export default function Index() {
 
   const [isPreloading, setIsPreloading] = useState(true);
   const [isModal, setIsModal] = useState(false);
-  const [matchScreenProps, setmatchScreenProps] = useState<{ matchId: string; username: string; image: string; }>();
+  const [matchScreenProps, setmatchScreenProps] = useState<{ matchId: string; isExisting: boolean, username: string; image: string; }>();
   const VISIBLE_STACK_SIZE = 5;
   const currentProfile = feed[currentIndex];
   const remaining = getRemaningProfiles();
@@ -89,10 +89,12 @@ export default function Index() {
     if(!currentProfile) return;
 
     const isMatch = (await swipeLike(currentProfile.id));
+    
     if(isMatch.isMatch && isMatch.matchId) {
       console.log(isMatch, ' logging isMatch');
       setmatchScreenProps({
-        matchId: isMatch.matchId, 
+        matchId: isMatch.matchId,
+        isExisting: isMatch.isExisting || false,
         username: currentProfile.type === 'pet' ? currentProfile.ownerName as string : currentProfile.name,
         image: currentProfile.type === 'pet' 
           ? `${pb.baseURL}/api/files/users/${currentProfile.ownerId}/${currentProfile.ownerImage}`
@@ -115,7 +117,7 @@ return (
             <MatchScreen
               modalOpen={setIsModal}
               matchScreenProps={matchScreenProps}
-              matchedProfile={currentProfile}
+              // matchedProfile={currentProfile}
           />
         )}
       </Modal>

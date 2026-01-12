@@ -145,6 +145,7 @@ routerAdd("POST", "/api/swipe", (c) => {
             0,
             { id: user.id }
         );
+        
         const myPetIds = myPets.map(pet => pet.id);
 
         let filter = `user = {:otherUser} && action = 'like' && (targetId = {:myId}`;
@@ -166,18 +167,53 @@ routerAdd("POST", "/api/swipe", (c) => {
         );
 
         if (mutualLikes.length > 0) {
-            const matches = $app.findCollectionByNameOrId('matches');
 
-            const match = new Record(matches);
-            match.set('user1', user.id);
-            match.set('user2', petOwnerId);
-            match.set('pet1', myPetIds[0]);
-            match.set('pet2', targetId);
-            match.set('status', 'active');
+            try {
+                const existingMatches = $app.findRecordsByFilter(
+                    'matches',
+                    `((user1 = {:myId} && user2 = {:otherId}) || (user1 = {:otherId} && user2 = {:myId})) && status!='unmatched'`,
+                    '-created',
+                    1,
+                    0,
+                    { 
+                        myId: user.id,
+                        otherId: petOwnerId
+                    }
+                );
 
-            $app.save(match);
+                if(existingMatches.length > 0) {
+                    const existingMatch = existingMatches[0].id;
 
-            return c.json(200, { isMatch: true, matchId: match.id});
+                    return c.json(200, {
+                        isMatch: true,
+                        matchId: existingMatch,
+                        isExisting: true
+                    });
+                }
+                throw new Error("No existing match found");
+
+            } catch (error) {
+
+                console.log(`existingMatch not found / ERROR: ${error}`);
+                
+                const matches = $app.findCollectionByNameOrId('matches');
+    
+                const match = new Record(matches);
+                match.set('user1', user.id);
+                match.set('user2', petOwnerId);
+                match.set('pet1', myPetIds[0]);
+                match.set('pet2', targetId);
+                match.set('status', 'active');
+    
+                $app.save(match);
+    
+                return c.json(200, { 
+                    isMatch: true, 
+                    matchId: match.id,
+                    isExisting: false
+                });
+            }
+
         }
     } catch (error) {
         console.error('match check error, swipes endpoint', error);
@@ -190,10 +226,7 @@ routerAdd("POST", "/api/unmatch", (c) => {
     const data = new DynamicModel({
         'matchId': '',
     });
-    c.bindBody(data);
-
-    console.log(data);
-    
+    c.bindBody(data);    
 
     const { matchId } = data;
 

@@ -10,7 +10,7 @@ interface FeedState {
     feedType: string;
 
     fetchProfileBatch: (type?: string) => Promise<void>;
-    swipeLike: (id: string) => Promise<{ isMatch: boolean; matchId?: string }>;
+    swipeLike: (id: string) => Promise<{ isMatch: boolean; matchId?: string, isExisting?: boolean }>;
     swipePass: (id: string) => void;
     getCurrentProfile: () => FeedProfile | null;
     getRemaningProfiles: () => number;
@@ -114,7 +114,7 @@ export const useFeedStore = create<FeedState>(
 
             try {
                 // Call the server-side endpoint
-                const response = await pb.send<{ isMatch: boolean; matchId?: string }>("/api/swipe", {
+                const response = await pb.send<{ isMatch: boolean; matchId?: string, isExisting?: boolean }>("/api/swipe", {
                     method: "POST",
                     body: {
                         targetId: id,
@@ -133,7 +133,8 @@ export const useFeedStore = create<FeedState>(
                 
                 return {
                     isMatch: response.isMatch,
-                    matchId: response.matchId
+                    matchId: response.matchId,
+                    isExisting: response.isExisting
                 };
 
             } catch (error) {

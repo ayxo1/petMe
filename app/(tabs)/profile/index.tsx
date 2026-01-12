@@ -9,7 +9,7 @@ import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PetSetup from '../../(auth)/pet-setup';
 
-const LogOutButton = (signOut: () => void) => (
+const LogOutButton = ({ signOut }: { signOut: () => void }) => (
   <View className='flex-1'>
     <ButtonComponent 
       title='sign out'
@@ -41,6 +41,7 @@ const Profile = () => {
                 resizeMode='contain'
                 // tintColor={focused ? Colors.secondary : '#000000'}
               />
+              <LogOutButton signOut={signOut}/>
             </TouchableOpacity>
           )
         }}
