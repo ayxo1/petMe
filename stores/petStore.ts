@@ -42,53 +42,6 @@ const convertPBPetToPetProfile = (pbPet: PBPet): PetProfile => {
     };
 };
 
-// const petAPI = {
-
-//     fetchUserPets: async (userId: string): Promise<PetProfile[]> => {
-//         await new Promise(resolve => setTimeout(resolve, 1000));
-
-//         const stored = await AsyncStorage.getItem('pet-storage');
-//         if(stored) {
-//             const data = JSON.parse(stored);
-//             return data.state.pets || [];
-//         }
-//         return [];
-//     },
-    
-//     addPet: async (ownerId: string, petData: PetFormData): Promise<PetProfile> => {
-//         await new Promise(resolve => setTimeout(resolve, 1000));
-
-//         return {
-//             id: Math.random().toString(),
-//             ownerId,
-//             ...petData,
-//             adoptionDetails: petData.isAvailableForAdoption ? {
-//                 requirements: petData.adoptionRequirements,
-//                 reason: petData.adoptionReason
-//             } : undefined,
-//             createdAt: new Date().toISOString()
-//         };
-//     },
-
-//     updatePet: async (petId: string, petData: Partial<PetProfile>): Promise<PetProfile> => {
-//         await new Promise(resolve => setTimeout(resolve, 1000));
-
-//         const currentPet = usePetStore.getState().pets.find(pet => petId === pet.id);
-//         if(!currentPet) throw new Error('no pet found');
-
-//         return {
-//             ...currentPet,
-//             ...petData,
-//             updatedAt: new Date().toISOString()
-//         };
-//     },
-
-//     deletePet: async (petId: string): Promise<void> => {
-//         await new Promise(resolve => setTimeout(resolve, 1000));
-//         // backend soon™ to make it actually functional lul
-//     }
-// }
-
 export const usePetStore = create<PetStoreState>()(
     persist(
         (set, get) => ({

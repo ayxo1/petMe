@@ -5,7 +5,7 @@ global.EventSource = EventSource;
 import { SignInFormData, SignUpFormData } from '@/types/auth';
 import { PBMatch, PBMessage, PBPet, PBUser } from '@/types/pbTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import PocketBase, { AsyncAuthStore, type RecordModel } from 'pocketbase';
+import PocketBase, { AsyncAuthStore } from 'pocketbase';
 import { IMessage } from 'react-native-gifted-chat';
 
 

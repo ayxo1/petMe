@@ -2,26 +2,31 @@ import ButtonComponent from '@/components/ButtonComponent';
 import Modal from '@/components/Modal';
 import { icons } from '@/constants';
 import { useAuthStore } from '@/stores/authStore';
+import { useFeedStore } from '@/stores/useFeedStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Stack } from 'expo-router';
 import { useState } from 'react';
 import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import PetSetup from '../../(auth)/pet-setup';
 
-const LogOutButton = ({ signOut }: { signOut: () => void }) => (
-  <View className='flex-1'>
-    <ButtonComponent 
-      title='sign out'
-      onPress={async () => {
-        await AsyncStorage.clear();
-        signOut();
-      }}
-      style='bg-red-600'
-      textStyle='color-white'
-    />
-  </View>
-);
+const LogOutButton = ({ signOut }: { signOut: () => void }) => {
+  const resetFeedStore = useFeedStore(state => state.reset);
+
+  return (
+    <View>
+      <ButtonComponent 
+        title='sign out'
+        onPress={async () => {
+          await AsyncStorage.clear();
+          resetFeedStore();
+          signOut();
+        }}
+        style='bg-red-600'
+        textStyle='color-white'
+      />
+    </View>
+  );
+};
 
 const Profile = () => {
 
@@ -34,15 +39,17 @@ const Profile = () => {
       <Stack.Screen 
         options={{
           headerRight: () => (
-            <TouchableOpacity className='mb-2'>
-              <Image 
-                source={icons.settings}
-                className='size-9'
-                resizeMode='contain'
-                // tintColor={focused ? Colors.secondary : '#000000'}
-              />
+            <View className='flex-row flex-1 justify-between items-center'>            
+              <TouchableOpacity className='mb-2'>
+                <Image 
+                  source={icons.settings}
+                  className='size-9'
+                  resizeMode='contain'
+                  // tintColor={focused ? Colors.secondary : '#000000'}
+                />
+              </TouchableOpacity>
               <LogOutButton signOut={signOut}/>
-            </TouchableOpacity>
+            </View>
           )
         }}
       />

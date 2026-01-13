@@ -4,7 +4,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { AuthState, RegistrationState, SignInFormData, SignUpFormData, User } from '../types/auth';
-import { usePetStore } from './petStore';
 
 const convertPBUserToUser = (pbUser: PBUser): User => {
   return {
