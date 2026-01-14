@@ -219,7 +219,7 @@ const ChatPage = () => {
           />
         )}
 
-        keyboardAvoidingViewProps={{ keyboardVerticalOffset }}
+        keyboardAvoidingViewProps={{ keyboardVerticalOffset, enabled: !isModal }}
       />
     </View>
   )
