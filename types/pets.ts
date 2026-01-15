@@ -11,7 +11,7 @@ export interface PetProfile {
   age: number;
   bio: string;
   // images?: string[];
-  images?: string[];
+  images: string[];
   createdAt: string;
   updatedAt?: string;
   isAvailableForAdoption: boolean;

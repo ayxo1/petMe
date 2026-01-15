@@ -2,16 +2,17 @@ import ButtonComponent from '@/components/ButtonComponent';
 import Modal from '@/components/Modal';
 import { icons } from '@/constants';
 import { useAuthStore } from '@/stores/authStore';
+import { usePetStore } from '@/stores/petStore';
 import { useFeedStore } from '@/stores/useFeedStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Stack } from 'expo-router';
-import { useState } from 'react';
-import { Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { router, Stack } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { FlatList, Image, ImageSourcePropType, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import PetSetup from '../../(auth)/pet-setup';
 
 const LogOutButton = ({ signOut }: { signOut: () => void }) => {
   const resetFeedStore = useFeedStore(state => state.reset);
-
+ 
   return (
     <View>
       <ButtonComponent 
@@ -31,8 +32,15 @@ const LogOutButton = ({ signOut }: { signOut: () => void }) => {
 const Profile = () => {
 
   const { user ,signOut } = useAuthStore();
+  if (!user) return;
   const [ petSettigsModal, togglePetSettingsModal ] = useState(false);
   const [profileSettingsModal, toggleProfileSettingsModal] = useState(false);
+  const { pets, hydratePets } = usePetStore();  
+  
+  useEffect(() => {
+    hydratePets(user.id);
+    
+  }, []);
 
   return (
     <>
@@ -54,7 +62,7 @@ const Profile = () => {
         }}
       />
       <ScrollView
-        className='p-5 flex-1 max-h-[95%]'
+        className='p-7 flex-1 max-h-[95%]'
         contentInsetAdjustmentBehavior='automatic'
         contentContainerStyle={{ paddingBottom: 40, alignItems: 'center', justifyContent: 'center' }}
       >
@@ -63,12 +71,14 @@ const Profile = () => {
           <View className='flex-row justify-center gap-6 m-4'>
             <TouchableOpacity
               className='p-2 bg-secondary rounded-2xl'
+              onPress={() => router.replace('/(auth)/profile-setup')}
             >
               <Text className='text-white'>edit profile</Text>
             </TouchableOpacity>
             <TouchableOpacity
               className={`p-2 bg-secondary rounded-2xl ${petSettigsModal && 'bg-slate-400'}`}
               onPress={() => togglePetSettingsModal(!petSettigsModal)}
+              // onPress={() => router.replace('/(auth)/pet-setup')}
             >
               <Text className='text-white'>add/edit pets</Text>
             </TouchableOpacity>
@@ -81,12 +91,45 @@ const Profile = () => {
         >
           {petSettigsModal && (
             <View
-              // keyboardShouldPersistTaps='handled'
-              // className='h-[80%] w-full'
-              // contentContainerStyle={{ flexGrow: 1 }}
+              className='flex-row '
             >
-
-              <PetSetup />
+              {/* <PetSetup /> */}
+              {pets && (
+                <View className='flex-row'>
+                  <FlatList 
+                    data={pets}
+                    horizontal
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => (
+                        <View className=''>
+                          <TouchableOpacity
+                            className='absolute z-10 border border-green-400 rounded-full p-1 left-20 top-1 size-8 bg-green-300/60'
+                          >
+                            <Text>✏️</Text>
+                          </TouchableOpacity>
+                          <Image 
+                            source={{uri: item.images[0]}}
+                            style={{ 
+                              width: 100,
+                              height: 100,
+                              borderRadius: 20
+                            }}
+                          />
+                        </View>
+                    )}
+                  />
+                  <TouchableOpacity
+                    style={{ 
+                      width: 100,
+                      height: 100,
+                      borderRadius: 20
+                    }}
+                    onPress={() => router.replace('/(auth)/pet-setup')}
+                  >
+                    <Text className='text-center'>+</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           )}
         </View>

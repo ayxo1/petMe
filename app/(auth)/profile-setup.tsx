@@ -1,5 +1,7 @@
 import ButtonComponent from '@/components/ButtonComponent';
 import InputController from '@/components/controllers/InputController';
+import { icons } from '@/constants';
+import Colors from '@/constants/Colors';
 import { profileSetupSchema } from '@/constants/schemas/profileSchemas';
 import { useAuthStore } from '@/stores/authStore';
 import { ProfileSetupFormData, ProfileSetupSubmitData } from '@/types/auth';
@@ -9,7 +11,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { router } from 'expo-router';
 import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, Text, View } from 'react-native';
+import { Alert, Image, Text, TouchableOpacity, View } from 'react-native';
 
 const formInputData: FormInputData[] = [
   // {
@@ -28,7 +30,7 @@ const formInputData: FormInputData[] = [
 
 const ProfileSetup = () => {
 
-  const { updateProfile, user, isLoading, setRegistrationState } = useAuthStore();
+  const { updateProfile, user, isLoading, registrationState, setRegistrationState } = useAuthStore();
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [coordinates, setCoordinates] = useState<Coordinates | undefined>();
 
@@ -99,7 +101,7 @@ const ProfileSetup = () => {
           'now you can add your pets',
           [{text: 'ok', onPress: () => router.replace('/(auth)/pet-setup')}]
         );
-        setRegistrationState('profile_set_up');
+        if(registrationState !== 'profile_set_up') setRegistrationState('profile_set_up');
       } else {
         router.replace('/');
         setRegistrationState('completed');
@@ -112,13 +114,27 @@ const ProfileSetup = () => {
 
   return (
     <View>
-        <View
-            className='flex justify-center flex-row mt-5 gap-2 p-3 font-bold'
-        >
-            <Text>
-                tell more about yourself
-            </Text>
+      {/* {registrationState === 'completed' && (     
+        <View>
+          <TouchableOpacity
+              onPress={() => router.replace('/(tabs)/profile')}
+          >
+              <Image
+                  source={icons.backIcon}
+                  className='size-9'
+                  resizeMode='contain'
+                  tintColor={Colors.secondary}
+              />
+          </TouchableOpacity>
         </View>
+      )} */}
+      <View
+          className='flex justify-center flex-row mt-5 gap-2 p-3 font-bold'
+      >
+          <Text>
+              tell more about yourself
+          </Text>
+      </View>
       <View
         className='gap-3 rounded-lg p-5'
       >
@@ -152,7 +168,7 @@ const ProfileSetup = () => {
         
         <View className='flex flex-row gap-5 p-2 items-center'>
           <Text
-            className='text-primary'
+            className='text-black font-bold'
           >add current location</Text>
           <ButtonComponent
             title={isLoadingLocation ? 'detecting location...' : '📍'}
@@ -190,6 +206,12 @@ const ProfileSetup = () => {
         onPress={handleSubmit(submit)}
         isLoading={isLoading}
         />
+        {registrationState === 'completed' && (
+          <ButtonComponent 
+            title='back'
+            onPress={() => router.replace('/(tabs)/profile')}
+          />
+        )}
       </View>
     </View>
   )

@@ -6,7 +6,7 @@ import ExpoImageCropTool from 'expo-image-crop-tool';
 import * as ImagePicker from 'expo-image-picker';
 import { Fragment, useState } from "react";
 import { useForm } from "react-hook-form";
-import { FlatList, Switch, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Image, ScrollView, Switch, Text, TouchableOpacity, View } from "react-native";
 import ButtonComponent from "../ButtonComponent";
 import InputController from "../controllers/InputController";
 
@@ -41,6 +41,7 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
     });
 
     const species = watch('species');
+    const petImages = watch('images');
     const isAvailableForAdoption = watch('isAvailableForAdoption');
     const adoptionStatus = watch('adoptionStatus');
 
@@ -77,6 +78,14 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
         
     };
 
+    const removeImage = (imageToRemove: string) => {
+        const updatedImages = (petImages || []).filter(uri => uri !== imageToRemove);
+        setValue('images', updatedImages, {
+            shouldDirty: true,
+            shouldValidate: true
+        });
+    };
+
     const speciesOptions: { 
         value: PetSpecies; 
         label: string;
@@ -91,7 +100,31 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
 
     return (
         <View className="flex-1 px-5 gap-3">
+            <View className="mt-2 flex-row gap-2 items-center justify-center">
+                {petImages && petImages.map(image =>                
+                    (
+                    <View key={image}>
+                        <TouchableOpacity
+                            className="absolute z-10 right-2 top-2"
+                            onPress={() => removeImage(image)}
+                        >
+                            <Text className="text-xl text-red-700 border rounded-full border-red-500 bg-red-300/60 px-2">x</Text>
+                        </TouchableOpacity>
+                        <Image
+                            source={{uri: image}}
+                            style={{ 
+                                width: 100,
+                                height: 100,
+                                borderRadius: 20
+                            }}
+                        />
+                    </View>
+                    )
+                )}
+            </View>
+
             <View>
+            {petImages === undefined || petImages.length < 3 ? (
                 <TouchableOpacity 
                     className="flex-row justify-start w-28 items-center"
                     onPress={pickImage}
@@ -99,33 +132,52 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
                     <Text className="label">load a photo</Text>
                     <Text className="text-l">(+)</Text>
                 </TouchableOpacity>
-
+            ) : (
+                <Text className="label text-secondary text-center">you uploaded the maximum number of pictures</Text>
+            )}
+                
+            <View className='h-5 mt-2'>
+                {errors.images && (
+                    <Text className='text-red-500 text-center'>
+                        {errors.images.message}
+                    </Text>
+                )}
+            </View>
 
             </View>
             {/* species  */}
             <View className="mb-6">
-                <Text className="label">
-                    species*
-                </Text>
-                <View
-                    className="flex-row flex-wrap gap-2 mt-2"
-                >
-                    <FlatList 
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerClassName="gap-x-3 pb-3"
-                        data={speciesOptions}
-                        keyExtractor={(item) => item.label}
-                        renderItem={({ item }) => (
-                            <TouchableOpacity
-                                key={item.label}
-                                className={`${species === item.value ? 'bg-primary' : 'bg-gray-200'} rounded-full px-4 py-3`}
-                                onPress={() => setValue('species', item.value)}
-                            >
-                                <Text>{item.icon} {item.label}</Text>
-                            </TouchableOpacity>
-                        )}
-                    />
+                <View className="">
+                    <Text className="label">
+                        species*
+                    </Text>
+                    <View
+                        className="flex-row flex-wrap gap-2 mt-2"
+                    >
+                        <FlatList 
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerClassName="gap-x-3 pb-3"
+                            data={speciesOptions}
+                            keyExtractor={(item) => item.label}
+                            renderItem={({ item }) => (
+                                <TouchableOpacity
+                                    key={item.label}
+                                    className={`${species === item.value ? 'bg-primary' : 'bg-gray-200'} rounded-full px-4 py-3`}
+                                    onPress={() => setValue('species', item.value)}
+                                >
+                                    <Text>{item.icon} {item.label}</Text>
+                                </TouchableOpacity>
+                            )}
+                        />
+                    </View>
+                    <View className='h-5 mt-2'>
+                    {errors.species && (
+                        <Text className='text-red-500 text-center'>
+                            {errors.species.message}
+                        </Text>
+                    )}
+                    </View>
                 </View>
             {/* form */}
                 <View className="gap-3">
@@ -143,7 +195,7 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
                 </View>
             {/* adoption availability toggle */}
                 <View className="flex-row items-center justify-between my-4 p-4 bg-gray-100 rounded-lg gap-2">
-                    <Text className="color-primary font-bold">
+                    <Text className="text-black font-bold">
                         looking for a new home for your pet?
                     </Text>
                     <Switch
@@ -171,9 +223,9 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
                         label='reason'
                         placeholder="e.g., found a stray"
                     />
-                    <View className="mb-2 flex-col items-center">
+                    <View className="mb-4 flex-col items-center">
                         <Text className="label">adoption status</Text>
-                        <View className="flex-row gap-2 mt-2">
+                        <View className="flex-row gap-2 mt-4">
                             {[
                             { value: 'available', label: 'available' },
                             { value: 'pending', label: 'pending' },

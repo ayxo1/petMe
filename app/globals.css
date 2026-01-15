@@ -18,6 +18,6 @@
     }
 
     .custom-btn {
-        @apply rounded-full px-7 py-1 items-center bg-primary;
+        @apply rounded-full px-7 py-1 items-center bg-secondary;
     }
 }
