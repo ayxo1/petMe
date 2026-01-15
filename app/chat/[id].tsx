@@ -27,12 +27,12 @@ const ChatPage = () => {
   const keyboardTopToolbarHeight = Platform.select({ ios: 44, default: 0 });
   const keyboardVerticalOffset = insets.bottom + tabbarHeight + keyboardTopToolbarHeight;
 
-  const params = useLocalSearchParams();
+  const params = useLocalSearchParams<{ id: string; otherUserName: string; otherUserImage: string; otherUserId: string; }>();
   const { id: matchId, otherUserName, otherUserImage, otherUserId } = params;
 
   const unmatch = async () => {
     try {
-      await messagesAPI.unmatchProfile(matchId as string);
+      await messagesAPI.unmatchProfile(matchId);
       router.push('/(tabs)/connect');
     } catch (error) {
       console.log('unmatch error: ', error);
@@ -62,7 +62,7 @@ const ChatPage = () => {
 
     const retrieveChatMessages = async () => {
       try {
-        const chatMessages: PBMessage[] = await messagesAPI.getMessages(matchId as string);
+        const chatMessages: PBMessage[] = await messagesAPI.getMessages(matchId);
 
         const formattedChatMessages: IMessage[] = formatChatMessages(chatMessages);
   
@@ -81,7 +81,7 @@ const ChatPage = () => {
     const trackMessages = async () => {
       try {
         unsubscribe = await messagesAPI.subscribe(
-          matchId as string, 
+          matchId, 
           userId, 
           (incMsg) => {
             setMessages(prev => GiftedChat.append(prev, [incMsg]));
@@ -104,7 +104,7 @@ const ChatPage = () => {
         if (messages) {
           console.log(messages[0]);
 
-          await messagesAPI.sendMessage(matchId as string, userId, messages[0].text)
+          await messagesAPI.sendMessage(matchId, userId, messages[0].text)
           setMessages(previousMessages =>
             GiftedChat.append(previousMessages, messages),
           )
@@ -123,7 +123,7 @@ const ChatPage = () => {
           headerTitle: () => (
             <View className='flex-row items-center gap-2 pb-2'>
               <Image 
-                source={{ uri: otherUserImage as string }}
+                source={{ uri: otherUserImage }}
                 style={{ 
                   width: 40,
                   height: 40,
@@ -170,8 +170,8 @@ const ChatPage = () => {
                       <ReportForm
                         toggleModal={toggleIsModal}
                         userId={userId}
-                        reportedProfileName={otherUserName as string}
-                        reportedProfileId={otherUserId as string}
+                        reportedProfileName={otherUserName}
+                        reportedProfileId={otherUserId}
                       />
                   </Modal> 
                   <Text className="text-red-900">report</Text>

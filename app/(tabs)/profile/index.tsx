@@ -37,10 +37,10 @@ const Profile = () => {
   const [profileSettingsModal, toggleProfileSettingsModal] = useState(false);
   const { pets, hydratePets } = usePetStore();  
   
-  useEffect(() => {
-    hydratePets(user.id);
+  // useEffect(() => {
+  //   hydratePets(user.id);
     
-  }, []);
+  // }, []);
 
   return (
     <>
@@ -77,7 +77,10 @@ const Profile = () => {
             </TouchableOpacity>
             <TouchableOpacity
               className={`p-2 bg-secondary rounded-2xl ${petSettigsModal && 'bg-slate-400'}`}
-              onPress={() => togglePetSettingsModal(!petSettigsModal)}
+              onPress={async () => {
+                if (!petSettigsModal) await hydratePets(user.id);
+                togglePetSettingsModal(!petSettigsModal);
+              }}
               // onPress={() => router.replace('/(auth)/pet-setup')}
             >
               <Text className='text-white'>add/edit pets</Text>
@@ -91,23 +94,29 @@ const Profile = () => {
         >
           {petSettigsModal && (
             <View
-              className='flex-row '
+              className='flex-row'
             >
               {/* <PetSetup /> */}
               {pets && (
-                <View className='flex-row'>
-                  <FlatList 
+                <View className='grid-flow-row grid-cols-3 bg-primary gap-1'>
+                  <FlatList
                     data={pets}
                     horizontal
                     keyExtractor={(item) => item.id}
                     renderItem={({ item }) => (
-                        <View className=''>
+                        <View className='ml-0.5'>
                           <TouchableOpacity
                             className='absolute z-10 border border-green-400 rounded-full p-1 left-20 top-1 size-8 bg-green-300/60'
+                            onPress={() => {
+                              router.replace({
+                                pathname: '/(auth)/pet-setup',
+                                params: { id: item.id }
+                              })
+                            }}
                           >
                             <Text>✏️</Text>
                           </TouchableOpacity>
-                          <Image 
+                          <Image
                             source={{uri: item.images[0]}}
                             style={{ 
                               width: 100,
@@ -120,9 +129,10 @@ const Profile = () => {
                   />
                   <TouchableOpacity
                     style={{ 
-                      width: 100,
-                      height: 100,
-                      borderRadius: 20
+                      width: 99,
+                      height: 99,
+                      borderRadius: 20,
+                      borderWidth: 1
                     }}
                     onPress={() => router.replace('/(auth)/pet-setup')}
                   >

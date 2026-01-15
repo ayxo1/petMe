@@ -1,41 +1,68 @@
 import ButtonComponent from '@/components/ButtonComponent';
 import PetForm from '@/components/pets/PetForm';
-import { icons } from '@/constants';
-import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
 import { usePetStore } from '@/stores/petStore';
 import { PetFormData } from '@/types/pets';
-import { router, Stack } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React from 'react';
-import { Alert, Image, KeyboardAvoidingView, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const PetSetup = () => {
 
-  const { addPet } = usePetStore();
+  const { pets, addPet, updatePet } = usePetStore();
   const { setRegistrationState, registrationState } = useAuthStore();
+
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const petToEdit = pets.find(pet => pet.id === id);
+  const isEditing = !!petToEdit
+
 
   const onSubmit = async (data: PetFormData) => {
     // console.log(data);
-    try {
-      await addPet(data);
+    if (isEditing) {
 
-      console.log(usePetStore.getState().pets);
+      try {
 
-      Alert.alert(
-        'success!',
-        `${data.name} is successfully added!`,
-        [
-          {text: 'add another', onPress: () => router.replace('/(tabs)/profile')},
-          {text: 'done', onPress: () => router.replace('/')}
-        ]
-      );
+        await updatePet(id, data);
 
-      if(registrationState !== 'completed') setRegistrationState('completed');
-    } catch (error) {
-      Alert.alert('error', 'failed to add pet, try again');
-      console.log(error, 'error adding pet');
-    };
+        Alert.alert(
+          'success!',
+          `${data.name} is successfully updated!`,
+          [
+            {text: 'done', onPress: () => router.replace('/')}
+          ]
+        );
+
+      } catch (error) {
+        console.log('updatePet pet-setup error:', error);
+        Alert.alert('error', 'failed to update the pet, try again');
+      }
+
+    } else {
+
+      try {
+
+        await addPet(data);
+  
+        Alert.alert(
+          'success!',
+          `${data.name} is successfully added!`,
+          [
+            {text: 'add another', onPress: () => router.replace('/(tabs)/profile')},
+            {text: 'done', onPress: () => router.replace('/')}
+          ]
+        );
+  
+        if(registrationState !== 'completed') setRegistrationState('completed');
+
+      } catch (error) {
+
+        Alert.alert('error', 'failed to add the pet, try again');
+        console.log(error, 'error adding the pet');
+
+      }
+    }
   };
 
   return (
@@ -70,6 +97,7 @@ const PetSetup = () => {
         // keyboardVerticalOffset={100}
       >
         <PetForm
+          initialData={petToEdit}
           onSubmit={onSubmit}
         />
         {registrationState === 'completed' && (
