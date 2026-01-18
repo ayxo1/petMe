@@ -3,10 +3,11 @@ export interface User {
   id: string;
   email: string;
   username: string;
-  profileImage: string;
+  images: string[];
   bio?: string;
-  location?: {
-    coordinates?: { lat: number; lng: number; };
+  location: {
+    coordinates: { lat: number; lng: number; };
+    city: string;
   }
   accountType?: 'owner' | 'seeker' | 'shelter';
   createdAt: string;
@@ -19,22 +20,33 @@ export interface SignInFormData {
 }
 
 export interface SignUpFormData extends SignInFormData {
-  username: string;
+  // username: string;
   passwordConfirm: string;
 }
 
 export interface ProfileSetupFormData {
-  // city: string;
+  username: string;
+  images: string[];
   bio?: string;
   accountType: 'owner' | 'seeker' | 'shelter';
-}
-
-export interface ProfileSetupSubmitData extends ProfileSetupFormData {
-  coordinates?: {
-    lat: number;
-    lng: number;
+  location: {
+    city: string;
+    coordinates: {
+      lat: number;
+      lng: number;
+    }
   };
 }
+
+// export interface ProfileSetupSubmitData extends ProfileSetupFormData {
+//   location: {
+//     city: string;
+//   }
+//   coordinates: {
+//     lat: number;
+//     lng: number;
+//   };
+// }
 
 export type RegistrationState = 'not_started' | 'signed_up' | 'profile_set_up' | 'completed';
 
@@ -42,9 +54,11 @@ export interface AuthState {
   isAuthenticated: boolean;
   user: User | null;
   isLoading: boolean;
+  isHydrated: boolean;
   registrationState: RegistrationState;
 
-  init: () => void;  
+  init: () => void;
+  hydrateUser: () => Promise<void>;
   signIn: (userData: SignInFormData) => Promise<void>;
   signUp: (userData: SignUpFormData) => Promise<void>;
   signOut: () => void;

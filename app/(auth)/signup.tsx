@@ -12,12 +12,6 @@ import { Alert, Text, View } from 'react-native';
 
 const formInputData: FormInputData[] = [
   {
-    name: 'username',
-    placeholder: 'enter your username',
-    label: 'username',
-    keyboardType: 'default',
-  },
-  {
     name: 'email',
     placeholder: 'enter your email',
     label: 'email',

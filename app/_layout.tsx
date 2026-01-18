@@ -12,9 +12,11 @@ export default function RootLayout() {
   const registrationState = useAuthStore(state => state.registrationState);
   const user = useAuthStore(state => state.user);
   const init = useAuthStore(state => state.init);
+  const hydrateUser = useAuthStore(state => state.hydrateUser);
 
   useEffect(() => {
     init();
+    hydrateUser();
   }, [])
   
   useEffect(() => {

@@ -14,7 +14,7 @@ const ProfileLayout = () => {
                 name="index"
                 options={
                     {
-                    title: `${user?.username}'s profile`,
+                    title: `${user?.username}`,
                     headerLargeTitle: true,
                     // headerTransparent: true,
                     // headerBlurEffect: 'regular',
@@ -23,7 +23,7 @@ const ProfileLayout = () => {
                         backgroundColor: Colors.primary,
                     },
                     headerStyle: {
-                        backgroundColor: Colors.secondary
+                        backgroundColor: Colors.secondary,
                     },
                     // headerSearchBarOptions: {
                     // },

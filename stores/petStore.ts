@@ -21,7 +21,7 @@ interface PetStoreState {
 
 const convertPBPetToPetProfile = (pbPet: PBPet): PetProfile => {
     const imageUrls = pbPet.images.map(filename => `${pb.baseURL}/api/files/pets/${pbPet.id}/${filename}`);
-
+    
     return {
         id: pbPet.id,
         ownerId: pbPet.owner,
@@ -53,7 +53,7 @@ export const usePetStore = create<PetStoreState>()(
                 try {
                     set({ isLoading: true });
 
-                    const pbPets = await petsAPI.getUserPets(userId)
+                    const pbPets = await petsAPI.getUserPets(userId);
                     const pets = pbPets.map(convertPBPetToPetProfile);
 
                     set({
@@ -102,6 +102,7 @@ export const usePetStore = create<PetStoreState>()(
             },
 
             updatePet: async (petId: string, petData: Partial<PetFormData>) => {
+                
                 try {
                     set({ isLoading: true});
 
@@ -111,12 +112,12 @@ export const usePetStore = create<PetStoreState>()(
                         breed: petData.breed,
                         age: petData.age,
                         bio: petData.bio,
-                        image: petData.images,
+                        images: petData.images,
                         isAvailableForAdoption: petData.isAvailableForAdoption,
                         adoptionStatus: petData.adoptionStatus,
                         adoptionRequirements: petData.adoptionRequirements,
                         adoptionReason: petData.adoptionReason
-                    });
+                    });                    
 
                     const updatedPet = convertPBPetToPetProfile(pbPet);
 

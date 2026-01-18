@@ -19,7 +19,7 @@ const PetSetup = () => {
 
 
   const onSubmit = async (data: PetFormData) => {
-    // console.log(data);
+    console.log('onSubmit pet-setup data: ', data);
     if (isEditing) {
 
       try {
@@ -88,11 +88,11 @@ const PetSetup = () => {
         </>
       ) : (
         <Text className='font-bold text-xl color-gray-400 text-center mb-4'>
-          add a new pet
+          {isEditing ? `editing ${petToEdit.name}'s profile` : 'add a new pet'}
         </Text>
       )}
       <View 
-        className='flex-1'
+        className='flex-1 h-full'
         // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         // keyboardVerticalOffset={100}
       >

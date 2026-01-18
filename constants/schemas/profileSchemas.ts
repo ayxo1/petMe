@@ -1,13 +1,29 @@
 import * as yup from 'yup';
 
 export const profileSetupSchema = yup.object({
+  username: yup
+    .string()
+    .required('name is required')
+    .min(3, 'username should have more than 3 characters'),
   accountType: yup
     .string()
     .oneOf(['owner', 'seeker', 'shelter'])
     .required('account type is required'),
-  // city: yup
-  //   .string()
-  //   .required('city is required'),
+  images: yup
+    .array()
+    .required('add at least one photo'),
+  location: yup
+    .object({
+      city: yup
+        .string()
+        .required(),
+      coordinates: yup.object({
+          lat: yup.number().required(),
+          lng: yup.number().required()
+        })
+        .required()
+    })
+    .required(),
   bio: yup
     .string()
     .required('bio is required')

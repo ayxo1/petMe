@@ -4,9 +4,10 @@ import { icons } from '@/constants';
 import { useAuthStore } from '@/stores/authStore';
 import { usePetStore } from '@/stores/petStore';
 import { useFeedStore } from '@/stores/useFeedStore';
+import { stringImageToPbUrl } from '@/utils/stringImageToPbUrl';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router, Stack } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { router, Stack, useFocusEffect } from 'expo-router';
+import { useCallback, useEffect, useState } from 'react';
 import { FlatList, Image, ImageSourcePropType, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import PetSetup from '../../(auth)/pet-setup';
 
@@ -35,12 +36,7 @@ const Profile = () => {
   if (!user) return;
   const [ petSettigsModal, togglePetSettingsModal ] = useState(false);
   const [profileSettingsModal, toggleProfileSettingsModal] = useState(false);
-  const { pets, hydratePets } = usePetStore();  
-  
-  // useEffect(() => {
-  //   hydratePets(user.id);
-    
-  // }, []);
+  const { pets, hydratePets } = usePetStore();
 
   return (
     <>
@@ -68,22 +64,35 @@ const Profile = () => {
       >
         <View>
           {/* profile preview */}
-          <View className='flex-row justify-center gap-6 m-4'>
+          <View className='flex-row justify-center gap-6 m-4 items-center'>
             <TouchableOpacity
-              className='p-2 bg-secondary rounded-2xl'
-              onPress={() => router.replace('/(auth)/profile-setup')}
+              className='p-2 border border-secondary rounded-2xl items-center'
+              onPress={async() => {
+                router.replace({
+                  pathname: '/(auth)/profile-setup',
+                  params: { initialData: '1' }
+                })
+              }}
             >
-              <Text className='text-white'>edit profile</Text>
+              <Image
+                source={{uri: user.images[0]}}
+                style={{ 
+                  width: 60,
+                  height: 60,
+                  borderRadius: 20
+                }}
+              />
+              <Text className='text-secondary'>edit profile</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              className={`p-2 bg-secondary rounded-2xl ${petSettigsModal && 'bg-slate-400'}`}
+              className={`p-2 border border-secondary rounded-2xl ${petSettigsModal && ' bg-red-300'}`}
               onPress={async () => {
                 if (!petSettigsModal) await hydratePets(user.id);
                 togglePetSettingsModal(!petSettigsModal);
               }}
               // onPress={() => router.replace('/(auth)/pet-setup')}
             >
-              <Text className='text-white'>add/edit pets</Text>
+              <Text className={` ${petSettigsModal ? 'text-white' : 'text-secondary'}`}>add/edit pets</Text>
             </TouchableOpacity>
           </View>
 
@@ -148,4 +157,4 @@ const Profile = () => {
   )
 }
 
-export default Profile
+export default Profile;

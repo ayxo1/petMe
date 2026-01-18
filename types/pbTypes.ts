@@ -6,7 +6,8 @@ export interface PBUser extends RecordModel {
   accountType: 'owner' | 'seeker' | 'shelter';
   bio: string;
   images: string[];
-  coordinates?: { lat: number; lng: number };
+  city: string;
+  coordinates: { lat: number; lng: number };
   created: string;
   updated: string;
 }

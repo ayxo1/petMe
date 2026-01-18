@@ -6,7 +6,7 @@ import ExpoImageCropTool from 'expo-image-crop-tool';
 import * as ImagePicker from 'expo-image-picker';
 import { Fragment, useState } from "react";
 import { useForm } from "react-hook-form";
-import { FlatList, Image, ScrollView, Switch, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Image, Switch, Text, TouchableOpacity, View } from "react-native";
 import ButtonComponent from "../ButtonComponent";
 import InputController from "../controllers/InputController";
 
@@ -26,8 +26,6 @@ const formInputData: FormInputData[] = [
 ];
 
 const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormProps) => {
-
-    // const [currentImage, setCurrentImage] = useState('');
 
     const {
         control,
@@ -53,8 +51,6 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
             quality: 0.6
         });
         if(!result.canceled) {
-            // setCurrentImage(result.assets[0].uri);
-            // console.log(result.assets[0].uri);
             const currentImages = watch('images') || [];
             setValue('images', [...currentImages, result.assets[0].uri])
         };
@@ -260,8 +256,7 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
             />
             </View>
         </View>
-    )
-
-}
+    );
+};
 
 export default PetForm;

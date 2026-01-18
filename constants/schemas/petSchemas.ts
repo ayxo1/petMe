@@ -5,7 +5,7 @@ export const petFormSchema = yup.object({
         .string()
         .required('pet name is required')
         .min(2, 'name is only 1 character long')
-        .max(50, 'name is too long'),
+        .max(24, 'name is too long, maximum 24 characters'),
     species: yup
         .string()
         .oneOf(['dog', 'cat', 'bird', 'rodent', 'other'])
@@ -31,6 +31,7 @@ export const petFormSchema = yup.object({
         .required(),
     adoptionStatus: yup
         .string()
+        .transform(val => val === '' ? null : val)
         .oneOf(['available', 'pending', 'adopted'])
         .optional(),
     adoptionRequirements: yup

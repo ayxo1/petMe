@@ -7,7 +7,7 @@ export interface Coordinates {
 
 interface LocationData {
     city: string;
-    coordinates?: Coordinates
+    coordinates: Coordinates
 }
 
 // location request + retrieval of GPS position

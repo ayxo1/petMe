@@ -75,12 +75,11 @@ export const signOut = (): void => {
  * authAPI
  */
 export const authAPI = {
-  signUp: async ({ email, password, username, passwordConfirm }: SignUpFormData): Promise<PBUser> => {
+  signUp: async ({ email, password, passwordConfirm }: SignUpFormData): Promise<PBUser> => {
     const user = await pb.collection('users').create({
       email,
       password,
       passwordConfirm,
-      username
     });
 
     // auto login after signup
@@ -96,7 +95,23 @@ export const authAPI = {
   },
 
   updateProfile: async (userId: string, data: Partial<PBUser>): Promise<PBUser> => {
-    const updated = await pb.collection('users').update(userId, data);
+    const formData = new FormData();
+
+    Object.keys(data).forEach(key => {
+      if (key !== 'images' && data[key] !== undefined) {
+        formData.append(key, data[key].toString());
+      }
+    });
+
+    data.images?.forEach(image => (
+      formData.append('images', {
+        uri: image,
+        name: image,
+        type: 'image/jpeg'
+      } as any)
+    ));
+    
+    const updated = await pb.collection('users').update(userId, formData);
 
     return updated as PBUser;
   },
@@ -138,7 +153,23 @@ export const petsAPI = {
   },
 
   updatePet: async (petId: string, data: Partial<PBPet>): Promise<PBPet> => {
-    const updated = await pb.collection('pets').update(petId, data);
+    const formData = new FormData();
+
+    // handle text fields
+    Object.keys(data).forEach(key => {
+      if (key !== 'images' && data[key] !== undefined) {
+        formData.append(key, data[key].toString());
+      }
+    });
+
+    data.images?.forEach(image => (
+      formData.append('images', {
+        uri: image,
+        name: image,
+        type: 'image/jpeg'
+      } as any)
+    ));
+    const updated = await pb.collection('pets').update(petId, formData);
 
     return updated as PBPet;
   },
