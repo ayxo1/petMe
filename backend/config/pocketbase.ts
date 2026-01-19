@@ -4,10 +4,10 @@ global.EventSource = EventSource;
 
 import { SignInFormData, SignUpFormData } from '@/types/auth';
 import { PBMatch, PBMessage, PBPet, PBUser } from '@/types/pbTypes';
+import { getFileName } from "@/utils/imageUtils";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PocketBase, { AsyncAuthStore } from 'pocketbase';
 import { IMessage } from 'react-native-gifted-chat';
-
 
 const PB_URL = __DEV__ 
     ? (process.env.EXPO_PUBLIC_POCKETBASE_HOST?.startsWith('http')
@@ -99,16 +99,19 @@ export const authAPI = {
 
     Object.keys(data).forEach(key => {
       if (key !== 'images' && data[key] !== undefined) {
-        formData.append(key, data[key].toString());
+        const value = data[key];
+        if (typeof value === 'object') {
+          formData.append(key, JSON.stringify(value))
+        } else formData.append(key, data[key].toString());
       }
     });
 
-    data.images?.forEach(image => (
+    data.images?.forEach(image => image.includes('file://') && (
       formData.append('images', {
         uri: image,
-        name: image,
+        name: getFileName(image),
         type: 'image/jpeg'
-      } as any)
+      })
     ));
     
     const updated = await pb.collection('users').update(userId, formData);
@@ -167,7 +170,7 @@ export const petsAPI = {
         uri: image,
         name: image,
         type: 'image/jpeg'
-      } as any)
+      })
     ));
     const updated = await pb.collection('pets').update(petId, formData);
 

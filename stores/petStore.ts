@@ -83,7 +83,7 @@ export const usePetStore = create<PetStoreState>()(
                         bio: petData.bio,
                         images: petData.images,
                         isAvailableForAdoption: petData.isAvailableForAdoption,
-                        adoptionStatus: petData.adoptionStatus,
+                        adoptionStatus: petData.adoptionStatus || undefined,
                         adoptionRequirements: petData.adoptionRequirements,
                         adoptionReason: petData.adoptionReason
                     });
@@ -114,7 +114,7 @@ export const usePetStore = create<PetStoreState>()(
                         bio: petData.bio,
                         images: petData.images,
                         isAvailableForAdoption: petData.isAvailableForAdoption,
-                        adoptionStatus: petData.adoptionStatus,
+                        adoptionStatus: petData.adoptionStatus || undefined,
                         adoptionRequirements: petData.adoptionRequirements,
                         adoptionReason: petData.adoptionReason
                     });                    

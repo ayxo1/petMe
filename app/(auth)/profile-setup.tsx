@@ -166,6 +166,7 @@ const ProfileSetup = () => {
     };
   };
 
+
   return (
     <View>
       {!isEditing && (
@@ -188,7 +189,7 @@ const ProfileSetup = () => {
               { value: 'owner', label: '🐾 Owner' },
               { value: 'seeker', label: '💝 Seeker' },
               { value: 'shelter', label: '🏠 Shelter' },
-            ].filter(option => isEditing && option.value !== 'shelter').map((option) => (
+            ].filter(option => isEditing && (option.value !== 'shelter')).map((option) => (
               <ButtonComponent
                 key={option.value}
                 title={option.label}

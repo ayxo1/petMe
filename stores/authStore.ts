@@ -1,6 +1,6 @@
 import { authAPI, pb, signOut as pbSignOut } from '@/backend/config/pocketbase';
 import { PBUser } from '@/types/pbTypes';
-import { stringImageToPbUrl } from '@/utils/stringImageToPbUrl';
+import { stringImageToPbUrl } from '@/utils/imageUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -155,7 +155,7 @@ export const useAuthStore = create<AuthState>()(
           if (profileData.location?.coordinates) {
             pbProfileData.coordinates = profileData.location.coordinates;
           };
-
+          
           const pbUpdatedUser = await authAPI.updateProfile(currentUser.id, pbProfileData);
 
           const updatedUser = convertPBUserToUser(pbUpdatedUser);

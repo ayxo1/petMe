@@ -30,7 +30,7 @@ export interface PetFormData {
   bio: string;
   images?: string[];
   isAvailableForAdoption: boolean;
-  adoptionStatus?: 'available' | 'pending' | 'adopted' | undefined;
+  adoptionStatus?: 'available' | 'pending' | 'adopted' | '';
   adoptionRequirements?: string;
   adoptionReason?: string;
 }

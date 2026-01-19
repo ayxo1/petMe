@@ -4,7 +4,7 @@ import { icons } from '@/constants';
 import { useAuthStore } from '@/stores/authStore';
 import { usePetStore } from '@/stores/petStore';
 import { useFeedStore } from '@/stores/useFeedStore';
-import { stringImageToPbUrl } from '@/utils/stringImageToPbUrl';
+import { stringImageToPbUrl } from '@/utils/imageUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, Stack, useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';

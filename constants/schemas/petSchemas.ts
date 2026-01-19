@@ -31,8 +31,8 @@ export const petFormSchema = yup.object({
         .required(),
     adoptionStatus: yup
         .string()
-        .transform(val => val === '' ? null : val)
-        .oneOf(['available', 'pending', 'adopted'])
+        .transform(val => val === '' ? '' : val)
+        .oneOf(['available', 'pending', 'adopted', ''])
         .optional(),
     adoptionRequirements: yup
         .string()
