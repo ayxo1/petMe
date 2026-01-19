@@ -104,7 +104,11 @@ const ProfileSetup = () => {
       });
       if(!result.canceled) {
           const currentImages = watch('images') || [];
-          setValue('images', [...currentImages, result.assets[0].uri]);
+          setValue('images', 
+            [...currentImages, result.assets[0].uri], {
+            shouldDirty: true,
+            shouldValidate: true,
+          });
       };
       
   };

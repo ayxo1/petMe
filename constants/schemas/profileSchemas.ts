@@ -11,6 +11,7 @@ export const profileSetupSchema = yup.object({
     .required('account type is required'),
   images: yup
     .array()
+    .min(1, 'add at least one photo')
     .required('add at least one photo'),
   location: yup
     .object({

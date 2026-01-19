@@ -106,13 +106,20 @@ export const authAPI = {
       }
     });
 
-    data.images?.forEach(image => image.includes('file://') && (
-      formData.append('images', {
-        uri: image,
-        name: getFileName(image),
-        type: 'image/jpeg'
-      })
-    ));
+    if (data.images && data.images.length > 0) {
+      data.images.forEach(image => {
+        if (image.includes('file://')) {
+          formData.append('images', {
+            uri: image,
+            name: getFileName(image),
+            type: 'image/jpeg'
+          })
+        } else {
+          const fileName = image.split('/').pop()?.split('?')[0];
+          if (fileName) formData.append('images', fileName);
+        }
+      });
+    }
     
     const updated = await pb.collection('users').update(userId, formData);
 
@@ -148,7 +155,7 @@ export const petsAPI = {
         uri: image,
         name: image,
         type: 'image/jpeg'
-      } as any)
+      })
     ));
 
     const pet = await pb.collection('pets').create(formData);
@@ -165,13 +172,21 @@ export const petsAPI = {
       }
     });
 
-    data.images?.forEach(image => (
-      formData.append('images', {
-        uri: image,
-        name: image,
-        type: 'image/jpeg'
-      })
-    ));
+    if (data.images && data.images.length > 0) {
+      data.images.forEach(image => {
+        if (image.includes('file://')) {
+          formData.append('images', {
+            uri: image,
+            name: getFileName(image),
+            type: 'image/jpeg'
+          })
+        } else {
+          const fileName = image.split('/').pop()?.split('?')[0];
+          if (fileName) formData.append('images', fileName);
+        }
+      });
+    }
+    
     const updated = await pb.collection('pets').update(petId, formData);
 
     return updated as PBPet;

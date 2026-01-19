@@ -52,7 +52,13 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
         });
         if(!result.canceled) {
             const currentImages = watch('images') || [];
-            setValue('images', [...currentImages, result.assets[0].uri])
+            setValue('images', 
+                [...currentImages, result.assets[0].uri], 
+                {
+                    shouldDirty: true,
+                    shouldValidate: true,
+                }
+            );
         };
 
         // need an apple dev account, gg
@@ -196,7 +202,14 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
                     </Text>
                     <Switch
                         value={isAvailableForAdoption}
-                        onValueChange={(val) => setValue('isAvailableForAdoption', val)}
+                        onValueChange={(val) => {
+                            setValue('isAvailableForAdoption', val);
+                            if (!val) {
+                                setValue('adoptionReason', undefined)
+                                setValue('adoptionRequirements', undefined)
+                                setValue('adoptionStatus', undefined)
+                            }
+                        }}
                     />
                 </View>
             {/* adoption deets */}
