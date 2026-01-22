@@ -135,29 +135,15 @@ export const useAuthStore = create<AuthState>()(
           const currentUser = get().user;
           if(!currentUser) throw new Error('no user is logged in');
 
-          const pbProfileData: Partial<PBUser> = {};
-
-          if (profileData.username) {
-            pbProfileData.username = profileData.username;
-          };
-          if (profileData.accountType) {
-            pbProfileData.accountType = profileData.accountType;
-          };
-          if (profileData.images) {
-            pbProfileData.images = profileData.images;
-          };
-          if (profileData.bio) {
-            pbProfileData.bio = profileData.bio;
-          };
-          if (profileData.location?.city) {
-            pbProfileData.city = profileData.location.city;
-          };
-          if (profileData.location?.coordinates) {
-            pbProfileData.coordinates = profileData.location.coordinates;
-          };
+          const pbUpdatedUser = await authAPI.updateProfile(currentUser.id, {
+            username: profileData.username,
+            accountType: profileData.accountType,
+            images: profileData.images,
+            bio: profileData.bio,
+            city: profileData.location?.city,
+            coordinates: profileData.location?.coordinates
+          });
           
-          const pbUpdatedUser = await authAPI.updateProfile(currentUser.id, pbProfileData);
-
           const updatedUser = convertPBUserToUser(pbUpdatedUser);
 
           set({

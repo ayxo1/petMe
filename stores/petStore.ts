@@ -28,7 +28,7 @@ const convertPBPetToPetProfile = (pbPet: PBPet): PetProfile => {
         name: pbPet.name,
         species: pbPet.species,
         breed: pbPet.breed,
-        age: pbPet.age,
+        age: +(pbPet.age),
         bio: pbPet.bio,
         images: imageUrls,
         isAvailableForAdoption: pbPet.isAvailableForAdoption,
@@ -125,6 +125,7 @@ export const usePetStore = create<PetStoreState>()(
                         pets: state.pets.map(pet => pet.id === petId ? updatedPet : pet),
                         isLoading: false
                     }));
+
                 } catch (error) {
                     set({ isLoading: false});
                     console.log(error, 'error updating a pet');

@@ -165,7 +165,7 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
                             renderItem={({ item }) => (
                                 <TouchableOpacity
                                     key={item.label}
-                                    className={`${species === item.value ? 'bg-primary' : 'bg-gray-200'} rounded-full px-4 py-3`}
+                                    className={`${species === item.value ? 'bg-secondary' : 'bg-gray-200'} rounded-full px-4 py-3`}
                                     onPress={() => setValue('species', item.value)}
                                 >
                                     <Text>{item.icon} {item.label}</Text>
@@ -205,9 +205,9 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
                         onValueChange={(val) => {
                             setValue('isAvailableForAdoption', val);
                             if (!val) {
-                                setValue('adoptionReason', undefined)
-                                setValue('adoptionRequirements', undefined)
-                                setValue('adoptionStatus', undefined)
+                                setValue('adoptionRequirements', undefined);
+                                setValue('adoptionReason', undefined);
+                                setValue('adoptionStatus', undefined);
                             }
                         }}
                     />

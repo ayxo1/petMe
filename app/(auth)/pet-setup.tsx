@@ -87,7 +87,7 @@ const PetSetup = () => {
           <Text className='text-base text-center text-gray-400 font-light mb-4'>(you will be able to add more pets from your profile)</Text>
         </>
       ) : (
-        <Text className='font-bold text-xl color-gray-400 text-center mb-4'>
+        <Text className='font-bold text-xl text-secondary text-center mb-4'>
           {isEditing ? `editing ${petToEdit.name}'s profile` : 'add a new pet'}
         </Text>
       )}

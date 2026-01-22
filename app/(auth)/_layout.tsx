@@ -4,11 +4,10 @@ import { useAuthStore } from '@/stores/authStore';
 import { router, Slot, usePathname } from 'expo-router';
 import React from 'react';
 import { Dimensions, Image, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const AuthLayout = () => {
   const pathName = usePathname();
-  const isFullScreen = pathName.includes('pet-setup');
+  const isFullScreen = pathName.includes('pet-setup') || pathName.includes('profile-setup');
   const registrationState = useAuthStore(state => state.registrationState);
   const showBackButton: boolean = registrationState === 'completed' && pathName.includes('pet-setup') || pathName.includes('profile-setup');
 

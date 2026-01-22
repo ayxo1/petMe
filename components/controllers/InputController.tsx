@@ -28,7 +28,7 @@ const InputController = (
             <InputComponent
               multiline={multiline}
               placeholder={placeholder}
-              value={value}
+              value={value?.toString()}
               onChangeText={onChange}
               label={label}
               keyboardType={keyboardType}

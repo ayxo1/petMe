@@ -8,7 +8,7 @@ export const profileSetupSchema = yup.object({
   accountType: yup
     .string()
     .oneOf(['owner', 'seeker', 'shelter'])
-    .required('account type is required'),
+    .required('choose one'),
   images: yup
     .array()
     .min(1, 'add at least one photo')

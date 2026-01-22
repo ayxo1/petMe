@@ -20,11 +20,6 @@ const TabBarIcon = ({focused, icon, red = false}: TabBarIconProps) => (
 const TabsLayout = () => {
 
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
-  const initAuth = useAuthStore(state => state.init);
-
-  useEffect(() => {
-    initAuth();
-  }, []);
   
   if(!isAuthenticated) return <Redirect href='/signin' />
 

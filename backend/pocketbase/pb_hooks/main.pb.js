@@ -28,12 +28,12 @@ routerAdd("GET", "/api/feed", (c) => {
     const types = rawTypes.split(',');
     const limit = perPage;
     const offset = (page - 1) * perPage;
-    const isAvailableForAdoption = types.includes('rescue') ? true : false;
+    const isAvailableForAdoption = types.includes('rescue');
 
     let queries = [];
     let bindParams = { userId: user.id, limit, offset };
 
-    if (types.includes('pets')) {
+    if (types.includes('pets') || types.includes('rescue')) {
     queries.push(`
         SELECT 
             id, 
@@ -243,5 +243,88 @@ routerAdd("POST", "/api/unmatch", (c) => {
     
     return c.json(200, { "unmatchedUser": matchId });
 
+
+}, $apis.requireAuth('users'));
+
+routerAdd("GET", "/api/likes", (c) => {
+    const user = c.auth;
+    let page = 1;
+    let perPage = 20;
+    const limit = perPage;
+    const offset = (page - 1) * perPage;
+
+    try {
+        const rawQuery = (c.request && c.request.url && c.request.url.rawQuery) || "";
+
+        const pageMatch = rawQuery.match(/[?&]page=(\d+)/);
+        if (pageMatch) page = parseInt(pageMatch[1]);
+
+        const perPageMatch = rawQuery.match(/[?&]perPage=(\d+)/);
+        if (perPageMatch) perPage = parseInt(perPageMatch[1]);
+
+    } catch (e) {
+        console.log("api/feed: Query parse error, using defaults:", e);
+    }
+
+    const myPets = $app.findRecordsByFilter(
+        'pets', 
+        'owner = {:userId}',
+        '-created',
+        100,
+        0,
+        { userId: user.id }
+    );
+
+    const myPetIds = myPets.map(p => `'${p.id}'`).join(',');
+
+    const targetIdsClause = myPetIds.length > 0 
+        ? `(s.targetId = {:userId} OR s.targetId IN (${myPetIds}))`
+        : `s.targetId = {:userId}`;
+
+    const query = `
+        SELECT
+            u.id,
+            u.username as name,
+            u.bio,
+            u.images,
+            'seeker' as type,
+
+            s.targetId as likedTarget,
+            s.swipeType as likedTargetType,
+            s.created as created
+
+        FROM swipes s
+        JOIN users u ON u.id = s.user
+        WHERE
+            s.action = 'like'
+            AND s.user != {:userId}
+            AND ${targetIdsClause}
+            AND s.user NOT IN (SELECT user2 FROM matches WHERE user1={:userId})
+        ORDER BY s.created DESC
+        LIMIT {:limit} OFFSET {:offset}
+    `;
+
+    const result = arrayOf(new DynamicModel({
+        'id': '',
+        'name': '',
+        'bio': '',
+        'images': [],
+        'type': '',
+        'likedTarget': '',
+        'likedTargetType': '',
+        'created': ''
+    }));
+
+    $app.db().newQuery(query).bind({ 
+        userId: user.id,
+        limit,
+        offset
+    }).all(result);
+
+    return c.json(200, {
+        'items': result,
+        'page': page,
+        'perPage': perPage
+    });
 
 }, $apis.requireAuth('users'));
