@@ -87,14 +87,14 @@ const SignUp = () => {
         />
       </View>
     <View
-        className='flex justify-center flex-row mt-5 gap-2 border-t border-primary p-3'
+        className='flex justify-center flex-row mt-5 gap-2 border-t border-secondary p-3'
       >
         <Text>
           already have an account?
         </Text>
         <Link 
           href={'/(auth)/signin'}
-          className='text-primary'
+          className='text-secondary'
         >
           sign in
         </Link>

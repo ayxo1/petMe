@@ -53,26 +53,32 @@ export interface PBMatch extends RecordModel {
 }
 
 export interface PBFeedRecord {
-    id: string;
-    name: string;
-    type: 'pet' | 'seeker' | 'owner' | 'shelter';
-    ownerId: string;
-    images: string[];
-    bio: string;
-    age: number;
-    ownerName?: string;
-    ownerImage?: string;
-    created: string;
-    updated: string;
+  id: string;
+  name: string;
+  type: 'pet' | 'seeker' | 'owner' | 'shelter';
+  ownerId: string;
+  images: string[];
+  bio: string;
+  age: number;
+  ownerName?: string;
+  ownerImage?: string;
+  created: string;
+  updated: string;
 
-    species?: string;
-    breed?: string;
-    isAvailableForAdoption: boolean;
-    adoptionStatus?: 'available' | 'pending' | 'adopted';
-    adoptionRequirements?: string;
-    adoptionReason?: string;
+  species?: string;
+  breed?: string;
+  isAvailableForAdoption: boolean;
+  adoptionStatus?: 'available' | 'pending' | 'adopted';
+  adoptionRequirements?: string;
+  adoptionReason?: string;
 
-    location?: string;
+  location?: string;
+}
+
+export interface PBIncomingLikeProfile extends PBFeedRecord {
+  likedTarget: string;
+  likedTargetType: string;
+  likedTargetName: string;
 }
 
 export interface PBMessage extends RecordModel {

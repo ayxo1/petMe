@@ -5,9 +5,10 @@ interface ModalComponentProps extends ModalProps {
     isOpen: boolean;
     withInput?: boolean;
     toggleModal: (isOpen: boolean) => void;
+    styleProps?: string;
 }
 
-const Modal = ({ isOpen, withInput, children, toggleModal, ...props }: ModalComponentProps) => {
+const Modal = ({ isOpen, withInput, children, toggleModal, styleProps, ...props }: ModalComponentProps) => {
     const styles = 'items-center justify-center h-[60%] rounded-2xl'
     const content = withInput
         ?   
@@ -37,7 +38,7 @@ const Modal = ({ isOpen, withInput, children, toggleModal, ...props }: ModalComp
             onPress={() => toggleModal(!isOpen)}
         >
             <Pressable 
-                className="w-[90%] bg-white/80 rounded-3xl p-4"
+                className={`w-[90%] bg-white/80 rounded-3xl p-4 ${styleProps}`}
                 onPress={e => {
                     e.stopPropagation();
                     Keyboard.dismiss();

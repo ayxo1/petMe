@@ -39,12 +39,12 @@ export const useAuthStore = create<AuthState>()(
       init: async () => {
         if (!pb.authStore.isValid && get().isAuthenticated) {
           get().signOut(); 
-        };
+        } 
       },
 
       hydrateUser: async () => {
         try {
-            set({ isLoading: true });
+            // set({ isLoading: true });
 
             const currentId = pb.authStore.record?.id;
             if (!currentId) {
@@ -57,7 +57,7 @@ export const useAuthStore = create<AuthState>()(
 
             set({
                 user: convertedUser,
-                isLoading: false,
+                // isLoading: false,
                 isHydrated: true
             });
         } catch (error) {

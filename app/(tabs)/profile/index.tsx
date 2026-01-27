@@ -4,6 +4,7 @@ import { icons } from '@/constants';
 import { useAuthStore } from '@/stores/authStore';
 import { usePetStore } from '@/stores/petStore';
 import { useFeedStore } from '@/stores/useFeedStore';
+import { useLikesStore } from '@/stores/useLikesStore';
 import { stringImageToPbUrl } from '@/utils/imageUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, Stack, useFocusEffect } from 'expo-router';
@@ -13,6 +14,8 @@ import PetSetup from '../../(auth)/pet-setup';
 
 const LogOutButton = ({ signOut }: { signOut: () => void }) => {
   const resetFeedStore = useFeedStore(state => state.reset);
+  const resetLikesStore = useLikesStore(state => state.reset)
+  const resetPetStore = usePetStore(state => state.reset)
  
   return (
     <View>
@@ -21,6 +24,8 @@ const LogOutButton = ({ signOut }: { signOut: () => void }) => {
         onPress={async () => {
           await AsyncStorage.clear();
           resetFeedStore();
+          resetLikesStore();
+          resetPetStore();
           signOut();
         }}
         style='bg-red-600'
@@ -107,7 +112,7 @@ const Profile = () => {
             >
               {/* <PetSetup /> */}
               {pets && (
-                <View className='grid-flow-row grid-cols-3 bg-primary gap-1'>
+                <View className=' bg-primary gap-1'>
                   <FlatList
                     data={pets}
                     horizontal

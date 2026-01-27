@@ -131,6 +131,8 @@ routerAdd("POST", "/api/swipe", (c) => {
     record.set('targetId', targetId);
     record.set('action', action);
     record.set('swipeType', swipeType);
+    record.set('targetOwnerId', petOwnerId);
+
     $app.save(record);
 
     if(action != 'like') return c.json(200, { isMatch: false });
@@ -263,23 +265,8 @@ routerAdd("GET", "/api/likes", (c) => {
         if (perPageMatch) perPage = parseInt(perPageMatch[1]);
 
     } catch (e) {
-        console.log("api/feed: Query parse error, using defaults:", e);
+        console.log("api/likes: Query parse error, using defaults:", e);
     }
-
-    const myPets = $app.findRecordsByFilter(
-        'pets', 
-        'owner = {:userId}',
-        '-created',
-        100,
-        0,
-        { userId: user.id }
-    );
-
-    const myPetIds = myPets.map(p => `'${p.id}'`).join(',');
-
-    const targetIdsClause = myPetIds.length > 0 
-        ? `(s.targetId = {:userId} OR s.targetId IN (${myPetIds}))`
-        : `s.targetId = {:userId}`;
 
     const query = `
         SELECT
@@ -287,19 +274,24 @@ routerAdd("GET", "/api/likes", (c) => {
             u.username as name,
             u.bio,
             u.images,
-            'seeker' as type,
+            u.accountType as type,
 
             s.targetId as likedTarget,
             s.swipeType as likedTargetType,
-            s.created as created
+            (CASE
+                WHEN s.swipeType = 'pet' THEN (SELECT name FROM pets WHERE id = s.targetId)
+                ELSE (SELECT username FROM users WHERE id = s.targetId)
+            END) as likedTargetName,
+            MAX(s.created) as created
 
         FROM swipes s
         JOIN users u ON u.id = s.user
         WHERE
             s.action = 'like'
             AND s.user != {:userId}
-            AND ${targetIdsClause}
+            AND s.targetOwnerId = {:userId}
             AND s.user NOT IN (SELECT user2 FROM matches WHERE user1={:userId})
+        GROUP BY u.id
         ORDER BY s.created DESC
         LIMIT {:limit} OFFSET {:offset}
     `;
@@ -312,6 +304,7 @@ routerAdd("GET", "/api/likes", (c) => {
         'type': '',
         'likedTarget': '',
         'likedTargetType': '',
+        'likedTargetName': '',
         'created': ''
     }));
 

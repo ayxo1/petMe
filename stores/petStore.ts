@@ -17,6 +17,7 @@ interface PetStoreState {
     deletePet: (petId: string) => Promise<void>;
     getPetById: (petId: string) => PetProfile | undefined;
     setLoading: (loading: boolean) => void;
+    reset: () => void;
 }
 
 const convertPBPetToPetProfile = (pbPet: PBPet): PetProfile => {
@@ -156,6 +157,14 @@ export const usePetStore = create<PetStoreState>()(
 
             setLoading: (loading: boolean) => {
                 set({ isLoading: loading });
+            },
+
+            reset: () => {
+                set({
+                    pets: [],
+                    isLoading: false,
+                    isHydrated: false,
+                });
             }
         }),
         {

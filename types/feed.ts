@@ -22,3 +22,9 @@ export interface FeedProfile {
 
     location?: string;
 }
+
+export interface IncomingLikeFeedProfile extends FeedProfile {
+    likedTarget: string;
+    likedTargetType: string;
+    likedTargetName: string;
+}

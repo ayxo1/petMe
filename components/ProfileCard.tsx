@@ -9,6 +9,7 @@ import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withDe
 import { SafeAreaView } from "react-native-safe-area-context";
 import { scheduleOnRN } from 'react-native-worklets';
 import { TiltEffect } from "./holoCard/TiltEffect";
+import ProfileInterface from "./ProfileInterface";
 
 interface ProfileCardPropsWithIndex extends ProfileCardProps {
   indexes: {
@@ -149,16 +150,10 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, 
                 top: '50%',
                 left: '50%',
                 zIndex: 10,
-                // backgroundColor: 'rgba(34, 197, 94, 0.9)',
-                // paddingHorizontal: 20,
-                // paddingVertical: 10,
-                // borderRadius: 8,
-                // transform: [{ rotate: '-15deg' }],
               },
           ]}
           pointerEvents="none"
         >
-            {/* <Text className="">❤️</Text> */}
             <View className="size-full">
               <Image 
               source={icons.dogLike} 
@@ -169,19 +164,19 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, 
         </Animated.View>
 
         <TiltEffect>
+          <ProfileInterface 
+            profileImages={profileImages}
+            profileName={profileName}
+            profileDescription={profileDescription}
 
-          <View
+          />
+          {/* <View
             className="h-[96.5%] overflow-hidden rounded-lg p-2 mt-6"
           >
 
             <View 
               className="flex-1 relative"
             >
-              {/* <ImageBackground
-                source={profileImages[0]}
-                className="size-full"
-                resizeMode="cover"
-              > */}
               <ImageBackground
                 source={profileCover}
                 className="size-full"
@@ -229,7 +224,7 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, 
                 &#9829; {profileDescription}
               </Text>
             </View>
-          </View>
+          </View> */}
 
         </TiltEffect>
         </Animated.View>

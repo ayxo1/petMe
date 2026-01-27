@@ -4,7 +4,6 @@ global.EventSource = EventSource;
 
 import { SignInFormData, SignUpFormData } from '@/types/auth';
 import { PBMatch, PBMessage, PBPet, PBUser } from '@/types/pbTypes';
-import { getFileName } from "@/utils/imageUtils";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PocketBase, { AsyncAuthStore } from 'pocketbase';
 import { IMessage } from 'react-native-gifted-chat';
@@ -22,6 +21,8 @@ const store = new AsyncAuthStore({
 });
 
 export const pb = new PocketBase(PB_URL, store);
+
+const getFileName = (uri: string) => uri.split('/').pop() || 'photo.jpg';
 
 // allow all requests - test it later
 // pb.autoCancellation(false);
