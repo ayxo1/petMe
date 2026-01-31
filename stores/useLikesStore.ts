@@ -64,6 +64,7 @@ export const useLikesStore = create<LikesStoreState>(
 
                 set({
                     incomingLikes: uniqueProfiles,
+                    unreadCount: uniqueProfiles.length,
                     isLoading: false
                 });
 

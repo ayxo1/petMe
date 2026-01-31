@@ -112,15 +112,16 @@ const Profile = () => {
             >
               {/* <PetSetup /> */}
               {pets && (
-                <View className=' bg-primary gap-1'>
+                <View className='bg-primary gap-1'>
                   <FlatList
                     data={pets}
                     horizontal
+                    contentContainerStyle={{ gap: 10, padding: 10 }}
                     keyExtractor={(item) => item.id}
                     renderItem={({ item }) => (
-                        <View className='ml-0.5'>
+                        <View>
                           <TouchableOpacity
-                            className='absolute z-10 border border-green-400 rounded-full p-1 left-20 top-1 size-8 bg-green-300/60'
+                            className='absolute z-10 border border-green-400 rounded-full p-1 left-24 top-1 size-8 bg-green-300/60'
                             onPress={() => {
                               router.replace({
                                 pathname: '/(auth)/pet-setup',
@@ -130,23 +131,30 @@ const Profile = () => {
                           >
                             <Text>✏️</Text>
                           </TouchableOpacity>
-                          <Image
-                            source={{uri: item.images[0]}}
-                            style={{ 
-                              width: 100,
-                              height: 100,
-                              borderRadius: 20
-                            }}
-                          />
+                          <View
+                            className='shadow rounded-full'
+                            style={{ elevation: 5 }}
+                          >
+                            <Image
+                              source={{uri: item.images[0]}}
+                              style={{ 
+                                width: 115,
+                                height: 115,
+                                borderRadius: 20
+                              }}
+                            />
+                          </View>
                         </View>
                     )}
                   />
                   <TouchableOpacity
                     style={{ 
-                      width: 99,
-                      height: 99,
+                      width: 114,
+                      height: 114,
                       borderRadius: 20,
-                      borderWidth: 1
+                      borderWidth: 1,
+                      padding: 10,
+                      marginLeft: 10
                     }}
                     onPress={() => router.replace('/(auth)/pet-setup')}
                   >

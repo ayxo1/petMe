@@ -133,7 +133,7 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, 
 
   return (
     <View
-      className="p-3 pb-4 px-5"
+      // className="p-3 pb-4 px-5"
     >
       <GestureDetector gesture={gesture}>
         <Animated.View

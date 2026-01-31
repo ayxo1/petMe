@@ -6,7 +6,8 @@ import { Image, ImageSourcePropType, Text, TouchableHighlight, View } from 'reac
 
 const ChatRow = ({ matchId, matchedUser, petName }: MatchRowData) => {  
   
-  const profilePic: ImageSourcePropType = { uri: `${pb.baseURL}/api/files/users/${matchedUser.id}/${matchedUser.images}`};
+  const profilePic: ImageSourcePropType = { uri: `${pb.baseURL}/api/files/users/${matchedUser.id}/${matchedUser.images[0]}`};
+    console.log(profilePic.uri);
     
   return (
     <Link href={{

@@ -20,7 +20,7 @@ interface PetStoreState {
     reset: () => void;
 }
 
-const convertPBPetToPetProfile = (pbPet: PBPet): PetProfile => {
+export const convertPBPetToPetProfile = (pbPet: PBPet): PetProfile => {
     const imageUrls = pbPet.images.map(filename => `${pb.baseURL}/api/files/pets/${pbPet.id}/${filename}`);
     
     return {

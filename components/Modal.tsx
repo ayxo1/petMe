@@ -8,8 +8,8 @@ interface ModalComponentProps extends ModalProps {
     styleProps?: string;
 }
 
-const Modal = ({ isOpen, withInput, children, toggleModal, styleProps, ...props }: ModalComponentProps) => {
-    const styles = 'items-center justify-center h-[60%] rounded-2xl'
+const Modal = ({ isOpen, withInput, children, toggleModal, styleProps = 'bg-white/80', ...props }: ModalComponentProps) => {
+    const styles = 'items-center justify-center rounded-2xl'
     const content = withInput
         ?   
             (<KeyboardAvoidingView
@@ -34,11 +34,11 @@ const Modal = ({ isOpen, withInput, children, toggleModal, styleProps, ...props 
         {...props}
     >
         <Pressable
-            className="flex-1 justify-center items-center bg-black/20"
+            className="flex-1 justify-center items-center bg-black/60"
             onPress={() => toggleModal(!isOpen)}
         >
             <Pressable 
-                className={`w-[90%] bg-white/80 rounded-3xl p-4 ${styleProps}`}
+                className={`rounded-3xl ${styleProps} `}
                 onPress={e => {
                     e.stopPropagation();
                     Keyboard.dismiss();

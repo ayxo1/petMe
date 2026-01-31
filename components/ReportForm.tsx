@@ -54,7 +54,7 @@ const ReportForm = ({ userId, reportedProfileName, reportedProfileId, toggleModa
     };
 
   return (
-    <KeyboardAvoidingView className='w-80'>
+    <KeyboardAvoidingView className='w-96'>
         <View>
             <Text className="text-center mb-10 text-xl text-red-900 mt-40">report {reportedProfileName}</Text>
         </View>

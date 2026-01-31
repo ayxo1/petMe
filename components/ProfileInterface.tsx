@@ -16,9 +16,9 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription }: Pr
     <View
     className="h-[96.5%] overflow-hidden rounded-lg p-2 mt-6"
     >
-
+        
         <View 
-            className="flex-1 relative"
+            className="flex-1 relative bg-white"
         >
             <ImageBackground
             source={profileCover}

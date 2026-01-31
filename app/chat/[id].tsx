@@ -149,13 +149,13 @@ const ChatPage = () => {
                         />
                     </TouchableOpacity>
                 </View>
-                <View className='justify-center items-center'>
+                {/* <View className='justify-center'>
                     <TouchableOpacity
                         onPress={unmatch}
                         >
                         <Text>unmatch</Text>
                     </TouchableOpacity>
-                </View>
+                </View> */}
             </View>
         ),
         headerRight: () => (
@@ -166,6 +166,7 @@ const ChatPage = () => {
                   <Modal
                       isOpen={isModal} 
                       toggleModal={toggleIsModal}
+                      styleProps='px-4 bg-white/80'
                   >
                       <ReportForm
                         toggleModal={toggleIsModal}
@@ -173,6 +174,14 @@ const ChatPage = () => {
                         reportedProfileName={otherUserName}
                         reportedProfileId={otherUserId}
                       />
+                      <View className='justify-center'>
+                        <TouchableOpacity
+                          className='custom-btn bg-red-900 mb-10 py-1.5'
+                          onPress={unmatch}
+                        >
+                          <Text className='text-white'>unmatch</Text>
+                        </TouchableOpacity>
+                      </View>
                   </Modal> 
                   <Text className="text-red-900">report</Text>
               </TouchableOpacity>

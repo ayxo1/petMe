@@ -145,7 +145,7 @@ return (
             return (
               <View 
               key={profile.id}
-              className="absolute top-0 left-0 right-0 bottom-12"
+              className="absolute top-0 left-0 right-0 bottom-12 p-3 pb-4 px-5"
               style={{
                 zIndex,
                 shadowColor: '#8c8981',
