@@ -1,10 +1,11 @@
 import { icons } from '@/constants';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
+import { useLikesStore } from '@/stores/useLikesStore';
 import { TabBarIconProps } from '@/types/components';
 import { Redirect, Tabs, useSegments } from 'expo-router';
 import { useEffect } from 'react';
-import { Image, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
 
 const TabBarIcon = ({focused, icon, red = false}: TabBarIconProps) => (
   <View className='mb-2'>
@@ -20,6 +21,20 @@ const TabBarIcon = ({focused, icon, red = false}: TabBarIconProps) => (
 const TabsLayout = () => {
 
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
+  const unreadCount = useLikesStore(state => state.unreadCount);
+  const fetchIncomingLikesProfiles = useLikesStore(state => state.fetchIncomingLikesProfiles);
+
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        await fetchIncomingLikesProfiles();
+      } catch (error) {
+        console.log('error fetching incomingLikes: ', error);
+      }
+    }
+    init();
+  }, [unreadCount])
   
   if(!isAuthenticated) return <Redirect href='/signin' />
 
@@ -61,11 +76,18 @@ const TabsLayout = () => {
             backgroundColor: Colors.primary
           },
           tabBarIcon: ({focused}) => (
-            <TabBarIcon 
+            <>
+            {unreadCount > 0 && (
+              <View className='absolute bottom-5 left-6 z-10 rounded-full py-1 px-2 bg-red-600/70'>
+                <Text className='text-white text-xs'>{unreadCount}</Text>
+              </View>
+            )}
+            <TabBarIcon
               focused={focused}
               icon={icons.pawLike}
               red
             />
+            </>
           ),
         }}
       />

@@ -10,6 +10,7 @@ interface LikesStoreState {
 
     fetchIncomingLikesProfiles: () => Promise<void>;
     subscribeToLikesCount: (userId: string) => Promise<void>;
+    removeLike: (profileId: string) => void;
     reset: () => void;
 }
 
@@ -76,6 +77,15 @@ export const useLikesStore = create<LikesStoreState>(
                 set({ isLoading: false });
                 throw error;
             }
+        },
+        removeLike: (id) => {
+            const currentLikes = get().incomingLikes;
+            const newLikes = currentLikes.filter(like => like.id !== id);
+            
+            set({
+                incomingLikes: newLikes,
+                unreadCount: newLikes.length
+            });
         },
 
         subscribeToLikesCount: async (userId) => {

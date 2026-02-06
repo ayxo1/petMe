@@ -12,7 +12,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Image, KeyboardAvoidingView, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, KeyboardAvoidingView, Platform, Text, TouchableOpacity, View } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { Bubble, GiftedChat, IMessage, InputToolbar } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -36,6 +36,7 @@ const ChatPage = () => {
       router.push('/(tabs)/connect');
     } catch (error) {
       console.log('unmatch error: ', error);
+      Alert.alert('error occurred while unmatching, please try again');
     }
   }
   

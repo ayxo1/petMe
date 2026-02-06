@@ -1,14 +1,16 @@
-import { petsAPI } from '@/backend/config/pocketbase';
+import { pb, petsAPI } from '@/backend/config/pocketbase';
 import Modal from '@/components/Modal';
 import ProfileCard from '@/components/ProfileCard';
+import ProfileInterface from '@/components/ProfileInterface';
 import Colors from '@/constants/Colors';
+import { useAuthStore } from '@/stores/authStore';
 import { convertPBPetToPetProfile } from '@/stores/petStore';
 import { useLikesStore } from '@/stores/useLikesStore';
-import { FeedProfile, IncomingLikeFeedProfile } from '@/types/feed';
+import { IncomingLikeFeedProfile } from '@/types/feed';
 import { PetProfile } from '@/types/pets';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Dimensions, FlatList, Image, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native';
+import { Alert, Dimensions, FlatList, Image, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 
@@ -17,7 +19,8 @@ const ITEM_WIDTH = (width / 2) - 24;
 
 const Likes = () => {
 
-  const { fetchIncomingLikesProfiles, incomingLikes } = useLikesStore();
+  const user = useAuthStore(state => state.user);
+  const { fetchIncomingLikesProfiles, incomingLikes, removeLike } = useLikesStore();
   const [selectedPets, setSelectedPets] = useState<PetProfile[]>();
 
   const [selectedProfile, setSelectedProfile] = useState<IncomingLikeFeedProfile | null>();
@@ -25,6 +28,8 @@ const Likes = () => {
 
   const [selectedPetsLoading, toggleselectedPetsLoading] = useState(false);
   const [activePetListOwnerId, setActivePetListOwnerId] = useState<string | null>();
+
+  const [isModal, setIsModal] = useState(false);
 
   const fetchPetListProfiles = async (ownerId: string) => {
     try {
@@ -39,12 +44,71 @@ const Likes = () => {
     }
   };
   // console.log(selectedPets[1].name);
+
+  const onSwipeLeft = async () => {
+    const currentId = selectedProfile 
+      ? selectedProfile.id
+      : (selectedPetProfile && selectedPetProfile.id);
+
+    if (currentId) {
+      try {
+        await pb.send("/api/swipe", {
+          method: "POST",
+          body: {
+            targetId: currentId,
+            action: "pass"
+          }
+        });
+        removeLike(currentId);
+      } catch (error) {
+        Alert.alert('error occurred', 'an error occurred liking the profile, try again');
+        console.log('error swiping left, selectedProfile, likes.tsx: ', error);
+      }
+      if (selectedProfile) {
+        setSelectedProfile(null);
+      } else setSelectedPetProfile(null);
+    }
+  };
+
+  const onSwipeRight = async () => {
+    const currentId = selectedProfile 
+      ? selectedProfile.id
+      : (selectedPetProfile && selectedPetProfile.id);
+    console.log(currentId);
+    
+    if (currentId) {
+      try {
+        const isMatch = await pb.send<{ isMatch: boolean; matchId?: string, isExisting?: boolean }>("/api/swipe", {
+          method: "POST",
+          body: {
+            targetId: currentId,
+            action: "like"
+          }
+        });
+  
+        if(isMatch.isMatch && isMatch.matchId) {
+          console.log(isMatch, ' logging isMatch');
+          setIsModal(true);
+        };
+  
+        if (selectedProfile) {
+          removeLike(selectedProfile.id);
+        } else if (selectedPetProfile) {
+          removeLike(selectedPetProfile.ownerId);
+        }
+      } catch (error) {
+        console.log('swipeRight likes.tsx error: ', error);
+      }
+      if (selectedProfile) {
+        setSelectedProfile(null);
+      } else setSelectedPetProfile(null);
+    }
+  };
   
 
   useFocusEffect(
     useCallback(() => {
       const init = async () => {
-        
         try {
           if (incomingLikes.length === 0) {
             await fetchIncomingLikesProfiles();
@@ -64,7 +128,27 @@ const Likes = () => {
   return (
     <SafeAreaView
       edges={['top']}
+      className='flex-1'
     >
+      {incomingLikes.length === 0 && (
+        <View className="p-6 items-center mt-16 justify-center">
+          <Text
+            className="text-2xl font-bold text-gray-600 text-center max-w-96"
+          >{
+          user?.accountType === 'owner' 
+          ? 'Profiles who liked one of your pets will be diplayed here!' 
+          : 'Pet owners who would like to introduce you to their pets will be diplayed here!'
+          }</Text>
+        </View>
+      )}
+      <Modal 
+        isOpen={isModal}
+        toggleModal={() => setIsModal(!isModal)}
+      >
+        <View>
+          <Text>heart emoji</Text>
+        </View>
+      </Modal>
       <Modal 
         isOpen={!!selectedProfile}
         toggleModal={() => setSelectedProfile(null)}
@@ -80,6 +164,8 @@ const Likes = () => {
               profileName={selectedProfile.name}
               profileDescription={selectedProfile.bio}
               indexes={{index: 0, reverseIndex: 0, currentIndex: 0}}
+              onSwipeLeft={onSwipeLeft}
+              onSwipeRight={onSwipeRight}
               />
           </View>
         )}
@@ -95,17 +181,19 @@ const Likes = () => {
             className='w-full aspect-[0.55]'
             // style={{ aspectRatio: 0.58 }}
           >
-            <ProfileCard 
+            <ProfileInterface 
               profileImages={selectedPetProfile.images}
               profileName={selectedPetProfile.name}
               profileDescription={selectedPetProfile.bio}
-              indexes={{index: 0, reverseIndex: 0, currentIndex: 0}}
+              // indexes={{index: 0, reverseIndex: 0, currentIndex: 0}}
+              // onSwipeLeft={onSwipeLeft}
+              // onSwipeRight={onSwipeRight}
               />
           </View>
         )}
       </Modal>
 
-      <View className='items-center'>
+      <View className=''>
 
         <FlatList
           data={incomingLikes}
@@ -190,9 +278,17 @@ const Likes = () => {
             <Text>{}</Text>
           </View>
           )} */}
+        </View>
+
+
+      </View>
+
           {activePetListOwnerId && selectedPets && (
+            // <View
+            //   className='w-full'
+            // >
             <View
-              className='w-full pt-5 -mt-10 overflow-hidden'
+              className='absolute bottom-20 w-full z-10'
             >
 
               <View 
@@ -205,11 +301,23 @@ const Likes = () => {
                   shadowRadius: 10,
                 }}
               >
+
                 <View>
                   <Text
                     className='text-xl font-bold text-secondary text-center'
-                  >{(incomingLikes.find(incProfile => incProfile.id === activePetListOwnerId))?.name || 'selected owner'}'s pets</Text>
+                  >
+                    {(incomingLikes.find(incProfile => incProfile.id === activePetListOwnerId))?.name || 'selected owner'}'s pets
+                  </Text>
                 </View>
+                <TouchableOpacity 
+                  className='absolute right-5 top-2 border rounded-full px-2 border-secondary'
+                  onPress={() => {
+                    console.log('test');
+                    
+                    setActivePetListOwnerId(null)}}
+                >
+                  <Text className='text-xl'>▼</Text>
+                </TouchableOpacity>
                 <FlatList
                   data={selectedPets}
                   horizontal
@@ -242,10 +350,10 @@ const Likes = () => {
               </View>
 
             </View>
-          )}
-        </View>
 
-      </View>
+            // </View>
+          )}
+          
     </SafeAreaView>
   )
 };

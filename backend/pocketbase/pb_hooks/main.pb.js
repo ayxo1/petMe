@@ -41,7 +41,7 @@ routerAdd("GET", "/api/feed", (c) => {
             bio, 
             images, 
             'pet' as type, 
-            owner as ownerId, 
+            owner as ownerId,
             age, 
             created,
             (SELECT username FROM users WHERE id = pets.owner) as ownerName,
@@ -49,7 +49,7 @@ routerAdd("GET", "/api/feed", (c) => {
         FROM pets
         WHERE owner != {:userId} 
             AND isAvailableForAdoption = ${isAvailableForAdoption}
-            AND id NOT IN (SELECT targetId FROM swipes WHERE user = {:userId} AND swipeType = 'pet')
+            AND id NOT IN (SELECT targetPet FROM swipes WHERE user = {:userId} AND swipeType = 'pet')
         `);
     }
 
@@ -66,7 +66,7 @@ routerAdd("GET", "/api/feed", (c) => {
             WHERE id != {:userId}
                 AND isHidden = FALSE
                 AND (${accountFilter})
-                AND id NOT IN (SELECT targetId FROM swipes WHERE user = {:userId} AND swipeType = 'profile')
+                AND id NOT IN (SELECT targetUser FROM swipes WHERE user = {:userId} AND swipeType = 'profile')
         `);
     }
 
@@ -128,7 +128,9 @@ routerAdd("POST", "/api/swipe", (c) => {
     const swipes = $app.findCollectionByNameOrId('swipes');
     const record = new Record(swipes);
     record.set('user', user.id);
-    record.set('targetId', targetId);
+    if (swipeType === 'profile') {
+        record.set('targetUser', targetId);
+    } else record.set('targetPet', targetId)
     record.set('action', action);
     record.set('swipeType', swipeType);
     record.set('targetOwnerId', petOwnerId);
@@ -141,7 +143,7 @@ routerAdd("POST", "/api/swipe", (c) => {
     try {
         const myPets = $app.findRecordsByFilter(
             'pets', 
-            'owner = {:id}', 
+            'owner = {:id}',
             '-created',
             100,
             0,
@@ -150,9 +152,9 @@ routerAdd("POST", "/api/swipe", (c) => {
         
         const myPetIds = myPets.map(pet => pet.id);
 
-        let filter = `user = {:otherUser} && action = 'like' && (targetId = {:myId}`;
+        let filter = `user = {:otherUser} && action = 'like' && (targetUser = {:myId}`;
         myPetIds.forEach(petId => {
-            filter += ` || targetId = '${petId}'`;
+            filter += ` || targetPet = '${petId}'`;
         });
         filter += `)`;
 
@@ -197,14 +199,22 @@ routerAdd("POST", "/api/swipe", (c) => {
             } catch (error) {
 
                 console.log(`existingMatch not found / ERROR: ${error}`);
+
+                const otherUserSwipe = mutualLikes[0];
+
+                let matchedProfileId = otherUserSwipe.getString('targetPet');
+                if (!matchedProfileId) {
+                    matchedProfileId = otherUserSwipe.getString('targetUser');
+                }
+                const pet1 = (matchedProfileId !== user.id) ? matchedProfileId : '';
                 
                 const matches = $app.findCollectionByNameOrId('matches');
     
                 const match = new Record(matches);
                 match.set('user1', user.id);
                 match.set('user2', petOwnerId);
-                match.set('pet1', myPetIds[0]);
-                match.set('pet2', targetId);
+                match.set('pet1', pet1);
+                match.set('pet2', targetId !== petOwnerId ? targetId : '');
                 match.set('status', 'active');
     
                 $app.save(match);
@@ -269,19 +279,25 @@ routerAdd("GET", "/api/likes", (c) => {
     }
 
     const query = `
-        SELECT
-            u.id,
-            u.username as name,
-            u.bio,
-            u.images,
+        SELECT 
+            u.id, 
+            u.username as name, 
+            u.bio, 
+            u.images, 
             u.accountType as type,
 
-            s.targetId as likedTarget,
+            (CASE 
+                WHEN s.swipeType = 'pet' THEN s.targetPet
+                ELSE s.targetUser
+            END) as likedTarget,
+
             s.swipeType as likedTargetType,
+
             (CASE
-                WHEN s.swipeType = 'pet' THEN (SELECT name FROM pets WHERE id = s.targetId)
-                ELSE (SELECT username FROM users WHERE id = s.targetId)
+                WHEN s.swipeType = 'pet' THEN (SELECT name FROM pets WHERE id = s.targetPet)
+                ELSE (SELECT username FROM users WHERE id = s.targetUser)
             END) as likedTargetName,
+            
             MAX(s.created) as created
 
         FROM swipes s
@@ -291,6 +307,7 @@ routerAdd("GET", "/api/likes", (c) => {
             AND s.user != {:userId}
             AND s.targetOwnerId = {:userId}
             AND s.user NOT IN (SELECT user2 FROM matches WHERE user1={:userId})
+            AND u.id NOT IN (SELECT targetUser FROM swipes WHERE user = {:userId} AND action = 'pass')
         GROUP BY u.id
         ORDER BY s.created DESC
         LIMIT {:limit} OFFSET {:offset}

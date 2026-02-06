@@ -36,7 +36,7 @@ export interface PBSwipe {
   id: string;
   action: 'like' | 'pass';
   targetUser: string; // User ID
-  targetId: string; // Pet ID
+  targetPet: string; // Pet ID
   swipeType: 'pet' | 'profile';
   created: string;
   updated: string;
