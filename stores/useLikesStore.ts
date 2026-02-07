@@ -9,7 +9,7 @@ interface LikesStoreState {
     isLoading: boolean;
 
     fetchIncomingLikesProfiles: () => Promise<void>;
-    subscribeToLikesCount: (userId: string) => Promise<void>;
+    subscribeToLikesCount: (userId: string) => Promise<() => void>;
     removeLike: (profileId: string) => void;
     reset: () => void;
 }
@@ -89,9 +89,14 @@ export const useLikesStore = create<LikesStoreState>(
         },
 
         subscribeToLikesCount: async (userId) => {
-            return await pb.collection('swipes').subscribe('*', e => {
-              if (e.record.targetOwnerId !== userId) return;
+            await pb.collection('swipes').unsubscribe('*');
+
+            return await pb.collection('swipes').subscribe('*', async e => {
+              if (e.action === 'create' && e.record.targetOwnerId === userId && e.record.action === 'like') {
+                console.log('new like received, subscribeToLikesCount', e.record);
                 
+                await get().fetchIncomingLikesProfiles();
+              }
 
             });
         },

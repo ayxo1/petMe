@@ -9,7 +9,7 @@ import { useLikesStore } from '@/stores/useLikesStore';
 import { IncomingLikeFeedProfile } from '@/types/feed';
 import { PetProfile } from '@/types/pets';
 import { useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Alert, Dimensions, FlatList, Image, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -20,7 +20,7 @@ const ITEM_WIDTH = (width / 2) - 24;
 const Likes = () => {
 
   const user = useAuthStore(state => state.user);
-  const { fetchIncomingLikesProfiles, incomingLikes, removeLike } = useLikesStore();
+  const { fetchIncomingLikesProfiles, incomingLikes, removeLike, subscribeToLikesCount } = useLikesStore();
   const [selectedPets, setSelectedPets] = useState<PetProfile[]>();
 
   const [selectedProfile, setSelectedProfile] = useState<IncomingLikeFeedProfile | null>();

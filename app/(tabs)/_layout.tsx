@@ -21,20 +21,33 @@ const TabBarIcon = ({focused, icon, red = false}: TabBarIconProps) => (
 const TabsLayout = () => {
 
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
-  const unreadCount = useLikesStore(state => state.unreadCount);
-  const fetchIncomingLikesProfiles = useLikesStore(state => state.fetchIncomingLikesProfiles);
+  const user = useAuthStore(state => state.user);
+  // const unreadCount = useLikesStore(state => state.unreadCount);
+  // const fetchIncomingLikesProfiles = useLikesStore(state => state.fetchIncomingLikesProfiles);
+  const { subscribeToLikesCount, unreadCount, fetchIncomingLikesProfiles } = useLikesStore();
 
 
   useEffect(() => {
+    let unsubscribe : () => void;
+
     const init = async () => {
       try {
         await fetchIncomingLikesProfiles();
+
+        if (user?.id) {
+          unsubscribe = await subscribeToLikesCount(user.id);
+        }
       } catch (error) {
         console.log('error fetching incomingLikes: ', error);
       }
     }
-    init();
-  }, [unreadCount])
+
+    if (isAuthenticated) init();
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    }
+  }, [isAuthenticated, user?.id])
   
   if(!isAuthenticated) return <Redirect href='/signin' />
 
