@@ -1,13 +1,17 @@
 import { pb } from '@/backend/config/pocketbase';
 import Colors from '@/constants/Colors';
+import { useChatStore } from '@/stores/useChatStore';
 import { MatchRowData } from '@/types/components';
 import { Link } from 'expo-router';
 import { Image, ImageSourcePropType, Text, TouchableHighlight, View } from 'react-native';
 
-const ChatRow = ({ matchId, matchedUser, petName }: MatchRowData) => {  
+const ChatRow = ({ matchId, matchedUser, petName, lastMessage }: MatchRowData) => {  
   
   const profilePic: ImageSourcePropType = { uri: `${pb.baseURL}/api/files/users/${matchedUser.id}/${matchedUser.images[0]}`};
     console.log(profilePic.uri);
+
+  const unreadChatRooms = useChatStore(state => state.unreadChatRooms);
+  const isChatRead = unreadChatRooms.includes(matchId);
     
   return (
     <Link href={{
@@ -35,7 +39,16 @@ const ChatRow = ({ matchId, matchedUser, petName }: MatchRowData) => {
                 {petName!=='seeker' ? `(${petName}'s owner)` : '(seeker)'}
               </Text>
             </View>
-            <Text className='text-base text-secondary' numberOfLines={2}>text msg</Text>
+            {isChatRead && (
+              <View className='absolute right-0 top-1'>
+                <Text>🔴</Text>
+              </View>
+            )}
+            <Text
+              className={`text-base ${isChatRead ? 'text-red-500' : 'text-secondary'}`}
+              numberOfLines={2}>
+                {lastMessage || 'start chatting!'}
+            </Text>
           </View>
         </View>
       </TouchableHighlight>

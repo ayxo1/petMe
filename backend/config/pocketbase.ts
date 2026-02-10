@@ -30,6 +30,7 @@ const getFileName = (uri: string) => uri.split('/').pop() || 'photo.jpg';
 // logger
 if (__DEV__) {
   pb.beforeSend = function (url, options) {
+    console.log('------------------------------------------');
     console.log('pb request:', JSON.stringify(url, null, 2));
     return { url, options };
   };
@@ -247,6 +248,11 @@ export const petsAPI = {
   
 };
 
+interface matchesWithMessages extends PBMatch {
+  lastMessage: string;
+  lastMessageTime: string;
+}
+
 /**
  * swipes + matches API
  */
@@ -292,14 +298,42 @@ export const swipesAPI = {
     return requests.filter(request => !preApprovedUsers.includes(request.user));
   },
 
-  getUserMatches: async (userId: string): Promise<PBMatch[]> => {
-    const matches = await pb.collection('matches').getFullList({
+  getUserMatches: async (userId: string): Promise<matchesWithMessages[]> => {
+    const matches: PBMatch[] = await pb.collection('matches').getFullList({
       filter: `(user1 = "${userId}" || user2 = "${userId}") && status = "active"`,
       expand: 'user1,user2,pet1,pet2',
       sort: '-created'
     });
 
-    return matches as PBMatch[];
+    const matchesWithMessages = await Promise.all(matches.map(async (match) => {
+      try {
+        const lastMsgList = await pb.collection('messages').getList(1, 1, {
+          filter: `match = "${match.id}"`,
+          sort: '-created',
+          requestKey: null
+        });
+
+        const lastMsg = lastMsgList.items[0];
+
+        return {
+          ...match,
+          lastMessage: lastMsg ? lastMsg.content : 'new match!',
+          lastMessageTime: lastMsg ? lastMsg.created : match.created
+        };
+      } catch (error) {
+        console.log('matchesWithMessages, pocketbase.ts error: ', error);
+
+        return {
+          ...match,
+          lastMessage: 'error retrieving a message',
+          lastMessageTime: match.created
+        };
+      }
+    }));
+
+    matchesWithMessages.sort((a, b) => new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime());
+
+    return matchesWithMessages as matchesWithMessages[];
   }
 };
 
@@ -316,7 +350,8 @@ export const messagesAPI = {
     return await pb.collection('messages').getFullList({
       filter: `match = "${matchId}"`,
       expand: 'sender',
-      sort: '-created'
+      sort: '-created',
+      requestKey: null
     });
   },
 
@@ -327,6 +362,15 @@ export const messagesAPI = {
           matchId
       }
     });
+  },
+
+  markMessagesAsRead: async (matchId: string, userId: string) => {
+    const unreadMsgs = await pb.collection('messages').getList(1, 50, {
+      filter: `match = "${matchId}" && sender != "${userId}" && readAt = ""`,
+      requestKey: null
+    });
+
+    await Promise.all(unreadMsgs.items.map(msg => pb.collection('messages').update(msg.id, { readAt: new Date().toISOString() })));
   },
 
   subscribe: async (matchId: string, userId: string, onNewMessage: (msg: IMessage) => void) => {

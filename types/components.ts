@@ -48,4 +48,6 @@ export interface MatchRowData {
   matchId: string;
   matchedUser: PBUser;
   petName: string;
+  lastMessage?: string;
+  lastMessageTime?: string;
 }

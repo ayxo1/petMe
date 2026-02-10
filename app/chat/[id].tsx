@@ -1,19 +1,14 @@
 import { messagesAPI } from '@/backend/config/pocketbase';
-import ButtonComponent from '@/components/ButtonComponent';
-import InputController from '@/components/controllers/InputController';
 import Modal from '@/components/Modal';
 import ReportForm from '@/components/ReportForm';
 import { icons } from '@/constants';
 import Colors from '@/constants/Colors';
-import { reportProfile } from '@/constants/schemas/profileSchemas';
 import { useAuthStore } from '@/stores/authStore';
+import { useChatStore } from '@/stores/useChatStore';
 import { PBMessage } from '@/types/pbTypes';
-import { yupResolver } from '@hookform/resolvers/yup';
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { Alert, Image, KeyboardAvoidingView, Platform, Text, TouchableOpacity, View } from 'react-native';
-import DropDownPicker from 'react-native-dropdown-picker';
+import { Alert, Image, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { Bubble, GiftedChat, IMessage, InputToolbar } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -29,6 +24,8 @@ const ChatPage = () => {
 
   const params = useLocalSearchParams<{ id: string; otherUserName: string; otherUserImage: string; otherUserId: string; }>();
   const { id: matchId, otherUserName, otherUserImage, otherUserId } = params;
+
+  const { checkUnreadStatus } = useChatStore();
 
   const unmatch = async () => {
     try {
@@ -68,7 +65,11 @@ const ChatPage = () => {
         const formattedChatMessages: IMessage[] = formatChatMessages(chatMessages);
   
         setMessages(formattedChatMessages);
-          
+
+        // check and handle unread messages status
+        await messagesAPI.markMessagesAsRead(matchId, userId);
+        checkUnreadStatus(userId);
+        
       } catch (error) {
         console.log('retrieveChatMessages error:', error);
       }
@@ -85,8 +86,17 @@ const ChatPage = () => {
           matchId, 
           userId, 
           (incMsg) => {
-            setMessages(prev => GiftedChat.append(prev, [incMsg]));
+            setMessages(prev => {
+              if (prev.some(msg => msg._id === incMsg._id)) {
+                return prev;
+              }
+              return GiftedChat.append(prev, [incMsg]);
+            });
           });
+
+          await messagesAPI.markMessagesAsRead(matchId, userId);
+
+          checkUnreadStatus(userId);
       } catch (error) {
         console.log('trackMessages error:', error);
       }
@@ -102,17 +112,20 @@ const ChatPage = () => {
   const onSend = useCallback((messages: IMessage[] = []) => {
     try {
       const sendMessage = async () => {
+        if (!messages.length) return;
+
         if (messages) {
           console.log(messages[0]);
 
-          await messagesAPI.sendMessage(matchId, userId, messages[0].text)
-          setMessages(previousMessages =>
-            GiftedChat.append(previousMessages, messages),
-          )
+          await messagesAPI.sendMessage(matchId, userId, messages[0].text);
+          // setMessages(previousMessages =>
+          //   GiftedChat.append(previousMessages, messages),
+          // );
         }
       };
       sendMessage();
     } catch (error) {
+      Alert.alert('error', 'error occurred sending the message, please try again');
       console.log('sendMessage error:', error);
     }
   }, []);

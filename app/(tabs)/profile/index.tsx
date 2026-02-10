@@ -1,31 +1,33 @@
 import ButtonComponent from '@/components/ButtonComponent';
-import Modal from '@/components/Modal';
 import { icons } from '@/constants';
 import { useAuthStore } from '@/stores/authStore';
 import { usePetStore } from '@/stores/petStore';
+import { useChatStore } from '@/stores/useChatStore';
 import { useFeedStore } from '@/stores/useFeedStore';
 import { useLikesStore } from '@/stores/useLikesStore';
-import { stringImageToPbUrl } from '@/utils/imageUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router, Stack, useFocusEffect } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
-import { FlatList, Image, ImageSourcePropType, ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import PetSetup from '../../(auth)/pet-setup';
+import { router, Stack } from 'expo-router';
+import { useState } from 'react';
+import { FlatList, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 const LogOutButton = ({ signOut }: { signOut: () => void }) => {
   const resetFeedStore = useFeedStore(state => state.reset);
-  const resetLikesStore = useLikesStore(state => state.reset)
-  const resetPetStore = usePetStore(state => state.reset)
+  const resetLikesStore = useLikesStore(state => state.reset);
+  const resetPetStore = usePetStore(state => state.reset);
+  const resetChatStore = useChatStore(state => state.reset);
  
   return (
     <View>
       <ButtonComponent 
         title='sign out'
         onPress={async () => {
-          await AsyncStorage.clear();
+          await resetChatStore();
+          await resetLikesStore();
+          
           resetFeedStore();
-          resetLikesStore();
           resetPetStore();
+
+          await AsyncStorage.clear();
           signOut();
         }}
         style='bg-red-600'
@@ -40,7 +42,6 @@ const Profile = () => {
   const { user ,signOut } = useAuthStore();
   if (!user) return;
   const [ petSettigsModal, togglePetSettingsModal ] = useState(false);
-  const [profileSettingsModal, toggleProfileSettingsModal] = useState(false);
   const { pets, hydratePets } = usePetStore();
 
   return (

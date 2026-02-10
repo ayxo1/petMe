@@ -7,11 +7,12 @@ interface LikesStoreState {
     incomingLikes: IncomingLikeFeedProfile[];
     unreadCount: number;
     isLoading: boolean;
+    unsubscribeLikes?: () => Promise<void>;
 
     fetchIncomingLikesProfiles: () => Promise<void>;
     subscribeToLikesCount: (userId: string) => Promise<() => void>;
     removeLike: (profileId: string) => void;
-    reset: () => void;
+    reset: () => Promise<void>;
 }
 
 const convertPBIncomingLikeProfile = (record: PBIncomingLikeProfile): IncomingLikeFeedProfile => {    
@@ -50,8 +51,11 @@ export const useLikesStore = create<LikesStoreState>(
         incomingLikes: [],
         unreadCount: 0,
         isLoading: false,
+        unsubscribeLikes: undefined,
 
         fetchIncomingLikesProfiles: async () => {
+            if(!pb.authStore.isValid) return;
+            
             set({ isLoading: true });
 
             try {
@@ -89,9 +93,13 @@ export const useLikesStore = create<LikesStoreState>(
         },
 
         subscribeToLikesCount: async (userId) => {
+            if (!pb.authStore.isValid) return async () => {};
+
+            if (get().unsubscribeLikes) get().unsubscribeLikes?.();
+
             await pb.collection('swipes').unsubscribe('*');
 
-            return await pb.collection('swipes').subscribe('*', async e => {
+            const unsub = await pb.collection('swipes').subscribe('*', async e => {
               if (e.action === 'create' && e.record.targetOwnerId === userId && e.record.action === 'like') {
                 console.log('new like received, subscribeToLikesCount', e.record);
                 
@@ -99,13 +107,21 @@ export const useLikesStore = create<LikesStoreState>(
               }
 
             });
+
+            set({ unsubscribeLikes: unsub });
+            return unsub;
         },
 
-        reset: () => {
+        reset: async () => {
+            if (get().unsubscribeLikes) {
+                await get().unsubscribeLikes?.();
+            }
+            
             set({
                 incomingLikes: [],
                 unreadCount: 0,
                 isLoading: false,
+                unsubscribeLikes: undefined
             });
         }
 

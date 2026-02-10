@@ -1,6 +1,7 @@
 import { icons } from '@/constants';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
+import { useChatStore } from '@/stores/useChatStore';
 import { useLikesStore } from '@/stores/useLikesStore';
 import { TabBarIconProps } from '@/types/components';
 import { Redirect, Tabs, useSegments } from 'expo-router';
@@ -25,27 +26,34 @@ const TabsLayout = () => {
   // const unreadCount = useLikesStore(state => state.unreadCount);
   // const fetchIncomingLikesProfiles = useLikesStore(state => state.fetchIncomingLikesProfiles);
   const { subscribeToLikesCount, unreadCount, fetchIncomingLikesProfiles } = useLikesStore();
+  const { checkUnreadStatus, subscribeToMessages, hasUnreadMessages } = useChatStore();
 
 
   useEffect(() => {
-    let unsubscribe : () => void;
+    let unsubscribeLikes: () => void;
+    let unsubscribeChatMessages: () => void;
 
     const init = async () => {
       try {
         await fetchIncomingLikesProfiles();
 
         if (user?.id) {
-          unsubscribe = await subscribeToLikesCount(user.id);
+          unsubscribeLikes = await subscribeToLikesCount(user.id);
+
+          await checkUnreadStatus(user.id);
+
+          unsubscribeChatMessages = await subscribeToMessages(user.id);
         }
       } catch (error) {
-        console.log('error fetching incomingLikes: ', error);
+        console.log('error fetching incomingLikes / subscribeLikes/Chat: ', error);
       }
     }
 
     if (isAuthenticated) init();
 
     return () => {
-      if (unsubscribe) unsubscribe();
+      if (unsubscribeLikes) unsubscribeLikes();
+      if (unsubscribeChatMessages) unsubscribeChatMessages();
     }
   }, [isAuthenticated, user?.id])
   
@@ -126,10 +134,17 @@ const TabsLayout = () => {
             backgroundColor: Colors.primary
           },
           tabBarIcon: ({focused}) => (
+            <>
+            {hasUnreadMessages && (
+              <View className='absolute bottom-5 left-6 z-10'>
+                <Text className=''>🔴</Text>
+              </View>
+            )}
             <TabBarIcon 
               focused={focused}
               icon={icons.catPass}
             />
+            </>
           ),
         }}
       />

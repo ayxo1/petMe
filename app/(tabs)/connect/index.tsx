@@ -10,12 +10,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Index = () => {
   
-  const userId = useAuthStore(state => state.user?.id) || '';
+  const user = useAuthStore(state => state.user);
+  const userId = user?.id || '';
 
   const [matchRows, setMatchRows] = useState<MatchRowData[]>();
+  const [isLoading, setIsLoading] = useState(false);
   
   useFocusEffect(
     useCallback(() => {
+      setIsLoading(true);
+
       const getMatchRowsData = async () => {
         const matchData = await swipesAPI.getUserMatches(userId);
   
@@ -29,11 +33,14 @@ const Index = () => {
           return {
             matchId: match.id,
             matchedUser,
-            petName: displayPetName
+            petName: displayPetName,
+            lastMessage: match.lastMessage,
+            lastMessageTime: match.lastMessageTime
           };
           
         });
         setMatchRows(rows);
+        setIsLoading(false);
       };
   
       getMatchRowsData();
@@ -46,13 +53,21 @@ const Index = () => {
       contentContainerStyle={{ paddingBottom: 40 }}
     > 
       {matchRows?.length === 0 && (
-        <SafeAreaView className="flex-1 p-6 items-center mt-10 justify-center">
+        <SafeAreaView className="flex-1 p-2 items-center justify-center">
           <Text className="text-2xl font-bold text-gray-600 text-center max-w-96">
-            Swipe on profiles to connect with more pets!
+            {user?.accountType === 'owner' 
+              ? 'Swipe on profiles to connect with more pets and seekers!' 
+              : 'Swipe on profiles to connect with more pets!'
+            }
             {"\n"}
             {"\n"}
-            You will be able to talk to their owners on this page 🐾
+            You will be able to chat with them on this page
           </Text>
+        </SafeAreaView>
+      )}
+      {isLoading && (
+        <SafeAreaView className="flex-1 items-center justify-center">
+          <Text className="text-xl text-gray-600 text-center max-w-96">loading..</Text>
         </SafeAreaView>
       )}
       <FlatList 

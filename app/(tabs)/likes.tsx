@@ -141,6 +141,11 @@ const Likes = () => {
           }</Text>
         </View>
       )}
+      {incomingLikes.length > 0 && (
+        <View className="p-2 items-center justify-center">
+          <Text className='font-bold text-gray-600 text-center'>swipe on owners/seekers to connect with them!</Text>
+        </View>
+      )}
       <Modal 
         isOpen={isModal}
         toggleModal={() => setIsModal(!isModal)}
