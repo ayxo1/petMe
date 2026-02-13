@@ -50,13 +50,21 @@ const SignIn = () => {
         createdAt: new Date().toISOString(),
       }
 
-      signIn(userData);
-      router.replace('/');
+      await signIn({email, password});
       setRegistrationState('completed');
+      router.replace('/');
     } catch (error) {
       console.log(error);
+      if (error instanceof Error) Alert.alert(error.message, 'incorrect login or password, please try again', [
+        {
+          text: 'close',
+        },
+        {
+          text: 'no account?',
+          onPress: () => router.replace('/signup')
+        }
+      ]);
     }
-    console.log(email);
   };
 
   return (
@@ -93,12 +101,12 @@ const SignIn = () => {
       <View
         className='flex justify-center flex-row mt-5 gap-2 border-t border-secondary p-3'
       >
-        <Text>
+        <Text className='text-xl'>
           no account?
         </Text>
         <Link 
           href={'/(auth)/signup'}
-          className='text-secondary'
+          className='text-secondary text-xl'
         >
           sign up
         </Link>

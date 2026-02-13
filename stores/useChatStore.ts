@@ -52,7 +52,7 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
                 unreadChatRooms: [...unreadChatRoomIds]
             })
         } catch (error) {
-            
+            console.log('useChatStore, checkUnreadChatRooms error:', error);
         }
     },
 
