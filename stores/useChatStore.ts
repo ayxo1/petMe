@@ -8,6 +8,7 @@ interface ChatStoreState {
     unsubscribeChat?: () => Promise<void>;
 
     checkUnreadStatus: (userId: string) => Promise<void>;
+    checkUnreadChatRooms: (userId: string) => Promise<void>;
     subscribeToMessages: (userId: string) => Promise<() => void>;
     reset: () => Promise<void>;
 }
@@ -22,18 +23,36 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
         try {
             const result = await pb.collection('messages').getList(1, 1, {
                 filter: `sender != "${userId}" && readAt = "" && (match.user1 = "${userId}" || match.user2 = "${userId}")`,
-                fields: 'id,match'
+                fields: 'id'
             });
 
-            const unreadChatRoomIds = result.items.map(msg => msg.match);
-            console.log('unread chat rooms ids logg: ', result);
+            // const unreadChatRoomIds = result.items.map(msg => msg.match);
+            // console.log('unread chat rooms ids logg: ', result);
             
             set({
                 hasUnreadMessages: result.totalItems > 0,
-                unreadChatRooms: unreadChatRoomIds
             });
         } catch (error) {
             console.log('checkUnreadStatus, useChatStore error: ', error);
+        }
+    },
+
+    checkUnreadChatRooms: async (userId: string) => {
+        if(!pb.authStore.isValid) return;
+        try {
+            const result = await pb.collection('messages').getFullList({
+                filter: `sender != "${userId}" && readAt = "" && (match.user1 = "${userId}" || match.user2 = "${userId}")`,
+                fields: 'match'
+            });
+            const unreadChatRoomIds = new Set<string>();
+            result.forEach(msg => unreadChatRoomIds.add(msg.match));
+            console.log('checkUnreadChatRooms log: ', unreadChatRoomIds);
+
+            set({
+                unreadChatRooms: [...unreadChatRoomIds]
+            })
+        } catch (error) {
+            
         }
     },
 

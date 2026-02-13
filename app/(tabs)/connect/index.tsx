@@ -1,6 +1,7 @@
 import { swipesAPI } from '@/backend/config/pocketbase';
 import ChatRow from '@/components/ChatRow';
 import { useAuthStore } from '@/stores/authStore';
+import { useChatStore } from '@/stores/useChatStore';
 import { MatchRowData } from '@/types/components';
 import { PBPet, PBUser } from '@/types/pbTypes';
 import { useFocusEffect } from 'expo-router';
@@ -13,13 +14,16 @@ const Index = () => {
   const user = useAuthStore(state => state.user);
   const userId = user?.id || '';
 
+  const checkUnreadChatRooms = useChatStore(state => state.checkUnreadChatRooms);
+  
   const [matchRows, setMatchRows] = useState<MatchRowData[]>();
   const [isLoading, setIsLoading] = useState(false);
   
   useFocusEffect(
     useCallback(() => {
       setIsLoading(true);
-
+      checkUnreadChatRooms(userId);
+      
       const getMatchRowsData = async () => {
         const matchData = await swipesAPI.getUserMatches(userId);
   
