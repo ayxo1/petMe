@@ -12,8 +12,8 @@ routerAdd("GET", "/api/feed", (c) => {
     try {
         const rawQuery = (c.request && c.request.url && c.request.url.rawQuery) || "";
 
-        const typeMatch = rawQuery.match(/[?&]type=([^&]+)/);
-        if (typeMatch) rawTypes = typeMatch[1];
+        const typeMatch = rawQuery.match(/type=([^&]+)/);
+        if (typeMatch) rawTypes = decodeURIComponent(typeMatch[1]);
 
         const pageMatch = rawQuery.match(/[?&]page=(\d+)/);
         if (pageMatch) page = parseInt(pageMatch[1]);
@@ -29,6 +29,12 @@ routerAdd("GET", "/api/feed", (c) => {
     const limit = perPage;
     const offset = (page - 1) * perPage;
     const isAvailableForAdoption = types.includes('rescue');
+
+    let adoptionStatuses = [];
+    if (types.includes('pets')) adoptionStatuses.push('false');
+    if (types.includes('rescue')) adoptionStatuses.push('true');
+    if (adoptionStatuses.length === 0) adoptionStatuses = ['true', 'false'];
+    const adoptionFilter = `isAvailableForAdoption IN (${adoptionStatuses.join(',')})`;
 
     let queries = [];
     let bindParams = { userId: user.id, limit, offset };
@@ -48,7 +54,7 @@ routerAdd("GET", "/api/feed", (c) => {
             (SELECT images FROM users WHERE id = pets.owner) as ownerImage
         FROM pets
         WHERE owner != {:userId} 
-            AND isAvailableForAdoption = ${isAvailableForAdoption}
+            AND ${adoptionFilter}
             AND id NOT IN (SELECT targetPet FROM swipes WHERE user = {:userId} AND swipeType = 'pet')
         `);
     }
@@ -57,14 +63,26 @@ routerAdd("GET", "/api/feed", (c) => {
     if (types.includes('seekers')) accountPatterns.push('seeker');
     if (types.includes('shelters')) accountPatterns.push('shelter');
 
-    const accountFilter = accountPatterns.map(pattern => `accountType LIKE '%${pattern}%'`).join(' OR ');
+    const accountFilter = accountPatterns.length > 0
+        ? accountPatterns.map(pattern => `accountType LIKE '%${pattern}%'`).join(' OR ') 
+        : '1=1';
 
-    if (types.includes('users')) {
+    if (types.includes('users') || types.includes('seekers')) {
         queries.push(`
-            SELECT id, username as name, bio, images, 'profile' as type, id as ownerId, 0 as age, created
+            SELECT id, 
+            username as name, 
+            bio, 
+            images, 
+            'profile' as type, 
+            id as ownerId, 
+            0 as age, 
+            created,
+            username as ownerName,
+            images as ownerImage
+            
             FROM users
             WHERE id != {:userId}
-                AND isHidden = FALSE
+                -- AND isHidden = FALSE
                 AND (${accountFilter})
                 AND id NOT IN (SELECT targetUser FROM swipes WHERE user = {:userId} AND swipeType = 'profile')
         `);
@@ -85,7 +103,8 @@ routerAdd("GET", "/api/feed", (c) => {
         'ownerName': '',
         'ownerImage': '',
         'ownerId': '',
-        'age': 0
+        'age': 0,
+        'created': ''
     }));
 
     if (queries.length > 0) {
@@ -152,11 +171,20 @@ routerAdd("POST", "/api/swipe", (c) => {
         
         const myPetIds = myPets.map(pet => pet.id);
 
-        let filter = `user = {:otherUser} && action = 'like' && (targetUser = {:myId}`;
-        myPetIds.forEach(petId => {
-            filter += ` || targetPet = '${petId}'`;
-        });
-        filter += `)`;
+        let orConditions = [`targetUser = '${user.id}'`];
+        if (myPetIds.length > 0) {
+            const petCondition = myPetIds.map(id => `targetPet = '${id}'`).join(' || ');
+            orConditions.push(petCondition);
+        }
+
+        const targetCheck = "(" + orConditions.join(" || ") + ")";        
+
+        // let filter = `user = {:otherUser} && action = 'like' && (targetUser = {:myId}`;
+        // myPetIds.forEach(petId => {
+        //     filter += ` || targetPet = '${petId}'`;
+        // });
+        // filter += `)`;
+        const filter = `user = {:otherUser} && action = 'like' && ${targetCheck}`;
 
         const mutualLikes = $app.findRecordsByFilter(
             'swipes', 
@@ -201,20 +229,15 @@ routerAdd("POST", "/api/swipe", (c) => {
                 console.log(`existingMatch not found / ERROR: ${error}`);
 
                 const otherUserSwipe = mutualLikes[0];
-
-                let matchedProfileId = otherUserSwipe.getString('targetPet');
-                if (!matchedProfileId) {
-                    matchedProfileId = otherUserSwipe.getString('targetUser');
-                }
-                const pet1 = (matchedProfileId !== user.id) ? matchedProfileId : '';
+                const otherSwipedPet = otherUserSwipe.getString('targetPet') || '';
+                const mySwipedPet = (swipeType === 'pet') ? targetId : '';
                 
                 const matches = $app.findCollectionByNameOrId('matches');
-    
                 const match = new Record(matches);
                 match.set('user1', user.id);
                 match.set('user2', petOwnerId);
-                match.set('pet1', pet1);
-                match.set('pet2', targetId !== petOwnerId ? targetId : '');
+                match.set('pet1', otherSwipedPet);
+                match.set('pet2', mySwipedPet);
                 match.set('status', 'active');
     
                 $app.save(match);
@@ -307,6 +330,7 @@ routerAdd("GET", "/api/likes", (c) => {
             AND s.user != {:userId}
             AND s.targetOwnerId = {:userId}
             AND s.user NOT IN (SELECT user2 FROM matches WHERE user1={:userId})
+            AND s.user NOT IN (SELECT user1 FROM matches WHERE user2={:userId})
             AND u.id NOT IN (SELECT targetUser FROM swipes WHERE user = {:userId} AND action = 'pass')
         GROUP BY u.id
         ORDER BY s.created DESC

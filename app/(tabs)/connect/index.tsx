@@ -28,7 +28,7 @@ const Index = () => {
           const matchedUser: PBUser = isUser1Me ? match.expand?.user2 : match.expand?.user1;
   
           const targetPet: PBPet = isUser1Me ? match.expand?.pet2 : match.expand?.pet1;
-          const displayPetName: string = targetPet?.name || 'seeker';
+          const displayPetName: string = targetPet?.name || matchedUser.accountType;
   
           return {
             matchId: match.id,

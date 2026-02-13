@@ -26,6 +26,7 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
             });
 
             const unreadChatRoomIds = result.items.map(msg => msg.match);
+            console.log('unread chat rooms ids logg: ', result);
             
             set({
                 hasUnreadMessages: result.totalItems > 0,

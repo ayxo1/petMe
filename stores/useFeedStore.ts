@@ -81,6 +81,7 @@ export const useFeedStore = create<FeedState>(
                         perPage: BATCH_SIZE.toString()
                     }
                 });
+                console.log('RESULT LOG IN USEFEEDSTORE:', result);
                 
                 const newPets = result.items.map(convertPBFeedRecordToFeedProfile);
 

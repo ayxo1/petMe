@@ -317,7 +317,7 @@ export const swipesAPI = {
 
         return {
           ...match,
-          lastMessage: lastMsg ? lastMsg.content : 'new match!',
+          lastMessage: lastMsg ? lastMsg.content : '',
           lastMessageTime: lastMsg ? lastMsg.created : match.created
         };
       } catch (error) {
@@ -377,7 +377,7 @@ export const messagesAPI = {
     return await pb.collection('messages').subscribe('*', e => {
       if (e.record.match !== matchId) return;
 
-      if (e.record.sender === userId) return;
+      // if (e.record.sender === userId) return;
 
       const newMsg: IMessage = {
         _id: e.record.id,

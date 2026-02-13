@@ -9,8 +9,39 @@ import { PBMessage } from '@/types/pbTypes';
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Image, Platform, Text, TouchableOpacity, View } from 'react-native';
-import { Bubble, GiftedChat, IMessage, InputToolbar } from 'react-native-gifted-chat';
+import { Bubble, BubbleProps, GiftedChat, IMessage, InputToolbar, InputToolbarProps } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+const renderInputToolbar = (props: InputToolbarProps<IMessage>) => (
+  <InputToolbar {...props} 
+  containerStyle={{
+    backgroundColor: 'fffff',
+    paddingHorizontal: 10,
+    borderRadius: 20,
+    borderTopColor: Colors.secondary,
+  }}
+  />
+);
+
+const renderBubble = (props: BubbleProps<IMessage>) => (
+  <Bubble {...props} 
+    textStyle={{
+      left: {
+        fontSize: 16,
+        color: '#000000'
+      },
+      right: {
+        fontSize: 16,
+        color: '#000000'
+      }
+    }}
+    wrapperStyle={{
+      left: {
+        backgroundColor: Colors.secondary
+      },
+    }}
+  />
+);
 
 const ChatPage = () => {
   const [messages, setMessages] = useState<IMessage[]>([]);
@@ -85,18 +116,19 @@ const ChatPage = () => {
         unsubscribe = await messagesAPI.subscribe(
           matchId, 
           userId, 
-          (incMsg) => {
+          async (incMsg) => {
             setMessages(prev => {
               if (prev.some(msg => msg._id === incMsg._id)) {
                 return prev;
               }
               return GiftedChat.append(prev, [incMsg]);
             });
+            if (incMsg._id !== userId) {
+              await messagesAPI.markMessagesAsRead(matchId, userId);
+              checkUnreadStatus(userId);
+            }
           });
-
-          await messagesAPI.markMessagesAsRead(matchId, userId);
-
-          checkUnreadStatus(userId);
+          
       } catch (error) {
         console.log('trackMessages error:', error);
       }
@@ -212,35 +244,8 @@ const ChatPage = () => {
         onSend={(messages: any) => onSend(messages)}
         scrollToBottomOffset={insets.bottom}
         renderAvatar={null}
-        renderInputToolbar={(props) => (
-          <InputToolbar {...props} 
-          containerStyle={{
-            backgroundColor: 'fffff',
-            paddingHorizontal: 10,
-            borderRadius: 20,
-            borderTopColor: Colors.secondary,
-          }}
-          />
-        )}
-        renderBubble={(props) => (
-          <Bubble {...props} 
-            textStyle={{
-              left: {
-                fontSize: 16,
-                color: '#000000'
-              },
-              right: {
-                fontSize: 16,
-                color: '#000000'
-              }
-            }}
-            wrapperStyle={{
-              left: {
-                backgroundColor: Colors.secondary
-              },
-            }}
-          />
-        )}
+        renderInputToolbar={renderInputToolbar}
+        renderBubble={renderBubble}
 
         keyboardAvoidingViewProps={{ keyboardVerticalOffset, enabled: !isModal }}
       />

@@ -28,24 +28,24 @@ const ChatRow = ({ matchId, matchedUser, petName, lastMessage }: MatchRowData) =
         <View className='flex-row items-center p-2'>
           <Image
             source={profilePic}
-            className='w-16 h-16 rounded-full'
+            className={`w-16 h-16 rounded-full ${(isChatRead || !lastMessage) && 'border border-red-500/60'}`}
           />
+          {(isChatRead || !lastMessage) && (
+            <View className='absolute left-14 top-2'>
+              <Text>🔴</Text>
+            </View>
+          )}
           <View className='flex-1 ml-5'>
             <View className='flex-row items-center gap-2'>
               <Text className='text-xl'>
                 {matchedUser.username}
               </Text>
               <Text className='text-base text-secondary'>
-                {petName!=='seeker' ? `(${petName}'s owner)` : '(seeker)'}
+                {(petName === 'seeker' || petName === 'owner') ? `(${petName})` : `(${petName}'s owner)`}
               </Text>
             </View>
-            {isChatRead && (
-              <View className='absolute right-0 top-1'>
-                <Text>🔴</Text>
-              </View>
-            )}
             <Text
-              className={`text-base ${isChatRead ? 'text-red-500' : 'text-secondary'}`}
+              className={`text-base ${(isChatRead || !lastMessage) ? 'text-red-500' : 'text-secondary'}`}
               numberOfLines={2}>
                 {lastMessage || 'start chatting!'}
             </Text>
