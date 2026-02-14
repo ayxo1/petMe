@@ -22,7 +22,7 @@ const formInputData: FormInputData[] = [
     { name: 'name', label: 'pet name*', placeholder: 'e.g., mr. fluff' },
     { name: 'breed', label: 'breed (optional)', placeholder: '' },
     { name: 'age', label: 'age (years)*', placeholder: 'e.g., 3', keyboardType: 'numeric' },
-    { name: 'bio', label: 'bio*', placeholder: 'describe your pet' },
+    { name: 'bio', label: 'bio*', placeholder: 'describe your pet', spellCheck: true },
 ];
 
 const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormProps) => {

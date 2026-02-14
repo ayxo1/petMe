@@ -15,6 +15,8 @@ const InputComponent = ({
 }: InputComponentProps) => {
 
     const [isFocused, setIsFocused] = useState(false);
+    console.log('textinput log', secureTextEntry, spellCheck);
+    
 
   return (
     <View
