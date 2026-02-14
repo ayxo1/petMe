@@ -28,7 +28,6 @@ routerAdd("GET", "/api/feed", (c) => {
     const types = rawTypes.split(',');
     const limit = perPage;
     const offset = (page - 1) * perPage;
-    const isAvailableForAdoption = types.includes('rescue');
 
     let adoptionStatuses = [];
     if (types.includes('pets')) adoptionStatuses.push('false');
@@ -56,6 +55,8 @@ routerAdd("GET", "/api/feed", (c) => {
         WHERE owner != {:userId} 
             AND ${adoptionFilter}
             AND id NOT IN (SELECT targetPet FROM swipes WHERE user = {:userId} AND swipeType = 'pet')
+            AND owner NOT IN (SELECT user2 FROM matches WHERE user1 = {:userId} AND status = 'active')
+            AND owner NOT IN (SELECT user1 FROM matches WHERE user2 = {:userId} AND status = 'active')
         `);
     }
 
@@ -85,6 +86,8 @@ routerAdd("GET", "/api/feed", (c) => {
                 -- AND isHidden = FALSE
                 AND (${accountFilter})
                 AND id NOT IN (SELECT targetUser FROM swipes WHERE user = {:userId} AND swipeType = 'profile')
+                AND id NOT IN (SELECT user2 FROM matches WHERE user1 = {:userId} AND status = 'active')
+                AND id NOT IN (SELECT user1 FROM matches WHERE user2 = {:userId} AND status = 'active')
         `);
     }
 
