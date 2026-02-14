@@ -1,3 +1,4 @@
+import { pb } from '@/backend/config/pocketbase';
 import { icons } from '@/constants';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';

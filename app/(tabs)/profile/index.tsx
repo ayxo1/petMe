@@ -6,9 +6,11 @@ import { useChatStore } from '@/stores/useChatStore';
 import { useFeedStore } from '@/stores/useFeedStore';
 import { useLikesStore } from '@/stores/useLikesStore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { router, Stack } from 'expo-router';
+import { Href, router, Stack } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+
+type AuthRoute = '/(auth)/profile-setup' | '/(auth)/pet-setup';
 
 const LogOutButton = ({ signOut }: { signOut: () => void }) => {
   const resetFeedStore = useFeedStore(state => state.reset);
@@ -43,6 +45,17 @@ const Profile = () => {
   if (!user) return;
   const [ petSettigsModal, togglePetSettingsModal ] = useState(false);
   const { pets, hydratePets } = usePetStore();
+  const unsubChat = useChatStore(state => state.unsubscribeChat);
+  const unsubLikes = useLikesStore(state => state.unsubscribeLikes);
+
+  const cleanUpBeforeNavigation = async (path: AuthRoute, params?: Record<string, string>) => {
+    if (unsubChat) await unsubChat();
+    if (unsubLikes) await unsubLikes();
+
+    if (params) {
+      router.replace({ pathname: path, params });
+    } else router.replace(path);
+  }
 
   return (
     <>
@@ -74,10 +87,11 @@ const Profile = () => {
             <TouchableOpacity
               className='p-2 border border-secondary rounded-2xl items-center'
               onPress={async() => {
-                router.replace({
-                  pathname: '/(auth)/profile-setup',
-                  params: { initialData: '1' }
-                })
+                await cleanUpBeforeNavigation('/(auth)/profile-setup', { initialData: '1' })
+                // router.replace({
+                //   pathname: '/(auth)/profile-setup',
+                //   params: { initialData: '1' }
+                // })
               }}
             >
               <Image
@@ -123,11 +137,12 @@ const Profile = () => {
                         <View>
                           <TouchableOpacity
                             className='absolute z-10 border border-green-400 rounded-full p-1 left-24 top-1 size-8 bg-green-300/60'
-                            onPress={() => {
-                              router.replace({
-                                pathname: '/(auth)/pet-setup',
-                                params: { id: item.id }
-                              })
+                            onPress={async () => {
+                              await cleanUpBeforeNavigation(('/(auth)/pet-setup'), { id: item.id })
+                              // router.replace({
+                              //   pathname: '/(auth)/pet-setup',
+                              //   params: { id: item.id }
+                              // })
                             }}
                           >
                             <Text>✏️</Text>
@@ -157,7 +172,10 @@ const Profile = () => {
                       padding: 10,
                       marginLeft: 10
                     }}
-                    onPress={() => router.replace('/(auth)/pet-setup')}
+                    onPress={async () => {
+                      await cleanUpBeforeNavigation(('/(auth)/pet-setup'))
+                      // router.replace('/(auth)/pet-setup')
+                    }}
                   >
                     <Text className='text-center'>+</Text>
                   </TouchableOpacity>

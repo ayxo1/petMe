@@ -270,6 +270,7 @@ const ProfileSetup = () => {
                 label={inputController.label}
                 keyboardType={inputController?.keyboardType}
                 secureTextEntry={inputController.name === 'password'}
+                spellCheck={inputController.name === 'bio'}
               />
             </Fragment>
           ))}

@@ -11,6 +11,7 @@ interface InputComponentProps {
   keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
   labelStyling?: string;
   multiline?: boolean;
+  spellCheck?: boolean
 }
 
 export interface FormInputControllerProps extends InputComponentProps {

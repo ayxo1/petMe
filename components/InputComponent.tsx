@@ -10,7 +10,8 @@ const InputComponent = ({
     secureTextEntry = false,
     keyboardType = 'default',
     labelStyling = '',
-    multiline = false
+    multiline = false,
+    spellCheck = false
 }: InputComponentProps) => {
 
     const [isFocused, setIsFocused] = useState(false);
@@ -27,7 +28,7 @@ const InputComponent = ({
         multiline={multiline}
         maxLength={240}
         autoCapitalize='none'
-        autoCorrect={false}
+        autoCorrect={spellCheck}
         value={value}
         onChangeText={onChangeText}
         secureTextEntry={secureTextEntry}
@@ -37,6 +38,7 @@ const InputComponent = ({
         placeholder={placeholder}
         placeholderTextColor='#888'
         className={`input ${isFocused ? 'border-amber-700' : 'border-gray-300'}`}
+        spellCheck={spellCheck}
       />
     </View>
   )
