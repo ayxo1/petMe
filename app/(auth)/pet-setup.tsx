@@ -67,20 +67,6 @@ const PetSetup = () => {
 
   return (
     <SafeAreaView className='flex-1 gap-2 mt-4'>
-      {/* {registrationState === 'completed' && (     
-        <View >
-          <TouchableOpacity
-              onPress={() => router.replace('/(tabs)/profile')}
-          >
-              <Image
-                  source={icons.backIcon}
-                  className='size-9'
-                  resizeMode='contain'
-                  tintColor={Colors.secondary}
-              />
-          </TouchableOpacity>
-        </View>
-      )} */}
       {registrationState !== 'completed' ? (
         <>
           <Text className='font-bold text-xl color-gray-400 text-center mb-4'>now it is time to add a profile for your pet!</Text>

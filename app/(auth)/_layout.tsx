@@ -12,10 +12,10 @@ const AuthLayout = () => {
   const showBackButton: boolean = registrationState === 'completed' && pathName.includes('pet-setup') || pathName.includes('profile-setup');
 
   return (
-    <KeyboardAvoidingView 
+    <View 
         className='flex-1 bg-primary'
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={10}
+        // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        // keyboardVerticalOffset={10}
     >
       {showBackButton && (
         <View className='absolute top-12 left-6 z-50'>
@@ -34,6 +34,7 @@ const AuthLayout = () => {
       <ScrollView
         keyboardShouldPersistTaps='handled'
         contentContainerStyle={{ flexGrow: 1 }}
+        automaticallyAdjustKeyboardInsets={true}
       >
         <View
           style={{
@@ -45,7 +46,7 @@ const AuthLayout = () => {
           <Slot />
         </View>
       </ScrollView>
-    </KeyboardAvoidingView>
+    </View>
   )
 }
 

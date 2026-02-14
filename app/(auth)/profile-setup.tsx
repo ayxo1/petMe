@@ -260,21 +260,26 @@ const ProfileSetup = () => {
             </View>
           )}
 
-          {formInputData.map((inputController, index) => (
-            <Fragment key={index}>
-              <InputController
-                control={control}
-                errors={errors}
-                name={inputController.name}
-                placeholder={inputController.placeholder}
-                label={inputController.label}
-                keyboardType={inputController?.keyboardType}
-                secureTextEntry={inputController.name === 'password'}
-                spellCheck={inputController.name === 'bio'}
-              />
-            </Fragment>
-          ))}
+          <View
+            className='flex-1 h-full'
+          >
+            {formInputData.map((inputController, index) => (
+              <Fragment key={index}>
+                <InputController
+                  control={control}
+                  errors={errors}
+                  name={inputController.name}
+                  placeholder={inputController.placeholder}
+                  label={inputController.label}
+                  keyboardType={inputController?.keyboardType}
+                  secureTextEntry={inputController.name === 'password'}
+                  spellCheck={inputController.name === 'bio'}
+                />
+              </Fragment>
+            ))}
 
+          </View>
+          
           <ButtonComponent
           title={isSubmitting ? 'saving' : 'save'} 
           onPress={handleSubmit(submit)}
@@ -286,6 +291,7 @@ const ProfileSetup = () => {
               onPress={() => router.replace('/(tabs)/profile')}
             />
           )}
+
         </View>
       </View>
     </SafeAreaView>
