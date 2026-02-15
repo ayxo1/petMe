@@ -1,9 +1,34 @@
 /// <reference path="../pb_data/types.d.ts" />
 
 //pet-feed endpoint
-routerAdd("GET", "/api/feed", (c) => {
+routerAdd("GET", "/api/feed", (c) => {  
     
     const user = c.auth;
+    let userCoords = null;
+    try {
+        const currentUser = new DynamicModel({ coordinates: '' });
+        $app.db().newQuery(
+            `SELECT coordinates FROM users WHERE id = {:userId}`
+        ).bind({ userId: user.id }).one(currentUser);
+
+        userCoords = JSON.parse(currentUser.coordinates);
+    } catch (error) {
+        console.log('currentUser.coordinates error: ', error);
+    }
+
+    const toRad = deg => deg * (Math.PI / 180);
+    const haversine = (lat1, lng1, lat2, lng2) => {
+        const R = 6371;
+        const dLat = toRad(lat2 - lat1);
+        const dLng = toRad(lng2 - lng1);
+        const a = 
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+            Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return Math.round(R * c);
+    };
 
     let page = 1;
     let perPage = 20;
@@ -50,7 +75,8 @@ routerAdd("GET", "/api/feed", (c) => {
             age, 
             created,
             (SELECT username FROM users WHERE id = pets.owner) as ownerName,
-            (SELECT images FROM users WHERE id = pets.owner) as ownerImage
+            (SELECT images FROM users WHERE id = pets.owner) as ownerImage,
+            (SELECT coordinates FROM users WHERE id = pets.owner) as ownerCoordinates
         FROM pets
         WHERE owner != {:userId} 
             AND ${adoptionFilter}
@@ -79,7 +105,8 @@ routerAdd("GET", "/api/feed", (c) => {
             0 as age, 
             created,
             username as ownerName,
-            images as ownerImage
+            images as ownerImage,
+            coordinates as ownerCoordinates
             
             FROM users
             WHERE id != {:userId}
@@ -106,6 +133,7 @@ routerAdd("GET", "/api/feed", (c) => {
         'ownerName': '',
         'ownerImage': '',
         'ownerId': '',
+        'ownerCoordinates': '',
         'age': 0,
         'created': ''
     }));
@@ -114,8 +142,22 @@ routerAdd("GET", "/api/feed", (c) => {
         $app.db().newQuery(finalQuery).bind(bindParams).all(result);
     }
 
+    const profilesWithDistance = result.map(profile => {
+        
+        if (!userCoords || !profile.ownerCoordinates) return { ...profile, distance: null }
+
+        try {
+            const otherCoords = JSON.parse(profile.ownerCoordinates);
+            const distance = haversine(userCoords.lat, userCoords.lng, otherCoords.lat, otherCoords.lng);
+            return { ...profile, distance: `${distance} km`};
+        } catch (error) {
+            console.log('profilesWithDistance error, returning distance as null: ', error);
+            return { ...profile, distance: null };
+        }
+    });
+
     return c.json(200, {
-        "items": result,
+        "items": profilesWithDistance,
         "page": page,
         "perPage": perPage
     });

@@ -6,9 +6,13 @@ interface ProfileInterfaceProps {
     profileImages: string[];
     profileName: string;
     profileDescription: string;
+    distance?: string;
 };
 
-const ProfileInterface = ({ profileImages, profileName, profileDescription }: ProfileInterfaceProps) => {
+const ProfileInterface = ({ profileImages, profileName, profileDescription, distance }: ProfileInterfaceProps) => {
+
+    console.log('dist profileinterf log:', distance);
+    
 
   const profileCover: ImageSourcePropType = { uri: profileImages[0] }
 
@@ -49,16 +53,21 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription }: Pr
             />
         </View>
 
-            <View className="absolute bottom-28 left-0 right-0">
+        <View className="absolute bottom-32 left-0 right-0">
             <Text
                 className="font-bold text-3xl text-secondary text-center"
                 numberOfLines={1}
             >
                 {profileName}
             </Text>
-            </View>
+        </View>
+
+        <View className="absolute bottom-24 left-7 right-0">
+            <Text className="font-bold text-l text-authPrimary">📍 {distance} away from you</Text>
+        </View>
+
         <View
-            className="absolute left-0 right-0 bottom-8 h-16 justify-start"
+            className="absolute left-0 right-0 bottom-6 h-16 justify-start"
         >
             <Text
             className="text-base mx-8 text-white"

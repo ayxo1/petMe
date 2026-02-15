@@ -33,10 +33,7 @@ const DURATION = 300;
 
 const END_POSITION = 0;
 
-const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, onSwipeLeft, onSwipeRight }: ProfileCardPropsWithIndex) => {
-  // console.log(indexes);
-
-  const profileCover: ImageSourcePropType = { uri: profileImages[0] }
+const ProfileCard = ({ profileImages, profileName, profileDescription, distance, indexes, onSwipeLeft, onSwipeRight }: ProfileCardPropsWithIndex) => {
 
   const offset = useSharedValue({ x: 0, y: 0 });
   const translateX = useSharedValue(0);
@@ -168,7 +165,7 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, indexes, 
             profileImages={profileImages}
             profileName={profileName}
             profileDescription={profileDescription}
-
+            distance={distance}
           />
           {/* <View
             className="h-[96.5%] overflow-hidden rounded-lg p-2 mt-6"

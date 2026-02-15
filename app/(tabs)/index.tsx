@@ -23,6 +23,7 @@ export default function Index() {
   const [isPreloading, setIsPreloading] = useState(true);
   const [isModal, setIsModal] = useState(false);
   const [matchScreenProps, setmatchScreenProps] = useState<{ matchId: string; isExisting: boolean, username: string; image: string; }>();
+
   const VISIBLE_STACK_SIZE = 5;
   const currentProfile = feed[currentIndex];
   const remaining = getRemaningProfiles();
@@ -161,6 +162,7 @@ return (
                   profileImages={profile.images || []}
                   profileName={profile.name}
                   profileDescription={profile.bio}
+                  distance={profile.distance}
                   indexes={{ index: cardIndex, reverseIndex: feed.length - cardIndex - 1, currentIndex }}
                   onSwipeLeft={arrIndex === 0 ? onSwipeLeft : undefined}
                   onSwipeRight={arrIndex === 0 ? onSwipeRight : undefined}

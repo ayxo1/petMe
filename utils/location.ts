@@ -82,7 +82,7 @@ export const calculateDistance = (
     coordinates2: Coordinates
 ): number => {
 
-    // a = sin²(Δφ/2) ⋅ sin²(Δλ/2) + cos φ₁ ⋅ cos φ₂  
+    // a = sin²(Δφ/2) + cos φ₁ ⋅ cos φ₂ ⋅ sin²(Δλ/2)
     // c = 2 ⋅ atan2( √a, √(1−a) )
     // d = R ⋅ c
 
@@ -101,5 +101,5 @@ export const calculateDistance = (
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-    return R * c;
+    return Math.round(R * c);
 }
