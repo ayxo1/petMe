@@ -1,6 +1,8 @@
 import { images } from "@/constants";
+import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ImageBackground, ImageSourcePropType, Text, View } from "react-native";
+import { useState } from "react";
+import { ImageBackground, ImageSourcePropType, Pressable, Text, View } from "react-native";
 
 interface ProfileInterfaceProps {
     profileImages: string[];
@@ -11,10 +13,9 @@ interface ProfileInterfaceProps {
 
 const ProfileInterface = ({ profileImages, profileName, profileDescription, distance }: ProfileInterfaceProps) => {
 
-    console.log('dist profileinterf log:', distance);
-    
+  const [currentImageIdx, setCurrentImageIdx] = useState(0);
 
-  const profileCover: ImageSourcePropType = { uri: profileImages[0] }
+  const profileCover: ImageSourcePropType = { uri: profileImages[currentImageIdx] }
 
   return (
     <View
@@ -23,23 +24,31 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, dist
         
         <View 
             className="flex-1 relative bg-white"
+            
         >
-            <ImageBackground
-            source={profileCover}
-            className="size-full"
-            resizeMode="cover"
-            >
-
-            <LinearGradient 
-                colors={['transparent', 'rgba(40, 40, 40, .9)']}
-                start={{ x: 0, y: 0.7 }}
-                end={{ x: 0, y: 1 }}
-                style={{
-                height: '100%',
-                width: '100%',
+            <Pressable
+                onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid)
+                    setCurrentImageIdx(prev => ((prev + 1) === profileImages.length ? 0 : prev + 1));
                 }}
-            />
-            </ImageBackground>
+            >
+                <ImageBackground
+                source={profileCover}
+                className="size-full"
+                resizeMode="cover"
+                >
+
+                <LinearGradient 
+                    colors={['transparent', 'rgba(40, 40, 40, .9)']}
+                    start={{ x: 0, y: 0.7 }}
+                    end={{ x: 0, y: 1 }}
+                    style={{
+                    height: '100%',
+                    width: '100%',
+                    }}
+                />
+                </ImageBackground>
+            </Pressable>
         </View>
 
         <View
@@ -53,6 +62,17 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, dist
             />
         </View>
 
+        <View className="absolute bottom-44 left-0 right-0 flex-row justify-center gap-2">
+            {profileImages.map((img, idx) => (
+                <Text
+                    key={img}
+                    className={`font-bold text-3xl text-center ${idx === currentImageIdx ? 'text-white' : 'text-white/50'}`}
+                >
+                    .
+                </Text>
+            ))}
+        </View>
+
         <View className="absolute bottom-32 left-0 right-0">
             <Text
                 className="font-bold text-3xl text-secondary text-center"
@@ -62,9 +82,9 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, dist
             </Text>
         </View>
 
-        <View className="absolute bottom-24 left-7 right-0">
-            <Text className="font-bold text-l text-authPrimary">📍 {distance} away from you</Text>
-        </View>
+        {distance && (<View className="absolute bottom-24 left-7 right-0">
+            <Text className="text-l text-authPrimary">📍 {distance} away from you</Text>
+        </View>)}
 
         <View
             className="absolute left-0 right-0 bottom-6 h-16 justify-start"
