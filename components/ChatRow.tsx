@@ -20,7 +20,8 @@ const ChatRow = ({ matchId, matchedUser, petName, lastMessage }: MatchRowData) =
           id: matchId,
           otherUserName: matchedUser.username,
           otherUserImage: profilePic.uri,
-          otherUserId: matchedUser.id
+          otherUserId: matchedUser.id,
+          otherUserType: matchedUser.accountType
         }
       }} asChild
     >

@@ -111,7 +111,6 @@ const Likes = () => {
         try {
           if (incomingLikes.length === 0) {
             await fetchIncomingLikesProfiles();
-            console.log('usecallback log: ',incomingLikes);
           }
 
         } catch (error) {
@@ -290,9 +289,7 @@ const Likes = () => {
                 </View>
                 <TouchableOpacity 
                   className='absolute right-5 top-2 border rounded-full px-2 border-secondary'
-                  onPress={() => {
-                    console.log('test');
-                    
+                  onPress={() => {                    
                     setActivePetListOwnerId(null)}}
                 >
                   <Text className='text-xl'>▼</Text>

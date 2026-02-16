@@ -338,6 +338,11 @@ export const swipesAPI = {
 };
 
 export const messagesAPI = {
+  getUser: async (userId: string): Promise<PBUser> => {
+    const result: PBUser = await pb.collection('users').getOne(userId);
+    return result;
+  },
+
   sendMessage: async (matchId: string, senderId: string, content: string) => {
     return await pb.collection('messages').create({
       match: matchId,

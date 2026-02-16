@@ -4,7 +4,7 @@ export interface User {
   email: string;
   username: string;
   images: string[];
-  bio?: string;
+  bio: string;
   location: {
     coordinates: { lat: number; lng: number; };
     city: string;

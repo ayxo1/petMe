@@ -6,7 +6,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { AuthState, RegistrationState, SignInFormData, SignUpFormData, User } from '../types/auth';
 
-const convertPBUserToUser = (pbUser: PBUser): User => {
+export const convertPBUserToUser = (pbUser: PBUser): User => {
   
   const imageUrls = pbUser.images.map(filename => stringImageToPbUrl(filename, 'users', pbUser.id));
 

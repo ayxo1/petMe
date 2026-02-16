@@ -1,11 +1,14 @@
 import { messagesAPI } from '@/backend/config/pocketbase';
 import Modal from '@/components/Modal';
+import ProfileInterface from '@/components/ProfileInterface';
 import ReportForm from '@/components/ReportForm';
 import { icons } from '@/constants';
 import Colors from '@/constants/Colors';
-import { useAuthStore } from '@/stores/authStore';
+import { convertPBUserToUser, useAuthStore } from '@/stores/authStore';
 import { useChatStore } from '@/stores/useChatStore';
-import { PBMessage } from '@/types/pbTypes';
+import { User } from '@/types/auth';
+import { PBMessage, PBUser } from '@/types/pbTypes';
+import { PetProfile } from '@/types/pets';
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Image, Platform, Text, TouchableOpacity, View } from 'react-native';
@@ -44,17 +47,24 @@ const renderBubble = (props: BubbleProps<IMessage>) => (
 );
 
 const ChatPage = () => {
+  const userId = useAuthStore(state => state.user?.id);
+  if (!userId) return; 
+
   const [messages, setMessages] = useState<IMessage[]>([]);
 
-  const [isModal, toggleIsModal] = useState(false);
+  const [isReportModal, toggleIsReportModal] = useState(false);
+  const [matchProfileModal, toggleMatchProfileModal] = useState(false);
+
+  const [matchData, setMatchData] = useState<User>();
+  const [selectedPets, setSelectedPets] = useState<PetProfile[]>();
+
+  const params = useLocalSearchParams<{ id: string; otherUserName: string; otherUserImage: string; otherUserId: string; otherUserType: string }>();
+  const { id: matchId, otherUserName, otherUserImage, otherUserId, otherUserType } = params;
   
   const insets = useSafeAreaInsets();
   const tabbarHeight = 14;
   const keyboardTopToolbarHeight = Platform.select({ ios: 44, default: 0 });
   const keyboardVerticalOffset = insets.bottom + tabbarHeight + keyboardTopToolbarHeight;
-
-  const params = useLocalSearchParams<{ id: string; otherUserName: string; otherUserImage: string; otherUserId: string; }>();
-  const { id: matchId, otherUserName, otherUserImage, otherUserId } = params;
 
   const { checkUnreadStatus } = useChatStore();
 
@@ -68,8 +78,6 @@ const ChatPage = () => {
     }
   }
   
-  const userId = useAuthStore(state => state.user?.id);
-  if (!userId) return; 
 
   useEffect(() => {
     const formatChatMessages = (messages: PBMessage[]): IMessage[] => {
@@ -150,9 +158,6 @@ const ChatPage = () => {
           console.log(messages[0]);
 
           await messagesAPI.sendMessage(matchId, userId, messages[0].text);
-          // setMessages(previousMessages =>
-          //   GiftedChat.append(previousMessages, messages),
-          // );
         }
       };
       sendMessage();
@@ -161,14 +166,29 @@ const ChatPage = () => {
       console.log('sendMessage error:', error);
     }
   }, []);
+console.log(matchData?.images);
 
   return (
     <View className={`flex-1 mb-6`}>
       <Stack.Screen 
         options={{
           headerTitle: () => (
-            <View className='flex-row items-center gap-2 pb-2'>
-              <Image 
+            <TouchableOpacity 
+              className='flex-row items-center gap-2 pb-2'
+              onPress={async () => {
+                if(!matchProfileModal) {
+                  try {
+                    const PBuser = await messagesAPI.getUser(otherUserId);
+                    const convertedUser = convertPBUserToUser(PBuser)
+                    setMatchData(convertedUser);
+                  } catch (error) {
+                    console.log('getUser, [id].tsx error:', error);
+                  }
+                }
+                toggleMatchProfileModal(!matchProfileModal);
+              }}
+            >
+              <Image
                 source={{ uri: otherUserImage }}
                 style={{ 
                   width: 40,
@@ -179,62 +199,86 @@ const ChatPage = () => {
               <Text className='text-xl font-bold text-primary'>
                 {otherUserName}
               </Text>
-            </View>
+            </TouchableOpacity>
           ),
           headerLeft: () => (
-            <View className="flex-row gap-5">
-                <View>
-                    <TouchableOpacity
-                        onPress={() => router.back()}
-                    >
-                        <Image
-                            source={icons.backIcon}
-                            className='size-9'
-                            resizeMode='contain'
-                            tintColor={Colors.primary}
-                        />
-                    </TouchableOpacity>
-                </View>
-                {/* <View className='justify-center'>
-                    <TouchableOpacity
-                        onPress={unmatch}
-                        >
-                        <Text>unmatch</Text>
-                    </TouchableOpacity>
-                </View> */}
+            <View className="flex-row gap-2 items-center">
+              <View>
+                <TouchableOpacity
+                  onPress={() => router.back()}
+                >
+                  <Image
+                    source={icons.backIcon}
+                    className='size-9'
+                    resizeMode='contain'
+                    tintColor={Colors.primary}
+                  />
+                </TouchableOpacity>
+              </View>
+              {otherUserType === 'owner' && (
+                <TouchableOpacity>
+                  <Text className='text-primary border border-primary p-1 rounded-xl'>see pets</Text>
+                </TouchableOpacity>
+              )}
             </View>
         ),
         headerRight: () => (
           <View className="flex-row gap-2">
-              <TouchableOpacity
-                  onPress={() => toggleIsModal(!isModal)}
+            <TouchableOpacity
+              onPress={() => toggleIsReportModal(!isReportModal)}
+            >
+              <Modal
+                isOpen={isReportModal} 
+                toggleModal={toggleIsReportModal}
+                styleProps='px-4 bg-white/80'
               >
-                  <Modal
-                      isOpen={isModal} 
-                      toggleModal={toggleIsModal}
-                      styleProps='px-4 bg-white/80'
+                <ReportForm
+                  toggleModal={toggleIsReportModal}
+                  userId={userId}
+                  reportedProfileName={otherUserName}
+                  reportedProfileId={otherUserId}
+                />
+                <View className='justify-center'>
+                  <TouchableOpacity
+                    className='custom-btn bg-red-900 mb-10 py-1.5'
+                    onPress={unmatch}
                   >
-                      <ReportForm
-                        toggleModal={toggleIsModal}
-                        userId={userId}
-                        reportedProfileName={otherUserName}
-                        reportedProfileId={otherUserId}
-                      />
-                      <View className='justify-center'>
-                        <TouchableOpacity
-                          className='custom-btn bg-red-900 mb-10 py-1.5'
-                          onPress={unmatch}
-                        >
-                          <Text className='text-white'>unmatch</Text>
-                        </TouchableOpacity>
-                      </View>
-                  </Modal> 
-                  <Text className="text-red-900">report</Text>
-              </TouchableOpacity>
+                    <Text className='text-white'>unmatch</Text>
+                  </TouchableOpacity>
+                </View>
+              </Modal> 
+              <Text className="text-red-900">report</Text>
+            </TouchableOpacity>
           </View>
         ),
         }}
       />
+      {matchProfileModal && (
+        <TouchableOpacity
+          onPress={() => toggleMatchProfileModal(!matchProfileModal)}
+        >
+          <Modal
+            isOpen={matchProfileModal} 
+            toggleModal={toggleMatchProfileModal}
+            styleProps={`${matchData ? 'bg-transparent px-6' : 'px-4 bg-white/80'}`}
+          >
+            {matchData && (
+              <View className='w-full aspect-[0.55]'>
+                <ProfileInterface 
+                  profileImages={matchData.images}
+                  profileName={matchData.username}
+                  profileDescription={matchData.bio}
+                />
+              </View>
+            )}
+            {!matchData && (
+              <View className='items-center py-10 px-5'>
+                <Text className='text-xl font-bold text-red-400'>error retrieving profile</Text>
+              </View>
+              )}
+          </Modal>
+      </TouchableOpacity>
+      )}
       <GiftedChat
         user={{ _id: userId }}
         messages={messages}
@@ -247,7 +291,7 @@ const ChatPage = () => {
         renderInputToolbar={renderInputToolbar}
         renderBubble={renderBubble}
 
-        keyboardAvoidingViewProps={{ keyboardVerticalOffset, enabled: !isModal }}
+        keyboardAvoidingViewProps={{ keyboardVerticalOffset, enabled: !isReportModal }}
       />
     </View>
   )
