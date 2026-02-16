@@ -56,7 +56,7 @@ const ReportForm = ({ userId, reportedProfileName, reportedProfileId, toggleModa
   return (
     <KeyboardAvoidingView className='w-96'>
         <View>
-            <Text className="text-center mb-10 text-xl text-red-900 mt-40">report {reportedProfileName}</Text>
+            <Text className="text-center mb-10 text-xl text-red-900 mt-10">report {reportedProfileName}</Text>
         </View>
         <View>
             <InputController
@@ -67,9 +67,10 @@ const ReportForm = ({ userId, reportedProfileName, reportedProfileId, toggleModa
                 errors={errors}
                 placeholder="please describe what you noticed"
                 labelStyling={'text-black'}
+                spellCheck={true}
             />
         </View>
-        <View className=''>
+        <View>
             <View>
                 <Text className='label text-black my-4 text-start'>select the reason</Text>
             </View>
