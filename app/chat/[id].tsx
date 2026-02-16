@@ -1,17 +1,18 @@
-import { messagesAPI } from '@/backend/config/pocketbase';
+import { messagesAPI, petsAPI } from '@/backend/config/pocketbase';
 import Modal from '@/components/Modal';
 import ProfileInterface from '@/components/ProfileInterface';
 import ReportForm from '@/components/ReportForm';
 import { icons } from '@/constants';
 import Colors from '@/constants/Colors';
 import { convertPBUserToUser, useAuthStore } from '@/stores/authStore';
+import { convertPBPetToPetProfile } from '@/stores/petStore';
 import { useChatStore } from '@/stores/useChatStore';
 import { User } from '@/types/auth';
-import { PBMessage, PBUser } from '@/types/pbTypes';
+import { PBMessage } from '@/types/pbTypes';
 import { PetProfile } from '@/types/pets';
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Image, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, FlatList, Image, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { Bubble, BubbleProps, GiftedChat, IMessage, InputToolbar, InputToolbarProps } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -54,9 +55,14 @@ const ChatPage = () => {
 
   const [isReportModal, toggleIsReportModal] = useState(false);
   const [matchProfileModal, toggleMatchProfileModal] = useState(false);
+  const [petProfileModal, togglePetProfileModal] = useState(false);
+
+  const [isPetlistVisible, setIsPetlistVisible] = useState(false);
 
   const [matchData, setMatchData] = useState<User>();
-  const [selectedPets, setSelectedPets] = useState<PetProfile[]>();
+  const [matchPetsList, setMatchPetsList] = useState<PetProfile[]>();
+
+  const [selectedPetProfile, setSelectedPetProfile] = useState<PetProfile | null>();
 
   const params = useLocalSearchParams<{ id: string; otherUserName: string; otherUserImage: string; otherUserId: string; otherUserType: string }>();
   const { id: matchId, otherUserName, otherUserImage, otherUserId, otherUserType } = params;
@@ -78,6 +84,23 @@ const ChatPage = () => {
     }
   }
   
+  const onSend = useCallback((messages: IMessage[] = []) => {
+  try {
+    const sendMessage = async () => {
+      if (!messages.length) return;
+
+      if (messages) {
+        console.log(messages[0]);
+
+        await messagesAPI.sendMessage(matchId, userId, messages[0].text);
+      }
+    };
+    sendMessage();
+  } catch (error) {
+    Alert.alert('error', 'error occurred sending the message, please try again');
+    console.log('sendMessage error:', error);
+  }
+  }, []);
 
   useEffect(() => {
     const formatChatMessages = (messages: PBMessage[]): IMessage[] => {
@@ -149,24 +172,28 @@ const ChatPage = () => {
     }
   }, [matchId]);
 
-  const onSend = useCallback((messages: IMessage[] = []) => {
+useEffect(() => {
+  const fetchMatchWithPets = async () => {
     try {
-      const sendMessage = async () => {
-        if (!messages.length) return;
+      const PBuser = await messagesAPI.getUser(otherUserId);
+      const convertedUser = convertPBUserToUser(PBuser);
+      setMatchData(convertedUser);
 
-        if (messages) {
-          console.log(messages[0]);
-
-          await messagesAPI.sendMessage(matchId, userId, messages[0].text);
+      if (otherUserType === 'owner') {
+        try { 
+          const PBmatchPets = await petsAPI.getUserPets(otherUserId);
+          const convertedPets = PBmatchPets.map(convertPBPetToPetProfile);
+          setMatchPetsList(convertedPets);
+        } catch (error) {
+          console.log('fetchMatchWithPets, PBmatchPets error, [id].tsx: ', error);
         }
-      };
-      sendMessage();
+      }
     } catch (error) {
-      Alert.alert('error', 'error occurred sending the message, please try again');
-      console.log('sendMessage error:', error);
+      console.log('fetchMatchWithPets error, [id].tsx: ', error);
     }
-  }, []);
-console.log(matchData?.images);
+  };
+  fetchMatchWithPets();
+}, [])
 
   return (
     <View className={`flex-1 mb-6`}>
@@ -175,18 +202,7 @@ console.log(matchData?.images);
           headerTitle: () => (
             <TouchableOpacity 
               className='flex-row items-center gap-2 pb-2'
-              onPress={async () => {
-                if(!matchProfileModal) {
-                  try {
-                    const PBuser = await messagesAPI.getUser(otherUserId);
-                    const convertedUser = convertPBUserToUser(PBuser)
-                    setMatchData(convertedUser);
-                  } catch (error) {
-                    console.log('getUser, [id].tsx error:', error);
-                  }
-                }
-                toggleMatchProfileModal(!matchProfileModal);
-              }}
+              onPress={() => toggleMatchProfileModal(!matchProfileModal)}
             >
               <Image
                 source={{ uri: otherUserImage }}
@@ -216,8 +232,10 @@ console.log(matchData?.images);
                 </TouchableOpacity>
               </View>
               {otherUserType === 'owner' && (
-                <TouchableOpacity>
-                  <Text className='text-primary border border-primary p-1 rounded-xl'>see pets</Text>
+                <TouchableOpacity
+                  onPress={() => setIsPetlistVisible(!isPetlistVisible)}
+                >
+                  <Text className='text-primary border border-primary p-1 rounded-xl'>{isPetlistVisible ? 'hide pets' : 'see pets'}</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -253,6 +271,7 @@ console.log(matchData?.images);
         ),
         }}
       />
+
       {matchProfileModal && (
         <TouchableOpacity
           onPress={() => toggleMatchProfileModal(!matchProfileModal)}
@@ -279,6 +298,61 @@ console.log(matchData?.images);
           </Modal>
       </TouchableOpacity>
       )}
+
+      {selectedPetProfile && (
+        <Modal 
+          isOpen={!!selectedPetProfile}
+          toggleModal={() => setSelectedPetProfile(null)}
+          styleProps='bg-transparent px-6'
+        >
+          {selectedPetProfile && (
+            <View
+              className='w-full aspect-[0.55]'
+            >
+              <ProfileInterface 
+                profileImages={selectedPetProfile.images}
+                profileName={selectedPetProfile.name}
+                profileDescription={selectedPetProfile.bio}
+                />
+            </View>
+          )}
+        </Modal>
+      )}
+
+      {isPetlistVisible && (
+        <View className='items-center'>
+          <FlatList
+            data={matchPetsList}
+            horizontal
+            contentContainerStyle={{ gap: 10, padding: 10 }}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => (
+              <TouchableOpacity 
+                onPress={() => setSelectedPetProfile(item)}
+                className='ml-1.5 max-w-32'
+              >
+                <View
+                  className='shadow rounded-full'
+                  style={{ elevation: 5 }}
+                >
+                  <Image
+                    source={{uri: item.images[0]}}
+                    style={{ 
+                      width: 100,
+                      height: 100,
+                      borderRadius: 20
+                    }}
+                  />
+                </View>
+                <Text className='text-center text-secondary font-bold p-2' numberOfLines={1} ellipsizeMode='tail'>
+                  {item.name}
+                </Text>
+              </TouchableOpacity>
+            )}
+          />
+        </View>
+      )}
+
       <GiftedChat
         user={{ _id: userId }}
         messages={messages}

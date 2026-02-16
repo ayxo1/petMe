@@ -265,9 +265,7 @@ const Likes = () => {
       </View>
 
           {activePetListOwnerId && selectedPets && (
-            <View
-              className='absolute bottom-20 w-full z-10'
-            >
+            <View className='absolute bottom-20 w-full z-10'>
 
               <View 
                 className="pt-2 border-t border-secondary/20 bg-primary w-full" 

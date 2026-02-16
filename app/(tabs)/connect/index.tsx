@@ -70,8 +70,8 @@ const Index = () => {
         </SafeAreaView>
       )}
       {isLoading && (
-        <SafeAreaView className="flex-1 items-center justify-center">
-          <Text className="text-xl text-gray-600 text-center max-w-96">loading..</Text>
+        <SafeAreaView className="flex-1 items-center justify-center absolute top-48 left-0 right-0">
+          <Text className="text-2xl text-gray-600/60 text-center max-w-96">loading..</Text>
         </SafeAreaView>
       )}
       <FlatList 
