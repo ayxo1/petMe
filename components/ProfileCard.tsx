@@ -128,101 +128,64 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, distance,
     ),
   }));
 
+  const dislikeOverlayStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(
+      translateX.value,
+      [-SWIPE_THRESHOLD, 0],
+      [1, 0]
+    ),
+  }));
+
   return (
-    <View
-      // className="p-3 pb-4 px-5"
-    >
+    <View>
       <GestureDetector gesture={gesture}>
         <Animated.View
-          // className="p-2 rounded-lg bg-orange-50"
-          // className="p-2 rounded-lg"
           style={animatedStyle}
         >
           
+
+        <TiltEffect>
+
          <Animated.View
-            style={[
-              likeOverlayStyle,
-              {
-                position: 'absolute',
-                top: '50%',
-                left: '50%',
-                zIndex: 10,
-              },
+          style={[
+            likeOverlayStyle,
+            {
+              position: 'absolute',
+              top: '15%',
+              right: '20%',
+              zIndex: 10,
+            },
           ]}
           pointerEvents="none"
         >
-            <View className="size-full">
-              <Image 
-              source={icons.dogLike} 
-              className="size-full"
-              contentFit="contain"
-              />
-            </View>
+          <View>
+            <Text className="text-red-500 text-3xl">{'<3'}</Text>
+          </View>
         </Animated.View>
 
-        <TiltEffect>
+        <Animated.View
+          style={[
+            dislikeOverlayStyle,
+            {
+              position: 'absolute',
+              top: '15%',
+              left: '20%',
+              zIndex: 10,
+            },
+          ]}
+          pointerEvents="none"
+        >
+          <View>
+            <Text className="text-red-500 text-3xl">{'</3'}</Text>
+          </View>
+        </Animated.View>
+          
           <ProfileInterface 
             profileImages={profileImages}
             profileName={profileName}
             profileDescription={profileDescription}
             distance={distance}
           />
-          {/* <View
-            className="h-[96.5%] overflow-hidden rounded-lg p-2 mt-6"
-          >
-
-            <View 
-              className="flex-1 relative"
-            >
-              <ImageBackground
-                source={profileCover}
-                className="size-full"
-                resizeMode="cover"
-              >
-
-                <LinearGradient 
-                  colors={['transparent', 'rgba(40, 40, 40, .9)']}
-                  start={{ x: 0, y: 0.7 }}
-                  end={{ x: 0, y: 1 }}
-                  style={{
-                    height: '100%',
-                    width: '100%',
-                  }}
-                />
-              </ImageBackground>
-            </View>
-
-            <View
-              className="absolute inset-0"
-              pointerEvents="none"
-            >
-                <ImageBackground
-                  source={images.profileCardBorder}
-                  className="size-full"
-                  resizeMode="stretch"
-                />
-            </View>
-
-              <View className="absolute bottom-28 left-0 right-0">
-                <Text
-                  className="font-bold text-3xl text-secondary text-center"
-                  numberOfLines={1}
-                >
-                  {profileName}
-                </Text>
-              </View>
-            <View
-              className="absolute left-0 right-0 bottom-8 h-16 justify-start"
-            >
-              <Text
-                className="text-base mx-8 text-white"
-                numberOfLines={2}
-              >
-                &#9829; {profileDescription}
-              </Text>
-            </View>
-          </View> */}
-
         </TiltEffect>
         </Animated.View>
       </GestureDetector>

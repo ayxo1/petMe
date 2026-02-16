@@ -224,11 +224,6 @@ routerAdd("POST", "/api/swipe", (c) => {
 
         const targetCheck = "(" + orConditions.join(" || ") + ")";        
 
-        // let filter = `user = {:otherUser} && action = 'like' && (targetUser = {:myId}`;
-        // myPetIds.forEach(petId => {
-        //     filter += ` || targetPet = '${petId}'`;
-        // });
-        // filter += `)`;
         const filter = `user = {:otherUser} && action = 'like' && ${targetCheck}`;
 
         const mutualLikes = $app.findRecordsByFilter(

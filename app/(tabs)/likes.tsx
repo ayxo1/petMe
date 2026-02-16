@@ -9,7 +9,7 @@ import { useLikesStore } from '@/stores/useLikesStore';
 import { IncomingLikeFeedProfile } from '@/types/feed';
 import { PetProfile } from '@/types/pets';
 import { useFocusEffect } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Alert, Dimensions, FlatList, Image, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -20,7 +20,7 @@ const ITEM_WIDTH = (width / 2) - 24;
 const Likes = () => {
 
   const user = useAuthStore(state => state.user);
-  const { fetchIncomingLikesProfiles, incomingLikes, removeLike, subscribeToLikesCount } = useLikesStore();
+  const { fetchIncomingLikesProfiles, incomingLikes, removeLike } = useLikesStore();
   const [selectedPets, setSelectedPets] = useState<PetProfile[]>();
 
   const [selectedProfile, setSelectedProfile] = useState<IncomingLikeFeedProfile | null>();
@@ -43,7 +43,6 @@ const Likes = () => {
       toggleselectedPetsLoading(false);
     }
   };
-  // console.log(selectedPets[1].name);
 
   const onSwipeLeft = async () => {
     const currentId = selectedProfile 
@@ -115,10 +114,8 @@ const Likes = () => {
             console.log('usecallback log: ',incomingLikes);
           }
 
-          
         } catch (error) {
           console.log('error fetching incomingLikes: ', error);
-          
         }
       }
       init();      
@@ -162,7 +159,6 @@ const Likes = () => {
         {selectedProfile && (
           <View
             className='w-full aspect-[0.55]'
-            // style={{ aspectRatio: 0.58 }}
           >
             <ProfileCard 
               profileImages={selectedProfile.images}
@@ -184,21 +180,17 @@ const Likes = () => {
         {selectedPetProfile && (
           <View
             className='w-full aspect-[0.55]'
-            // style={{ aspectRatio: 0.58 }}
           >
             <ProfileInterface 
               profileImages={selectedPetProfile.images}
               profileName={selectedPetProfile.name}
               profileDescription={selectedPetProfile.bio}
-              // indexes={{index: 0, reverseIndex: 0, currentIndex: 0}}
-              // onSwipeLeft={onSwipeLeft}
-              // onSwipeRight={onSwipeRight}
               />
           </View>
         )}
       </Modal>
 
-      <View className=''>
+      <View>
 
         <FlatList
           data={incomingLikes}
@@ -244,10 +236,6 @@ const Likes = () => {
                   <TouchableOpacity
                     disabled={selectedPetsLoading}
                     onPress={async () => {
-                      // if (!renderPetList) {
-                      //   await fetchPetListProfiles(item.id);
-                      // }
-                      // toggleRenderPetList(!renderPetList);
                       if (activePetListOwnerId === item.id) {
                         setActivePetListOwnerId(null);
                       } else {
@@ -272,26 +260,12 @@ const Likes = () => {
         <View 
           className='flex-row pt-2'
         >
-          {/* {activePetListOwnerId && selectedPets && (
-          <View
-            className='absolute overflow-y-hidden top-0 w-full border-t border-secondary/40'
-            style={{
-              // elevation: 10,
-              boxShadow: '0 -5px 15px rgba(0, 0, 0, 0.15)',
-            }}
-          >
-            <Text>{}</Text>
-          </View>
-          )} */}
         </View>
 
 
       </View>
 
           {activePetListOwnerId && selectedPets && (
-            // <View
-            //   className='w-full'
-            // >
             <View
               className='absolute bottom-20 w-full z-10'
             >
@@ -355,8 +329,6 @@ const Likes = () => {
               </View>
 
             </View>
-
-            // </View>
           )}
           
     </SafeAreaView>

@@ -24,7 +24,7 @@ export default function Index() {
   const [isModal, setIsModal] = useState(false);
   const [matchScreenProps, setmatchScreenProps] = useState<{ matchId: string; isExisting: boolean, username: string; image: string; }>();
 
-  const VISIBLE_STACK_SIZE = 5;
+  const VISIBLE_STACK_SIZE = 4;
   const currentProfile = feed[currentIndex];
   const remaining = getRemaningProfiles();
   const visibleCards = feed.slice(currentIndex, currentIndex + VISIBLE_STACK_SIZE);
@@ -85,7 +85,7 @@ export default function Index() {
 
   const onSwipeRight = async () => {
     console.log('swiping right ', currentProfile.name);
-    console.log(currentProfile, 'logging currentProfile');
+    // console.log(currentProfile, 'logging currentProfile');
     
     if(!currentProfile) return;
 
@@ -118,7 +118,6 @@ return (
             <MatchScreen
               modalOpen={setIsModal}
               matchScreenProps={matchScreenProps}
-              // matchedProfile={currentProfile}
           />
         )}
       </Modal>

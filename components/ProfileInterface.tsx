@@ -28,7 +28,7 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, dist
         >
             <Pressable
                 onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Rigid)
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
                     setCurrentImageIdx(prev => ((prev + 1) === profileImages.length ? 0 : prev + 1));
                 }}
             >
