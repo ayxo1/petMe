@@ -1,4 +1,5 @@
 import { messagesAPI, petsAPI } from '@/backend/config/pocketbase';
+import ButtonComponent from '@/components/ButtonComponent';
 import Modal from '@/components/Modal';
 import ProfileInterface from '@/components/ProfileInterface';
 import ReportForm from '@/components/ReportForm';
@@ -12,9 +13,20 @@ import { PBMessage } from '@/types/pbTypes';
 import { PetProfile } from '@/types/pets';
 import { router, Stack, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, FlatList, Image, Platform, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, FlatList, Image, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { Bubble, BubbleProps, GiftedChat, IMessage, InputToolbar, InputToolbarProps } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+const renderLoading = () => {
+  return (
+    <View 
+      className='flex-1 justify-center items-center'
+    >
+      <Text className='text-gray-600/60 font-bold'>loading</Text>
+      <ActivityIndicator size="small" className='color-gray-600/60' />
+    </View>
+  );
+};
 
 const renderInputToolbar = (props: InputToolbarProps<IMessage>) => (
   <InputToolbar {...props} 
@@ -55,7 +67,7 @@ const ChatPage = () => {
 
   const [isReportModal, toggleIsReportModal] = useState(false);
   const [matchProfileModal, toggleMatchProfileModal] = useState(false);
-  const [petProfileModal, togglePetProfileModal] = useState(false);
+  const [unmatchModal, toggleUnmatchModal] = useState(false);
 
   const [isPetlistVisible, setIsPetlistVisible] = useState(false);
 
@@ -259,8 +271,40 @@ useEffect(() => {
                 <View className='justify-center'>
                   <TouchableOpacity
                     className='custom-btn bg-red-900 mb-10 py-1.5'
-                    onPress={unmatch}
+                    onPress={() => toggleUnmatchModal(!unmatchModal)}
                   >
+                    {unmatchModal && (
+                      <Modal
+                        isOpen={unmatchModal}
+                        toggleModal={toggleUnmatchModal}
+                      >
+                        <View className='p-4'>
+                          <View className='p-2 mb-4'>
+                            <Text className='font-bold text-xl mb-2 text-center'>do you want to unmatch this user?</Text>
+                            <Text className='text-center'>the chat room will be automatically closed</Text>
+                          </View>
+                          <View className='flex-row justify-center gap-2'>
+                            <ButtonComponent
+                              title='yes'
+                              onPress={() => {
+                                unmatch();
+                                toggleUnmatchModal(!unmatchModal);
+                              }}
+                              style='bg-red-900'
+                              textStyle='text-primary'
+                            />
+                            <ButtonComponent
+                              title='close'
+                              onPress={() => {
+                                toggleUnmatchModal(!unmatchModal);
+                              }}
+                              style='bg-red-900'
+                              textStyle='text-primary'
+                            />
+                          </View>
+                        </View>
+                      </Modal>
+                    )}
                     <Text className='text-white'>unmatch</Text>
                   </TouchableOpacity>
                 </View>
@@ -331,6 +375,7 @@ useEffect(() => {
                 onPress={() => setSelectedPetProfile(item)}
                 className='ml-1.5 max-w-32'
               >
+                <ActivityIndicator size="small" className='color-gray-600/60 absolute left-[40%] top-[40%]' />
                 <View
                   className='shadow rounded-full'
                   style={{ elevation: 5 }}
@@ -364,7 +409,7 @@ useEffect(() => {
         renderAvatar={null}
         renderInputToolbar={renderInputToolbar}
         renderBubble={renderBubble}
-
+        renderLoading={renderLoading}
         keyboardAvoidingViewProps={{ keyboardVerticalOffset, enabled: !isReportModal }}
       />
     </View>

@@ -1,5 +1,4 @@
 import { reportsAPI } from '@/backend/config/pocketbase';
-import Colors from '@/constants/Colors';
 import { reportProfile } from '@/constants/schemas/profileSchemas';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';

@@ -6,7 +6,7 @@ import { MatchRowData } from '@/types/components';
 import { PBPet, PBUser } from '@/types/pbTypes';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { FlatList, ScrollView, Text } from 'react-native';
+import { ActivityIndicator, FlatList, ScrollView, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Index = () => {
@@ -70,8 +70,9 @@ const Index = () => {
         </SafeAreaView>
       )}
       {isLoading && (
-        <SafeAreaView className="flex-1 items-center justify-center absolute top-48 left-0 right-0">
-          <Text className="text-2xl text-gray-600/60 text-center max-w-96">loading..</Text>
+        <SafeAreaView className="flex-1 flex-row gap-2 items-center justify-center absolute top-48 left-0 right-0">
+          <ActivityIndicator size="small" className='color-gray-600/60' />
+          <Text className="text-2xl text-gray-600/60 text-center max-w-96">loading</Text>
         </SafeAreaView>
       )}
       <FlatList 
