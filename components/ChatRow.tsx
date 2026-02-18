@@ -4,11 +4,11 @@ import { useChatStore } from '@/stores/useChatStore';
 import { MatchRowData } from '@/types/components';
 import { Link } from 'expo-router';
 import { Image, ImageSourcePropType, Text, TouchableHighlight, View } from 'react-native';
+import AvatarComponent from './AvatarComponent';
 
 const ChatRow = ({ matchId, matchedUser, petName, lastMessage }: MatchRowData) => {  
   
   const profilePic: ImageSourcePropType = { uri: `${pb.baseURL}/api/files/users/${matchedUser.id}/${matchedUser.images[0]}`};
-    console.log(profilePic.uri);
 
   const unreadChatRooms = useChatStore(state => state.unreadChatRooms);
   const isChatRead = unreadChatRooms.includes(matchId);
@@ -27,10 +27,14 @@ const ChatRow = ({ matchId, matchedUser, petName, lastMessage }: MatchRowData) =
     >
       <TouchableHighlight underlayColor={Colors.secondary}>
         <View className='flex-row items-center p-2'>
-          <Image
+          <AvatarComponent 
+            uri={profilePic.uri || ''}
+            style={`w-16 h-16 rounded-full ${(isChatRead || !lastMessage) && 'border border-red-500/60'}`}
+          />
+          {/* <Image
             source={profilePic}
             className={`w-16 h-16 rounded-full ${(isChatRead || !lastMessage) && 'border border-red-500/60'}`}
-          />
+          /> */}
           {(isChatRead || !lastMessage) && (
             <View className='absolute left-14 top-2'>
               <Text>🔴</Text>

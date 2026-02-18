@@ -1,3 +1,4 @@
+import AvatarComponent from '@/components/AvatarComponent';
 import ButtonComponent from '@/components/ButtonComponent';
 import { icons } from '@/constants';
 import { useAuthStore } from '@/stores/authStore';
@@ -151,13 +152,17 @@ const Profile = () => {
                             className='shadow rounded-full'
                             style={{ elevation: 5 }}
                           >
-                            <Image
+                            {/* <Image
                               source={{uri: item.images[0]}}
                               style={{ 
                                 width: 115,
                                 height: 115,
                                 borderRadius: 20
                               }}
+                            /> */}
+                            <AvatarComponent 
+                              uri={item.images[0]}
+                              style='w-32 h-32 rounded-2xl'
                             />
                           </View>
                         </View>

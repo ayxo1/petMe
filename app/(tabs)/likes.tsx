@@ -1,4 +1,5 @@
 import { pb, petsAPI } from '@/backend/config/pocketbase';
+import AvatarComponent from '@/components/AvatarComponent';
 import Modal from '@/components/Modal';
 import ProfileCard from '@/components/ProfileCard';
 import ProfileInterface from '@/components/ProfileInterface';
@@ -211,9 +212,9 @@ const Likes = () => {
                     className='shadow rounded-full'
                     style={{ elevation: 5 }}
                   >
-                    <Image
-                      source={{uri: item.images[0]}}
-                      className='w-44 h-44 rounded-full border border-secondary/40'
+                    <AvatarComponent 
+                      uri={item.images[0]}
+                      style='w-44 h-44 rounded-full border border-secondary/40'
                     />
                   </View>
                   <Text
@@ -265,7 +266,7 @@ const Likes = () => {
       </View>
 
           {activePetListOwnerId && selectedPets && (
-            <View className='absolute bottom-20 w-full z-10'>
+            <View className='absolute bottom-20 w-full z-10 h-56'>
 
               <View 
                 className="pt-2 border-t border-secondary/20 bg-primary w-full" 
@@ -306,13 +307,9 @@ const Likes = () => {
                         className='shadow rounded-full'
                         style={{ elevation: 5 }}
                       >
-                        <Image
-                          source={{uri: item.images[0]}}
-                          style={{ 
-                            width: 120,
-                            height: 120,
-                            borderRadius: 20
-                          }}
+                        <AvatarComponent 
+                          uri={item.images[0]}
+                          style='w-32 h-32 rounded-2xl'
                         />
                       </View>
                       <Text className='text-center text-secondary font-bold p-2' numberOfLines={1} ellipsizeMode='tail'>

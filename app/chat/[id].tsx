@@ -1,4 +1,5 @@
 import { messagesAPI, petsAPI } from '@/backend/config/pocketbase';
+import AvatarComponent from '@/components/AvatarComponent';
 import ButtonComponent from '@/components/ButtonComponent';
 import Modal from '@/components/Modal';
 import ProfileInterface from '@/components/ProfileInterface';
@@ -375,18 +376,14 @@ useEffect(() => {
                 onPress={() => setSelectedPetProfile(item)}
                 className='ml-1.5 max-w-32'
               >
-                <ActivityIndicator size="small" className='color-gray-600/60 absolute left-[40%] top-[40%]' />
+                {!item.images[0] && (<ActivityIndicator size="small" className='color-gray-600/60 absolute left-[40%] top-[40%]' />)}
                 <View
                   className='shadow rounded-full'
                   style={{ elevation: 5 }}
                 >
-                  <Image
-                    source={{uri: item.images[0]}}
-                    style={{ 
-                      width: 100,
-                      height: 100,
-                      borderRadius: 20
-                    }}
+                  <AvatarComponent 
+                    uri={item.images[0]}
+                    style='w-24 h-24 rounded-2xl'
                   />
                 </View>
                 <Text className='text-center text-secondary font-bold p-2' numberOfLines={1} ellipsizeMode='tail'>
