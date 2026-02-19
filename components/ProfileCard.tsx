@@ -143,7 +143,6 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, distance,
           style={animatedStyle}
         >
           
-
         <TiltEffect>
 
          <Animated.View
@@ -186,7 +185,9 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, distance,
             profileDescription={profileDescription}
             distance={distance}
           />
+
         </TiltEffect>
+        
         </Animated.View>
       </GestureDetector>
       

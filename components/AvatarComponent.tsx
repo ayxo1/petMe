@@ -7,7 +7,7 @@ const AvatarComponent = ({ uri, style = 'w-24 h-24 rounded-2xl' }: { uri: string
   return (
     <View className='items-center'>
         {!loaded && (
-            <View className='items-center justify-center w-16 h-16'>
+            <View className='items-center justify-center absolute top-[35%] left-[35%]'>
                 <ActivityIndicator size='small' />
             </View>
         )}

@@ -46,7 +46,6 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
             });
             const unreadChatRoomIds = new Set<string>();
             result.forEach(msg => unreadChatRoomIds.add(msg.match));
-            console.log('checkUnreadChatRooms log: ', unreadChatRoomIds);
 
             set({
                 unreadChatRooms: [...unreadChatRoomIds]

@@ -7,6 +7,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Fragment, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FlatList, Image, Switch, Text, TouchableOpacity, View } from "react-native";
+import AvatarComponent from "../AvatarComponent";
 import ButtonComponent from "../ButtonComponent";
 import InputController from "../controllers/InputController";
 
@@ -112,13 +113,9 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
                         >
                             <Text className="text-xl text-red-700 border rounded-full border-red-500 bg-red-300/60 px-2">x</Text>
                         </TouchableOpacity>
-                        <Image
-                            source={{uri: image}}
-                            style={{ 
-                                width: 100,
-                                height: 100,
-                                borderRadius: 20
-                            }}
+                        <AvatarComponent 
+                            uri={image}
+                            style="w-32 h-32 rounded-2xl"
                         />
                     </View>
                     )

@@ -1,13 +1,16 @@
 import AvatarComponent from '@/components/AvatarComponent';
 import ButtonComponent from '@/components/ButtonComponent';
-import { icons } from '@/constants';
+import Modal from '@/components/Modal';
+import ProfileInterface from '@/components/ProfileInterface';
+import { icons, images } from '@/constants';
 import { useAuthStore } from '@/stores/authStore';
 import { usePetStore } from '@/stores/petStore';
 import { useChatStore } from '@/stores/useChatStore';
 import { useFeedStore } from '@/stores/useFeedStore';
 import { useLikesStore } from '@/stores/useLikesStore';
+import { PetProfile } from '@/types/pets';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Href, router, Stack } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
@@ -44,7 +47,11 @@ const Profile = () => {
 
   const { user ,signOut } = useAuthStore();
   if (!user) return;
+
   const [ petSettigsModal, togglePetSettingsModal ] = useState(false);
+  const [profilePreview, toggleProfilePreview] = useState(false);
+  const [selectedPetProfile, setSelectedPetProfile] = useState<PetProfile | null>();
+
   const { pets, hydratePets } = usePetStore();
   const unsubChat = useChatStore(state => state.unsubscribeChat);
   const unsubLikes = useLikesStore(state => state.unsubscribeLikes);
@@ -69,7 +76,6 @@ const Profile = () => {
                   source={icons.settings}
                   className='size-9'
                   resizeMode='contain'
-                  // tintColor={focused ? Colors.secondary : '#000000'}
                 />
               </TouchableOpacity>
               <LogOutButton signOut={signOut}/>
@@ -77,6 +83,45 @@ const Profile = () => {
           )
         }}
       />
+
+      {profilePreview && (
+        <TouchableOpacity
+          onPress={() => toggleProfilePreview(!profilePreview)}
+        >
+          <Modal
+            isOpen={profilePreview}  
+            toggleModal={toggleProfilePreview}
+            styleProps={`${user ? 'bg-transparent px-6' : 'px-4 bg-white/80'}`}
+          >
+            <View className='w-full aspect-[0.55]'>
+              <ProfileInterface 
+                profileImages={user.images}
+                profileName={user.username}
+                profileDescription={user.bio}
+              />
+            </View>
+          </Modal>
+        </TouchableOpacity>
+      )}
+
+      {selectedPetProfile && (
+        <Modal 
+          isOpen={!!selectedPetProfile}
+          toggleModal={() => setSelectedPetProfile(null)}
+          styleProps='bg-transparent px-6'
+        > 
+          <View
+            className='w-full aspect-[0.55]'
+          >
+            <ProfileInterface 
+              profileImages={selectedPetProfile.images}
+              profileName={selectedPetProfile.name}
+              profileDescription={selectedPetProfile.bio}
+              />
+          </View>
+        </Modal>
+      )}
+
       <ScrollView
         className='p-7 flex-1 max-h-[95%]'
         contentInsetAdjustmentBehavior='automatic'
@@ -87,105 +132,100 @@ const Profile = () => {
           <View className='flex-row justify-center gap-6 m-4 items-center'>
             <TouchableOpacity
               className='p-2 border border-secondary rounded-2xl items-center'
-              onPress={async() => {
-                await cleanUpBeforeNavigation('/(auth)/profile-setup', { initialData: '1' })
-                // router.replace({
-                //   pathname: '/(auth)/profile-setup',
-                //   params: { initialData: '1' }
-                // })
-              }}
+              onPress={() => toggleProfilePreview(!profilePreview)}
             >
-              <Image
-                source={{uri: user.images[0]}}
-                style={{ 
-                  width: 60,
-                  height: 60,
-                  borderRadius: 20
-                }}
+              <AvatarComponent 
+                uri={user.images[0]}
+                style='w-32 h-32 rounded-2xl p-1'
               />
-              <Text className='text-secondary'>edit profile</Text>
+              <Text className='text-secondary'>preview profile</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              className={`p-2 border border-secondary rounded-2xl ${petSettigsModal && ' bg-red-300'}`}
-              onPress={async () => {
-                if (!petSettigsModal) await hydratePets(user.id);
-                togglePetSettingsModal(!petSettigsModal);
+
+            <View className='gap-4'>
+
+              <TouchableOpacity
+                className='p-2 border border-secondary rounded-2xl'
+                onPress={async() => {
+                await cleanUpBeforeNavigation('/(auth)/profile-setup', { initialData: '1' })
               }}
-              // onPress={() => router.replace('/(auth)/pet-setup')}
-            >
-              <Text className={` ${petSettigsModal ? 'text-white' : 'text-secondary'}`}>add/edit pets</Text>
-            </TouchableOpacity>
+              >
+                <Text className='text-center text-secondary'>edit profile</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className={`p-2 border border-secondary rounded-2xl ${petSettigsModal && ' bg-authPrimary'}`}
+                onPress={async () => {
+                  if (!petSettigsModal) await hydratePets(user.id);
+                  togglePetSettingsModal(!petSettigsModal);
+                }}
+              >
+                <Text className={`text-center ${petSettigsModal ? 'text-white' : 'text-secondary'}`}>add/edit pets</Text>
+              </TouchableOpacity>
+
+            </View>
+
           </View>
 
         </View>
 
         <View
-          className='bg-slate-100 rounded-xl'
+          className=' rounded-xl'
         >
           {petSettigsModal && (
-            <View
-              className='flex-row'
-            >
-              {/* <PetSetup /> */}
-              {pets && (
-                <View className='bg-primary gap-1'>
-                  <FlatList
-                    data={pets}
-                    horizontal
-                    contentContainerStyle={{ gap: 10, padding: 10 }}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => (
-                        <View>
-                          <TouchableOpacity
-                            className='absolute z-10 border border-green-400 rounded-full p-1 left-24 top-1 size-8 bg-green-300/60'
-                            onPress={async () => {
-                              await cleanUpBeforeNavigation(('/(auth)/pet-setup'), { id: item.id })
-                              // router.replace({
-                              //   pathname: '/(auth)/pet-setup',
-                              //   params: { id: item.id }
-                              // })
-                            }}
-                          >
-                            <Text>✏️</Text>
-                          </TouchableOpacity>
-                          <View
-                            className='shadow rounded-full'
-                            style={{ elevation: 5 }}
-                          >
-                            {/* <Image
-                              source={{uri: item.images[0]}}
-                              style={{ 
-                                width: 115,
-                                height: 115,
-                                borderRadius: 20
+            <View>
+              <Text className='text-center font-extralight p-2 text-secondary'>tap on the profile icon to preview</Text>
+              <View
+                className='flex-row'
+              >
+                {/* <PetSetup /> */}
+                {pets && (
+                  <View className='bg-primary gap-1'>
+                    <FlatList
+                      data={pets}
+                      horizontal
+                      contentContainerStyle={{ gap: 10, padding: 10 }}
+                      keyExtractor={(item) => item.id}
+                      renderItem={({ item }) => (
+                          <View>
+                            <TouchableOpacity
+                              className='absolute z-10 border border-green-400 rounded-full p-1 left-24 top-1 size-8 bg-green-300/60'
+                              onPress={async () => {
+                                await cleanUpBeforeNavigation(('/(auth)/pet-setup'), { id: item.id })
                               }}
-                            /> */}
-                            <AvatarComponent 
-                              uri={item.images[0]}
-                              style='w-32 h-32 rounded-2xl'
-                            />
+                            >
+                              <Text>✏️</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              className='shadow rounded-full'
+                              style={{ elevation: 5 }}
+                              onPress={() => setSelectedPetProfile(item)}
+                            >
+                              <AvatarComponent 
+                                uri={item.images[0]}
+                                style='w-32 h-32 rounded-2xl'
+                              />
+                            </TouchableOpacity>
                           </View>
-                        </View>
-                    )}
-                  />
-                  <TouchableOpacity
-                    style={{ 
-                      width: 114,
-                      height: 114,
-                      borderRadius: 20,
-                      borderWidth: 1,
-                      padding: 10,
-                      marginLeft: 10
-                    }}
-                    onPress={async () => {
-                      await cleanUpBeforeNavigation(('/(auth)/pet-setup'))
-                      // router.replace('/(auth)/pet-setup')
-                    }}
-                  >
-                    <Text className='text-center'>+</Text>
-                  </TouchableOpacity>
-                </View>
-              )}
+                      )}
+                    />
+                    <TouchableOpacity
+                      style={{ 
+                        width: 112,
+                        height: 112,
+                        borderRadius: 20,
+                        borderWidth: 1,
+                        padding: 10,
+                        marginLeft: 10
+                      }}
+                      onPress={async () => {
+                        await cleanUpBeforeNavigation(('/(auth)/pet-setup'))
+                      }}
+                    >
+                      <Text className='text-center text-l text-secondary'>+ a new pet</Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </View>
             </View>
           )}
         </View>

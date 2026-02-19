@@ -231,7 +231,7 @@ useEffect(() => {
             </TouchableOpacity>
           ),
           headerLeft: () => (
-            <View className="flex-row gap-2 items-center">
+            <View className="flex-row gap-1 items-center">
               <View>
                 <TouchableOpacity
                   onPress={() => router.back()}
@@ -350,17 +350,15 @@ useEffect(() => {
           toggleModal={() => setSelectedPetProfile(null)}
           styleProps='bg-transparent px-6'
         >
-          {selectedPetProfile && (
-            <View
-              className='w-full aspect-[0.55]'
-            >
-              <ProfileInterface 
-                profileImages={selectedPetProfile.images}
-                profileName={selectedPetProfile.name}
-                profileDescription={selectedPetProfile.bio}
-                />
-            </View>
-          )}
+          <View
+            className='w-full aspect-[0.55]'
+          >
+            <ProfileInterface 
+              profileImages={selectedPetProfile.images}
+              profileName={selectedPetProfile.name}
+              profileDescription={selectedPetProfile.bio}
+              />
+          </View>
         </Modal>
       )}
 
@@ -386,7 +384,7 @@ useEffect(() => {
                     style='w-24 h-24 rounded-2xl'
                   />
                 </View>
-                <Text className='text-center text-secondary font-bold p-2' numberOfLines={1} ellipsizeMode='tail'>
+                <Text className='text-center text-secondary font-bold p-2 max-w-24' numberOfLines={1} ellipsizeMode='tail'>
                   {item.name}
                 </Text>
               </TouchableOpacity>

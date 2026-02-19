@@ -5,6 +5,7 @@ import settings from '@/assets/icons/settings.png';
 import shelter from '@/assets/icons/shelter.png';
 import buritto from "@/assets/images/buritto.png";
 import ket from '@/assets/images/ket.jpg';
+import mrBigBlurhash from '@/assets/images/mrbigblurhash.jpg';
 import mrEggPlant from '@/assets/images/mrEggPlant.jpg';
 import penthouseKet from '@/assets/images/penthouseKet.jpg';
 import catPass from '../assets/icons/catPass.png';
@@ -18,7 +19,8 @@ export const images = {
     buritto,
     mrEggPlant,
     penthouseKet,
-    profileCardBorder
+    profileCardBorder,
+    mrBigBlurhash
 };
 
 export const icons = {

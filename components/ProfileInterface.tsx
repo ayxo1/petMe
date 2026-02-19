@@ -1,5 +1,6 @@
 import { images } from "@/constants";
 import * as Haptics from 'expo-haptics';
+import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from "react";
 import { ImageBackground, ImageSourcePropType, Pressable, Text, View } from "react-native";
@@ -23,8 +24,7 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, dist
     >
         
         <View 
-            className="flex-1 relative bg-white"
-            
+            className="flex-1 relative bg-primary"
         >
             <Pressable
                 onPress={() => {
@@ -32,11 +32,16 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, dist
                     setCurrentImageIdx(prev => ((prev + 1) === profileImages.length ? 0 : prev + 1));
                 }}
             >
-                <ImageBackground
-                source={profileCover}
-                className="size-full"
-                resizeMode="cover"
-                >
+
+                <Image 
+                    source={profileCover}
+                    style={{ width: '100%', height: '100%', position: 'absolute' }}
+                    contentFit='cover'
+                    cachePolicy="memory-disk"
+                    placeholder={images.mrBigBlurhash}
+                    // placeholder={blurhash}
+                    transition={50}
+                />
 
                 <LinearGradient 
                     colors={['transparent', 'rgba(40, 40, 40, .9)']}
@@ -47,7 +52,7 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, dist
                     width: '100%',
                     }}
                 />
-                </ImageBackground>
+
             </Pressable>
         </View>
 

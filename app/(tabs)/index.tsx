@@ -21,6 +21,7 @@ export default function Index() {
   } = useFeedStore();
 
   const [isPreloading, setIsPreloading] = useState(true);
+
   const [isModal, setIsModal] = useState(false);
   const [matchScreenProps, setmatchScreenProps] = useState<{ matchId: string; isExisting: boolean, username: string; image: string; }>();
 
