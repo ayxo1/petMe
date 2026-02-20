@@ -30,7 +30,6 @@ export default function RootLayout() {
     
   }, [isAuthenticated, registrationState, user]);
 
-
   return (
     <GestureHandlerRootView>
       <Stack

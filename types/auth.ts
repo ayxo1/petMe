@@ -6,7 +6,7 @@ export interface User {
   images: string[];
   bio: string;
   location: {
-    coordinates: { lat: number; lng: number; };
+    coordinates?: { lat: number; lng: number; };
     city: string;
   }
   accountType?: 'owner' | 'seeker' | 'shelter';
@@ -31,7 +31,7 @@ export interface ProfileSetupFormData {
   accountType: 'owner' | 'seeker' | 'shelter';
   location: {
     city: string;
-    coordinates: {
+    coordinates?: {
       lat: number;
       lng: number;
     }

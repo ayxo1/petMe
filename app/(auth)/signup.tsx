@@ -59,7 +59,7 @@ const SignUp = () => {
       console.log(error, ' signup error');
       Alert.alert('something went wrong, please try again');
     }
-    console.log(data);
+    // console.log(data);
   }
 
   return (

@@ -152,16 +152,18 @@ const Profile = () => {
                 <Text className='text-center text-secondary'>edit profile</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                className={`p-2 border border-secondary rounded-2xl ${petSettigsModal && ' bg-authPrimary'}`}
-                onPress={async () => {
-                  if (!petSettigsModal) await hydratePets(user.id);
-                  togglePetSettingsModal(!petSettigsModal);
-                }}
-              >
-                <Text className={`text-center ${petSettigsModal ? 'text-white' : 'text-secondary'}`}>add/edit pets</Text>
-              </TouchableOpacity>
-
+              {user.accountType === 'owner' && (
+                <TouchableOpacity
+                  className={`p-2 border border-secondary rounded-2xl ${petSettigsModal && ' bg-authPrimary'}`}
+                  onPress={async () => {
+                    if (!petSettigsModal) await hydratePets(user.id);
+                    togglePetSettingsModal(!petSettigsModal);
+                  }}
+                >
+                  <Text className={`text-center ${petSettigsModal ? 'text-white' : 'text-secondary'}`}>add/edit pets</Text>
+                </TouchableOpacity>
+              )}
+ 
             </View>
 
           </View>

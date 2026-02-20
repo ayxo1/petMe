@@ -16,7 +16,6 @@ import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const formInputData: FormInputData[] = [
-
   {
     name: 'username',
     placeholder: 'enter your username',
@@ -49,7 +48,7 @@ const ProfileSetup = () => {
       errors, isSubmitting
     }
   } = useForm({
-    resolver: yupResolver(profileSetupSchema),
+    resolver: yupResolver(profileSetupSchema(isEditing)),
     defaultValues: isEditing ? {...user} : {}
   });  
 
@@ -123,7 +122,7 @@ const ProfileSetup = () => {
         images: formData.images,
         location: {
           city: formData.location.city,
-          coordinates: formData.location.coordinates
+          ...(formData.location.coordinates && { coordinates: formData.location.coordinates })
         },
         bio: formData.bio
       };
@@ -131,14 +130,14 @@ const ProfileSetup = () => {
       const userId = user?.id;
       if(!userId) throw new Error('user not found');
       await updateProfile(userUpdate);
-
+      
       if (isEditing) {
         Alert.alert(
           'success!',
           'your profile is updated',
           [{text: 'ok', onPress: () => router.replace('/')}]
         );
-      } else if(formData.accountType === 'owner' || formData.accountType === 'shelter') {
+      } else if((formData.accountType === 'owner' || formData.accountType === 'shelter') && registrationState !== 'completed') {
         Alert.alert(
           'profile created!',
           'now you can add your pets',
@@ -146,17 +145,17 @@ const ProfileSetup = () => {
         );
         if(registrationState !== 'profile_set_up') setRegistrationState('profile_set_up');
 
-      } else {
+      } else if (formData.accountType === 'seeker') {
         router.replace('/');
         setRegistrationState('completed');
-      }
+      } 
     } catch (error) {
       console.log(error, 'profile setup error');
       Alert.alert('error', `failed to ${isEditing ? 'update' : 'create'} profile, please try again`)
     };
   };
 
-console.log(user.location.coordinates);
+console.log(errors.location);
 
   return (
     <SafeAreaView className='flex-1 gap-2 mt-4'>
@@ -179,7 +178,7 @@ console.log(user.location.coordinates);
                 { value: 'owner', label: '🐾 Owner' },
                 { value: 'seeker', label: '💝 Seeker' },
                 { value: 'shelter', label: '🏠 Shelter' },
-              ].filter(option => isEditing && (option.value !== 'shelter')).map((option) => (
+              ].filter(option => isEditing ? (option.value !== 'shelter') : option).map((option) => (
                 <ButtonComponent
                   key={option.value}
                   title={option.label}
@@ -216,22 +215,22 @@ console.log(user.location.coordinates);
               </View>
               )
             )}
-        </View>
+          </View>
 
-        {profileImages === undefined || profileImages.length < 2 
-          ? (
-            <TouchableOpacity 
-                className="flex-row justify-start w-28 items-center"
-                onPress={pickImage}
-            >
-              <Text className="label">add a photo*</Text>
-              <Text className="text-l text-secondary">(+)</Text>
-            </TouchableOpacity>
-          ) 
-          : (
-            <Text className="label text-secondary text-center">you uploaded the maximum number of pictures</Text>
-          )
-        }
+          {profileImages === undefined || profileImages.length < 2 
+            ? (
+              <TouchableOpacity 
+                  className="flex-row justify-start w-28 items-center"
+                  onPress={pickImage}
+              >
+                <Text className="label">add a photo*</Text>
+                <Text className="text-l text-secondary">(+)</Text>
+              </TouchableOpacity>
+            ) 
+            : (
+              <Text className="label text-secondary text-center">you uploaded the maximum number of pictures</Text>
+            )
+          }
 
           <View className='h-5 mt-2'>
             {errors.images && (
@@ -241,28 +240,29 @@ console.log(user.location.coordinates);
             )}
           </View>
           
-        <View className='flex flex-row gap-5 label items-center'>
-          <Text
-            className='text-black font-bold'
-          >{isEditing ? 'change' : 'add'} your current location</Text>
-          <ButtonComponent
-            title={isLoadingLocation ? 'detecting location...' : '📍'}
-            onPress={handleCurrentLocation}
-            isLoading={isLoadingLocation}
-            style="bg-blue-200 px-2 py-2"
-            textStyle="text-white"
-          />
-        </View>
-          {isEditing && (
-            <Text className='label text-secondary text-center'>(currently detected as {user.location.city})</Text>
-          )}
-
+          <View className='flex flex-row gap-5 label items-center'>
+            <Text
+              className='text-black font-bold'
+            >{isEditing ? 'change your current location' : 'add your location*'}</Text>
+            <ButtonComponent
+              title={isLoadingLocation ? 'detecting location...' : '📍'}
+              onPress={handleCurrentLocation}
+              isLoading={isLoadingLocation}
+              style="bg-blue-200 px-2 py-2"
+              textStyle="text-white"
+            />
+          </View>
+        
           {profileCoordinates && !isEditing && (
-            <View className="bg-green-100 p-2 rounded-lg mb-4">
+            <View className="bg-green-100 p-2 rounded-lg mb-2">
               <Text className="text-green-800 text-center">
                 coordinates captured
               </Text>
             </View>
+          )}
+
+          {watch('location.city') && (
+            <Text className='label text-secondary text-center'>(currently detected as {watch('location.city')})</Text>
           )}
 
           <View
@@ -290,6 +290,7 @@ console.log(user.location.coordinates);
           onPress={handleSubmit(submit)}
           isLoading={isLoading}
           />
+
           {registrationState === 'completed' && (
             <ButtonComponent 
               title='back'
