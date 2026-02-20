@@ -7,11 +7,12 @@ import { ProfileSetupFormData } from '@/types/auth';
 import { FormInputData } from '@/types/components';
 import { getCityFromCoordinates, getCurrentLocation } from '@/utils/location';
 import { yupResolver } from '@hookform/resolvers/yup';
+import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, Image, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const formInputData: FormInputData[] = [
@@ -84,17 +85,23 @@ const ProfileSetup = () => {
   const pickImage = async () => {
       const result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ['images'],
-          allowsEditing: true,
-          aspect: [4, 3],
-          quality: 0.6
+          // allowsEditing: true,
+          // aspect: [4, 3],
+          // quality: 0.6
       });
       if(!result.canceled) {
-          const currentImages = watch('images') || [];
-          setValue('images', 
-            [...currentImages, result.assets[0].uri], {
-            shouldDirty: true,
-            shouldValidate: true,
-          });
+        const converted = await ImageManipulator.manipulateAsync(
+          result.assets[0].uri,
+          [],
+          { format: ImageManipulator.SaveFormat.JPEG, compress: 0.8 }
+        );
+
+        const currentImages = watch('images') || [];
+        setValue('images', 
+          [...currentImages, converted.uri], {
+          shouldDirty: true,
+          shouldValidate: true,
+        });
       };
       
   };
@@ -149,6 +156,7 @@ const ProfileSetup = () => {
     };
   };
 
+console.log(user.location.coordinates);
 
   return (
     <SafeAreaView className='flex-1 gap-2 mt-4'>
@@ -163,7 +171,7 @@ const ProfileSetup = () => {
         <View
           className='gap-2 rounded-lg p-5'
         >
-          <View className="">
+          <View>
 
             <Text className="label">I am a...*</Text>
             <View className="flex-row gap-2 mt-2 justify-center">

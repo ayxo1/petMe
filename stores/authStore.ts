@@ -7,6 +7,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { AuthState, RegistrationState, SignInFormData, SignUpFormData, User } from '../types/auth';
 
 export const convertPBUserToUser = (pbUser: PBUser): User => {
+  console.log('convertPBUserToUser, coordinates log:', pbUser);
   
   const imageUrls = pbUser.images.map(filename => stringImageToPbUrl(filename, 'users', pbUser.id));
 

@@ -2,11 +2,11 @@ import { petFormSchema } from "@/constants/schemas/petSchemas";
 import { FormInputData } from "@/types/components";
 import { PetFormData, PetSpecies } from "@/types/pets";
 import { yupResolver } from "@hookform/resolvers/yup";
-import ExpoImageCropTool from 'expo-image-crop-tool';
+import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 import { useForm } from "react-hook-form";
-import { FlatList, Image, Switch, Text, TouchableOpacity, View } from "react-native";
+import { FlatList, Switch, Text, TouchableOpacity, View } from "react-native";
 import AvatarComponent from "../AvatarComponent";
 import ButtonComponent from "../ButtonComponent";
 import InputController from "../controllers/InputController";
@@ -47,14 +47,20 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
     const pickImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ['images'],
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 0.6
+            // allowsEditing: true,
+            // aspect: [4, 3],
+            // quality: 0.6
         });
         if(!result.canceled) {
+            const converted = await ImageManipulator.manipulateAsync(
+                result.assets[0].uri,
+                [],
+                { format: ImageManipulator.SaveFormat.JPEG, compress: 0.8 }
+            );
+
             const currentImages = watch('images') || [];
             setValue('images', 
-                [...currentImages, result.assets[0].uri], 
+                [...currentImages, converted.uri], 
                 {
                     shouldDirty: true,
                     shouldValidate: true,
