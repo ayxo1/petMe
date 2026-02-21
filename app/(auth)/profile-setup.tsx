@@ -255,7 +255,7 @@ console.log(errors.location);
             />
           </View>
         
-          {profileCoordinates && !isEditing && (
+          {profileCoordinates && (
             <View className="bg-green-100 p-2 rounded-lg mb-2">
               <Text className="text-green-800 text-center">
                 coordinates captured

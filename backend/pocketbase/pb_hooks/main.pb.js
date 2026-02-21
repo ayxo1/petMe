@@ -4,7 +4,7 @@ onRecordViewRequest((e) => {
     if (e.record.id !== e.requestInfo?.auth?.id) {
         e.record.set('coordinates', null);
     }
-}, 'users');
+}, 'users, superusers');
 
 //pet-feed endpoint
 routerAdd("GET", "/api/feed", (c) => {  
@@ -89,6 +89,7 @@ routerAdd("GET", "/api/feed", (c) => {
             AND id NOT IN (SELECT targetPet FROM swipes WHERE user = {:userId} AND swipeType = 'pet')
             AND owner NOT IN (SELECT user2 FROM matches WHERE user1 = {:userId} AND status = 'active')
             AND owner NOT IN (SELECT user1 FROM matches WHERE user2 = {:userId} AND status = 'active')
+            AND (SELECT accountType FROM users WHERE id = pets.owner) NOT LIKE '%seeker%'
         `);
     }
 

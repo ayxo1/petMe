@@ -23,7 +23,7 @@ export const getCurrentLocation = async (): Promise<Coordinates> => {
             accuracy: Location.Accuracy.Balanced
         });
 
-        const noise = () => (Math.random() - 0.5) * 0.02;
+        const noise = () => (Math.random() - 0.5) * 0.018;
         
         return {
             lat: location.coords.latitude + noise(),

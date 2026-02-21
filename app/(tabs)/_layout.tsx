@@ -111,7 +111,7 @@ const TabsLayout = () => {
           tabBarIcon: ({focused}) => (
             <>
             {unreadCount > 0 && (
-              <View className='absolute bottom-5 left-6 z-10'>
+              <View className='absolute bottom-6 left-7 z-10 bg-red-500/90 px-2 rounded-full'>
                 <Text className='text-white text-xs'>{unreadCount}</Text>
               </View>
             )}
