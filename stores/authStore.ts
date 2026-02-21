@@ -7,7 +7,6 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { AuthState, RegistrationState, SignInFormData, SignUpFormData, User } from '../types/auth';
 
 export const convertPBUserToUser = (pbUser: PBUser): User => {
-  console.log('convertPBUserToUser, coordinates log:', pbUser);
   
   const imageUrls = pbUser.images.map(filename => stringImageToPbUrl(filename, 'users', pbUser.id));
 
@@ -45,8 +44,6 @@ export const useAuthStore = create<AuthState>()(
 
       hydrateUser: async () => {
         try {
-            // set({ isLoading: true });
-
             const currentId = pb.authStore.record?.id;
             if (!currentId) {
               return;
@@ -58,7 +55,6 @@ export const useAuthStore = create<AuthState>()(
 
             set({
                 user: convertedUser,
-                // isLoading: false,
                 isHydrated: true
             });
         } catch (error) {

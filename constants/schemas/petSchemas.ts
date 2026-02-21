@@ -21,7 +21,7 @@ export const petFormSchema = yup.object({
     bio: yup
         .string()
         .required('bio is required')
-        .min(24, 'don\'t be shy')
+        .min(24, 'don\'t be shy, at least 24 characters')
         .max(240, 'max length is 240 characters'),
     images: yup
         .array()

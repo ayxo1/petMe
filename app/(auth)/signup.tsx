@@ -6,6 +6,7 @@ import { SignUpFormData } from '@/types/auth';
 import { FormInputData } from '@/types/components';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Link, router } from 'expo-router';
+import { ClientResponseError } from 'pocketbase';
 import { Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, Text, View } from 'react-native';
@@ -56,8 +57,12 @@ const SignUp = () => {
       setRegistrationState('signed_up');
       router.replace('/(auth)/profile-setup');
     } catch (error) {
-      console.log(error, ' signup error');
-      Alert.alert('something went wrong, please try again');
+      if (error instanceof ClientResponseError && error.response.data.email.message === 'Value must be unique.') {
+        Alert.alert('an account with such email already exists');
+      } else {
+        console.log(error, ' signup error');
+        Alert.alert('something went wrong, please try again');
+      }
     }
     // console.log(data);
   }

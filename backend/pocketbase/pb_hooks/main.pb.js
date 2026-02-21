@@ -1,5 +1,11 @@
 /// <reference path="../pb_data/types.d.ts" />
 
+onRecordViewRequest((e) => {
+    if (e.record.id !== e.requestInfo?.auth?.id) {
+        e.record.set('coordinates', null);
+    }
+}, 'users');
+
 //pet-feed endpoint
 routerAdd("GET", "/api/feed", (c) => {  
     

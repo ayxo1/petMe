@@ -2,6 +2,7 @@ import { pb } from '@/backend/config/pocketbase';
 import { icons } from '@/constants';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
+import { usePetStore } from '@/stores/petStore';
 import { useChatStore } from '@/stores/useChatStore';
 import { useLikesStore } from '@/stores/useLikesStore';
 import { TabBarIconProps } from '@/types/components';
@@ -24,11 +25,14 @@ const TabsLayout = () => {
 
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const user = useAuthStore(state => state.user);
-  // const unreadCount = useLikesStore(state => state.unreadCount);
-  // const fetchIncomingLikesProfiles = useLikesStore(state => state.fetchIncomingLikesProfiles);
+  if (!user) return;
+
+  const { registrationState } = useAuthStore();
+  const { pets } = usePetStore();
   const { subscribeToLikesCount, unreadCount, fetchIncomingLikesProfiles } = useLikesStore();
   const { checkUnreadStatus, subscribeToMessages, hasUnreadMessages } = useChatStore();
 
+  const isNewOwner = registrationState === 'completed' && !pets.length && user.accountType === 'owner';
 
   useEffect(() => {
     let unsubscribeLikes: () => void;
@@ -84,10 +88,17 @@ const TabsLayout = () => {
             backgroundColor: Colors.primary
           },
           tabBarIcon: ({focused}) => (
-            <TabBarIcon 
-              focused={focused}
-              icon={icons.profile}
-            />
+            <>
+              {isNewOwner && (
+              <View className='absolute bottom-6 left-4 z-10 rounded-xl py-1 px-2 w-28'>
+                <Text className='text-red-600 text-xs'>(new!)</Text>
+              </View>
+              )}
+              <TabBarIcon 
+                focused={focused}
+                icon={icons.profile}
+              />
+            </>
           ),
         }}
       />
@@ -100,7 +111,7 @@ const TabsLayout = () => {
           tabBarIcon: ({focused}) => (
             <>
             {unreadCount > 0 && (
-              <View className='absolute bottom-5 left-6 z-10 rounded-full py-1 px-2 bg-red-600/70'>
+              <View className='absolute bottom-5 left-6 z-10'>
                 <Text className='text-white text-xs'>{unreadCount}</Text>
               </View>
             )}
@@ -137,7 +148,7 @@ const TabsLayout = () => {
           tabBarIcon: ({focused}) => (
             <>
             {hasUnreadMessages && (
-              <View className='absolute bottom-5 left-6 z-10'>
+              <View className='absolute bottom-5 left-6 z-10 rounded-full py-1 px-2'>
                 <Text className=''>🔴</Text>
               </View>
             )}

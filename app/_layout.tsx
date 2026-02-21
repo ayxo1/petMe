@@ -17,7 +17,7 @@ export default function RootLayout() {
   useEffect(() => {
     init();
     hydrateUser();
-  }, [])
+  }, []);
   
   useEffect(() => {
     if (isAuthenticated) {
@@ -26,14 +26,21 @@ export default function RootLayout() {
       requestAnimationFrame(() => {
         router.replace(targetRoute);
       });
-    };
+    } else {
+      requestAnimationFrame(() => {
+        router.replace('/(auth)/signin');
+      });
+    }
     
   }, [isAuthenticated, registrationState, user]);
+console.log('reg status:', registrationState);
+
+
 
   return (
     <GestureHandlerRootView>
       <Stack
-      screenOptions={{ headerShown: false, contentStyle: {backgroundColor: Colors.primary}}}
+        screenOptions={{ headerShown: false, contentStyle: {backgroundColor: Colors.primary}}}
       />
     </GestureHandlerRootView>
   );

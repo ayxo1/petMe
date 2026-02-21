@@ -38,6 +38,7 @@ const ProfileSetup = () => {
 
   const { initialData } = useLocalSearchParams<{ initialData: '0' | '1' }>()
   const isEditing = initialData === '1';
+  const isRegistered = registrationState === 'completed';
 
   const {
     control,
@@ -48,7 +49,7 @@ const ProfileSetup = () => {
       errors, isSubmitting
     }
   } = useForm({
-    resolver: yupResolver(profileSetupSchema(isEditing)),
+    resolver: yupResolver(profileSetupSchema(isEditing, isRegistered)),
     defaultValues: isEditing ? {...user} : {}
   });  
 
@@ -116,6 +117,7 @@ const ProfileSetup = () => {
   const submit = async (formData: ProfileSetupFormData) => {
     try {
 
+
       const userUpdate = {
         username: formData.username,
         accountType: formData.accountType,
@@ -126,7 +128,7 @@ const ProfileSetup = () => {
         },
         bio: formData.bio
       };
-
+console.log('userUpdate log:', userUpdate);
       const userId = user?.id;
       if(!userId) throw new Error('user not found');
       await updateProfile(userUpdate);

@@ -1,6 +1,6 @@
 import * as yup from 'yup';
 
-export const profileSetupSchema = (isEditing: boolean) => yup.object({
+export const profileSetupSchema = (isEditing: boolean, isRegistered: boolean = true) => yup.object({
   username: yup
     .string()
     .required('name is required')
@@ -19,7 +19,7 @@ export const profileSetupSchema = (isEditing: boolean) => yup.object({
       city: yup
         .string()
         .required(),
-      coordinates: isEditing 
+      coordinates: (isEditing)
         ? yup.object({
           lat: yup.number().required(),
           lng: yup.number().required()

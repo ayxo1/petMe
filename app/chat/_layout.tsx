@@ -1,12 +1,6 @@
-import InputController from "@/components/controllers/InputController";
-import Modal from "@/components/Modal";
-import { icons } from "@/constants";
 import Colors from "@/constants/Colors";
 import { FormInputData } from "@/types/components";
-import { router, Stack } from "expo-router";
-import { Fragment, useState } from "react";
-import { useForm } from "react-hook-form";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Stack } from "expo-router";
 
 const formInputData: FormInputData[] = [
   {

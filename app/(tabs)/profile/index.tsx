@@ -17,6 +17,7 @@ import { FlatList, Image, ScrollView, Text, TouchableOpacity, View } from 'react
 type AuthRoute = '/(auth)/profile-setup' | '/(auth)/pet-setup';
 
 const LogOutButton = ({ signOut }: { signOut: () => void }) => {
+  const { pets } = usePetStore();
   const resetFeedStore = useFeedStore(state => state.reset);
   const resetLikesStore = useLikesStore(state => state.reset);
   const resetPetStore = usePetStore(state => state.reset);
@@ -41,11 +42,11 @@ const LogOutButton = ({ signOut }: { signOut: () => void }) => {
       />
     </View>
   );
-};
+};  
 
 const Profile = () => {
 
-  const { user ,signOut } = useAuthStore();
+  const { user ,signOut, registrationState } = useAuthStore();
   if (!user) return;
 
   const [ petSettigsModal, togglePetSettingsModal ] = useState(false);
@@ -58,7 +59,7 @@ const Profile = () => {
 
   const cleanUpBeforeNavigation = async (path: AuthRoute, params?: Record<string, string>) => {
     if (unsubChat) await unsubChat();
-    if (unsubLikes) await unsubLikes();
+    if (unsubLikes) await unsubLikes(); 
 
     if (params) {
       router.replace({ pathname: path, params });
@@ -127,6 +128,15 @@ const Profile = () => {
         contentInsetAdjustmentBehavior='automatic'
         contentContainerStyle={{ paddingBottom: 40, alignItems: 'center', justifyContent: 'center' }}
       >
+        {registrationState === 'completed' && !pets.length && user.accountType === 'owner' && (
+          <View>
+            <Text className='text-base text-center color-red-400 border p-4 rounded-2xl border-secondary'>
+              🔴 congrats on becoming a pet owner! 
+              {'\n'}
+              you can add a profile for them via 'add/edit pets'
+            </Text>
+          </View>
+        )}
         <View>
           {/* profile preview */}
           <View className='flex-row justify-center gap-6 m-4 items-center'>

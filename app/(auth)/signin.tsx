@@ -42,14 +42,6 @@ const SignIn = () => {
 
   const submit = async ({email, password}: SignInFormData) => {
     try {
-      const userData = {
-        id: Math.random().toString(),
-        email,
-        password,
-        username: email.split('@')[0],
-        createdAt: new Date().toISOString(),
-      }
-
       await signIn({email, password});
       setRegistrationState('completed');
       router.replace('/');
