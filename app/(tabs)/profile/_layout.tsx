@@ -1,4 +1,3 @@
-import Modal from "@/components/Modal";
 import Colors from "@/constants/Colors";
 import { useAuthStore } from "@/stores/authStore";
 import { Stack } from "expo-router";
@@ -16,17 +15,12 @@ const ProfileLayout = () => {
                     {
                     title: `${user?.username}`,
                     headerLargeTitle: true,
-                    // headerTransparent: true,
-                    // headerBlurEffect: 'regular',
-                    // headerShadowVisible: false,
                     contentStyle: {
                         backgroundColor: Colors.primary,
                     },
                     headerStyle: {
                         backgroundColor: Colors.secondary,
                     },
-                    // headerSearchBarOptions: {
-                    // },
                     headerTintColor: Colors.primary,
                     }
                 }

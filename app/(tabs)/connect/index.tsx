@@ -78,7 +78,6 @@ const Index = () => {
       <FlatList 
         scrollEnabled={false}
         data={matchRows}
-        // ItemSeparatorComponent={() => <View className='h-1 bg-secondary rounded-full'></View>}
         keyExtractor={(item) => item.matchId}
         renderItem={({item}) => <ChatRow {...item}/>}
       />

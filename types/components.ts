@@ -12,6 +12,7 @@ export interface ProfileCardProps {
   profileImages: string[];
   profileName: string;
   profileDescription: string;
+  profileType?: string;
   distance?: string;
 }
 

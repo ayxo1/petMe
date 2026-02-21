@@ -25,14 +25,13 @@ const TabsLayout = () => {
 
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const user = useAuthStore(state => state.user);
-  if (!user) return;
 
   const { registrationState } = useAuthStore();
   const { pets } = usePetStore();
   const { subscribeToLikesCount, unreadCount, fetchIncomingLikesProfiles } = useLikesStore();
   const { checkUnreadStatus, subscribeToMessages, hasUnreadMessages } = useChatStore();
 
-  const isNewOwner = registrationState === 'completed' && !pets.length && user.accountType === 'owner';
+  const isNewOwner = registrationState === 'completed' && pets.length === 0 && user?.accountType === 'owner';
 
   useEffect(() => {
     let unsubscribeLikes: () => void;
@@ -61,14 +60,15 @@ const TabsLayout = () => {
       if (unsubscribeChatMessages) unsubscribeChatMessages();
     }
   }, [isAuthenticated, user?.id])
-  
+
+  if (!user) return;
+
   if(!isAuthenticated) return <Redirect href='/signin' />
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        // tabBarShowLabel: false,
         tabBarStyle: {
           borderTopWidth: 0,
           backgroundColor: 'transparent',

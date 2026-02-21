@@ -1,5 +1,6 @@
 import Colors from "@/constants/Colors";
 import { useAuthStore } from "@/stores/authStore";
+import { usePetStore } from "@/stores/petStore";
 import { getRegistrationStateRoute } from "@/utils/routingHelper";
 import { router, Stack } from "expo-router";
 import { useEffect } from "react";
@@ -13,10 +14,14 @@ export default function RootLayout() {
   const user = useAuthStore(state => state.user);
   const init = useAuthStore(state => state.init);
   const hydrateUser = useAuthStore(state => state.hydrateUser);
+  const hydratePets = usePetStore(state => state.hydratePets);
 
   useEffect(() => {
     init();
     hydrateUser();
+    if(user) {
+      hydratePets(user.id);
+    }
   }, []);
   
   useEffect(() => {
@@ -33,9 +38,6 @@ export default function RootLayout() {
     }
     
   }, [isAuthenticated, registrationState, user]);
-console.log('reg status:', registrationState);
-
-
 
   return (
     <GestureHandlerRootView>

@@ -9,10 +9,11 @@ interface ProfileInterfaceProps {
     profileImages: string[];
     profileName: string;
     profileDescription: string;
+    profileType?: string
     distance?: string;
 };
 
-const ProfileInterface = ({ profileImages, profileName, profileDescription, distance }: ProfileInterfaceProps) => {
+const ProfileInterface = ({ profileImages, profileName, profileDescription, profileType, distance }: ProfileInterfaceProps) => {
 
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
 
@@ -22,10 +23,18 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, dist
     <View
     className="h-[96.5%] overflow-hidden rounded-lg p-2 mt-6"
     >
-        
+
         <View 
             className="flex-1 relative bg-primary"
         >
+            <View className="flex-row justify-center gap-2">
+                {profileType && profileType === 'seeker' && (
+                    <Text className="absolute text-center text-primary/80 text-xl z-50 top-16 right-8 bg-authPrimary/50 px-2 py-1 rounded-xl">
+                        seeker
+                    </Text>
+                )}
+            </View>
+
             <Pressable
                 onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)

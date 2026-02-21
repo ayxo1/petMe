@@ -62,7 +62,7 @@ export interface PBFeedRecord {
   age: number;
   distance?: string;
   ownerName?: string;
-  ownerImage?: string;
+  ownerImage?: string[];
   created: string;
   updated: string;
 

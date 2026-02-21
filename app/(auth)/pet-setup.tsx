@@ -97,8 +97,6 @@ const PetSetup = () => {
 
       <View 
         className='flex-1 h-full'
-        // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        // keyboardVerticalOffset={100}
       >
         <PetForm
           initialData={petToEdit}

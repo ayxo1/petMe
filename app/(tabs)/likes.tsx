@@ -9,7 +9,7 @@ import { convertPBPetToPetProfile } from '@/stores/petStore';
 import { useLikesStore } from '@/stores/useLikesStore';
 import { IncomingLikeFeedProfile } from '@/types/feed';
 import { PetProfile } from '@/types/pets';
-import { useFocusEffect } from 'expo-router';
+import { Link, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Alert, Dimensions, FlatList, Image, Text, TouchableHighlight, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -147,8 +147,18 @@ const Likes = () => {
         isOpen={isModal}
         toggleModal={() => setIsModal(!isModal)}
       >
-        <View>
-          <Text>heart emoji</Text>
+        <View className='px-4 py-8'>
+          <Text className='text-center text-xl text-secondary font-bold'>congrats on the new match :)</Text>
+          <View className='flex justify-center flex-row mt-5 gap-1 p-3'>
+            <Text className='text-l'>you can chat with them via the</Text>
+            <Link
+              href={'/(tabs)/connect'}
+              className='text-secondary text-l'
+              onPressOut={() => setIsModal(!isModal)}
+            >
+              connect page!
+            </Link>
+          </View>
         </View>
       </Modal>
       <Modal 

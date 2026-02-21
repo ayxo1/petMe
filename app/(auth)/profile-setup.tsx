@@ -33,7 +33,6 @@ const formInputData: FormInputData[] = [
 const ProfileSetup = () => {
 
   const { updateProfile, user, isLoading, registrationState, setRegistrationState } = useAuthStore();
-  if (!user) return;
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
 
   const { initialData } = useLocalSearchParams<{ initialData: '0' | '1' }>()
@@ -116,8 +115,6 @@ const ProfileSetup = () => {
 
   const submit = async (formData: ProfileSetupFormData) => {
     try {
-
-
       const userUpdate = {
         username: formData.username,
         accountType: formData.accountType,
@@ -128,7 +125,7 @@ const ProfileSetup = () => {
         },
         bio: formData.bio
       };
-console.log('userUpdate log:', userUpdate);
+
       const userId = user?.id;
       if(!userId) throw new Error('user not found');
       await updateProfile(userUpdate);
@@ -157,7 +154,7 @@ console.log('userUpdate log:', userUpdate);
     };
   };
 
-console.log(errors.location);
+  if (!user) return;
 
   return (
     <SafeAreaView className='flex-1 gap-2 mt-4'>

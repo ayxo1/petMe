@@ -7,7 +7,7 @@ export interface FeedProfile {
     bio: string;
     distance?: string;
     ownerName?: string;
-    ownerImage?: string;
+    ownerImage?: string[];
     createdAt: string;
     updatedAt: string;
 

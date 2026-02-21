@@ -1,12 +1,9 @@
-import { pb } from "@/backend/config/pocketbase";
-import { FeedProfile } from "@/types/feed";
 import { Link } from "expo-router";
 import React from 'react';
-import { ImageSourcePropType, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 interface MatchScreenPageProps {
     modalOpen: (isOpen: boolean) => void;
-    // matchedProfile: FeedProfile;
     matchScreenProps: {
         matchId: string;
         username: string;
@@ -18,42 +15,32 @@ interface MatchScreenPageProps {
 const MatchScreen = ({modalOpen, matchScreenProps} : MatchScreenPageProps) => {
     
   return (
-        <View className="items-center justify-center">
+        <View className="items-center justify-center px-2 py-4">
             
             <View>
-                <Text className="text-2xl color-slate-800 text-center">{matchScreenProps.isExisting ? `looks like you already matched with ${matchScreenProps.username} over a different pet previously!` : 'it is a match!'}</Text>
+                <Text className="text-2xl color-secondary text-center font-bold">{matchScreenProps.isExisting ? `looks like you already matched with ${matchScreenProps.username} over a different pet previously!` : 'it is a match!'}</Text>
             </View>
     
             <View
-                className='flex justify-end items-baseline flex-row mt-5 gap-2 p-3'
+                className='flex justify-end items-center flex-row mt-5 gap-2 p-3'
                 >
                 <View
-                className="border rounded-xl p-2"
+                className="rounded-xl p-2 bg-primary"
                 >   
-                    <Link href={{
-                        pathname: '/chat/[id]',
-                        params: {
-                            id: matchScreenProps.matchId,
-                            otherUserName: matchScreenProps.username,
-                            otherUserImage: matchScreenProps.image
-                        }
-                        }}
-                        asChild
+                    <Link 
+                        href={'/(tabs)/connect'}
+                        onPressOut={() => modalOpen(false)}
                     >
-                        <Pressable
-                            onPress={() => modalOpen(false)}
-                        >
-                            <Text>message them!</Text>
-                        </Pressable>
+                        <Text className="text-secondary">message them!</Text>
                     </Link>
                 </View>
                 <View
-                className="border rounded-xl p-2"
+                className="bg-primary rounded-xl p-2"
                 >
                     <Pressable
                     onPress={() => modalOpen(false)}
                     >
-                        <Text>continue exploring</Text>
+                        <Text className="text-secondary">continue exploring</Text>
                     </Pressable>
                 </View>
         </View>

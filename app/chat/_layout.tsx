@@ -1,21 +1,5 @@
 import Colors from "@/constants/Colors";
-import { FormInputData } from "@/types/components";
 import { Stack } from "expo-router";
-
-const formInputData: FormInputData[] = [
-  {
-    name: 'email',
-    placeholder: 'enter your email',
-    label: 'email',
-    keyboardType: "email-address",
-  },
-  {
-    name: 'password',
-    placeholder: 'enter your password',
-    label: 'password',
-    keyboardType: "default",
-  },
-];
 
 const ChatLayout = () => {
      

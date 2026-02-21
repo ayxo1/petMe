@@ -107,7 +107,7 @@ routerAdd("GET", "/api/feed", (c) => {
             username as name, 
             bio, 
             images, 
-            'profile' as type, 
+            accountType as type, 
             id as ownerId, 
             0 as age, 
             created,

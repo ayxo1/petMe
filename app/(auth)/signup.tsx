@@ -64,7 +64,6 @@ const SignUp = () => {
         Alert.alert('something went wrong, please try again');
       }
     }
-    // console.log(data);
   }
 
   return (

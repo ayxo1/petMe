@@ -14,8 +14,6 @@ const AuthLayout = () => {
   return (
     <View 
         className='flex-1 bg-primary'
-        // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        // keyboardVerticalOffset={10}
     >
       {showBackButton && (
         <View className='absolute top-12 left-6 z-50'>

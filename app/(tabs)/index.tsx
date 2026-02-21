@@ -86,7 +86,6 @@ export default function Index() {
 
   const onSwipeRight = async () => {
     console.log('swiping right ', currentProfile.name);
-    // console.log(currentProfile, 'logging currentProfile');
     
     if(!currentProfile) return;
 
@@ -97,7 +96,7 @@ export default function Index() {
       setmatchScreenProps({
         matchId: isMatch.matchId,
         isExisting: isMatch.isExisting || false,
-        username: currentProfile.type === 'pet' ? currentProfile.ownerName as string : currentProfile.name,
+        username: currentProfile.type === 'pet' ? currentProfile?.ownerName as string : currentProfile.name,
         image: currentProfile.type === 'pet' 
           ? `${pb.baseURL}/api/files/users/${currentProfile.ownerId}/${currentProfile.ownerImage}`
           : currentProfile.images[0],
@@ -142,7 +141,7 @@ return (
   
             const cardIndex = currentIndex + arrIndex;
             const zIndex = visibleCards.length - arrIndex;
-  
+
             return (
               <View 
               key={profile.id}
@@ -162,11 +161,13 @@ return (
                   profileImages={profile.images || []}
                   profileName={profile.name}
                   profileDescription={profile.bio}
+                  profileType={profile.type}
                   distance={profile.distance}
                   indexes={{ index: cardIndex, reverseIndex: feed.length - cardIndex - 1, currentIndex }}
                   onSwipeLeft={arrIndex === 0 ? onSwipeLeft : undefined}
                   onSwipeRight={arrIndex === 0 ? onSwipeRight : undefined}
                 />
+                
               </View>
             )
           })}

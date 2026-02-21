@@ -2,7 +2,7 @@ import AvatarComponent from '@/components/AvatarComponent';
 import ButtonComponent from '@/components/ButtonComponent';
 import Modal from '@/components/Modal';
 import ProfileInterface from '@/components/ProfileInterface';
-import { icons, images } from '@/constants';
+import { icons } from '@/constants';
 import { useAuthStore } from '@/stores/authStore';
 import { usePetStore } from '@/stores/petStore';
 import { useChatStore } from '@/stores/useChatStore';
@@ -17,7 +17,6 @@ import { FlatList, Image, ScrollView, Text, TouchableOpacity, View } from 'react
 type AuthRoute = '/(auth)/profile-setup' | '/(auth)/pet-setup';
 
 const LogOutButton = ({ signOut }: { signOut: () => void }) => {
-  const { pets } = usePetStore();
   const resetFeedStore = useFeedStore(state => state.reset);
   const resetLikesStore = useLikesStore(state => state.reset);
   const resetPetStore = usePetStore(state => state.reset);
@@ -47,24 +46,25 @@ const LogOutButton = ({ signOut }: { signOut: () => void }) => {
 const Profile = () => {
 
   const { user ,signOut, registrationState } = useAuthStore();
-  if (!user) return;
-
+  
   const [ petSettigsModal, togglePetSettingsModal ] = useState(false);
   const [profilePreview, toggleProfilePreview] = useState(false);
   const [selectedPetProfile, setSelectedPetProfile] = useState<PetProfile | null>();
-
+  
   const { pets, hydratePets } = usePetStore();
   const unsubChat = useChatStore(state => state.unsubscribeChat);
   const unsubLikes = useLikesStore(state => state.unsubscribeLikes);
-
+  
   const cleanUpBeforeNavigation = async (path: AuthRoute, params?: Record<string, string>) => {
     if (unsubChat) await unsubChat();
     if (unsubLikes) await unsubLikes(); 
-
+    
     if (params) {
       router.replace({ pathname: path, params });
     } else router.replace(path);
   }
+  
+  if (!user) return;
 
   return (
     <>
@@ -128,12 +128,10 @@ const Profile = () => {
         contentInsetAdjustmentBehavior='automatic'
         contentContainerStyle={{ paddingBottom: 40, alignItems: 'center', justifyContent: 'center' }}
       >
-        {registrationState === 'completed' && !pets.length && user.accountType === 'owner' && (
+        {registrationState === 'completed' && pets.length === 0 && user.accountType === 'owner' && (
           <View>
             <Text className='text-base text-center color-red-400 border p-4 rounded-2xl border-secondary'>
-              🔴 congrats on becoming a pet owner! 
-              {'\n'}
-              you can add a profile for them via 'add/edit pets'
+              🔴 you can add profiles for pets via 'add/edit pets!'
             </Text>
           </View>
         )}
