@@ -14,6 +14,7 @@ export interface ProfileCardProps {
   profileDescription: string;
   profileType?: string;
   distance?: string;
+  isAvailableForAdoption?: boolean;
 }
 
 export interface InputComponentProps {

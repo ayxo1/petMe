@@ -168,6 +168,7 @@ return (
                   profileDescription={profile.bio}
                   profileType={profile.type}
                   distance={profile.distance}
+                  isAvailableForAdoption={profile.isAvailableForAdoption}
                   indexes={{ index: cardIndex, reverseIndex: feed.length - cardIndex - 1, currentIndex }}
                   onSwipeLeft={arrIndex === 0 ? onSwipeLeft : undefined}
                   onSwipeRight={arrIndex === 0 ? onSwipeRight : undefined}

@@ -33,7 +33,7 @@ const DURATION = 300;
 
 const END_POSITION = 0;
 
-const ProfileCard = ({ profileImages, profileName, profileDescription, profileType, distance, indexes, onSwipeLeft, onSwipeRight }: ProfileCardPropsWithIndex) => {
+const ProfileCard = ({ profileImages, profileName, profileDescription, profileType, distance, isAvailableForAdoption, indexes, onSwipeLeft, onSwipeRight }: ProfileCardPropsWithIndex) => {
 
   const offset = useSharedValue({ x: 0, y: 0 });
   const translateX = useSharedValue(0);
@@ -185,6 +185,7 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, profileTy
             profileDescription={profileDescription}
             profileType={profileType}
             distance={distance}
+            isAvailableForAdoption={isAvailableForAdoption}
           />
 
         </TiltEffect>

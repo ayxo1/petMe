@@ -3,7 +3,7 @@ import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from "react";
-import { ImageBackground, ImageSourcePropType, Pressable, Text, View } from "react-native";
+import { ImageBackground, ImageSourcePropType, Pressable, Text, TouchableOpacity, View } from "react-native";
 
 interface ProfileInterfaceProps {
     profileImages: string[];
@@ -11,9 +11,10 @@ interface ProfileInterfaceProps {
     profileDescription: string;
     profileType?: string
     distance?: string;
+    isAvailableForAdoption?: boolean;
 };
 
-const ProfileInterface = ({ profileImages, profileName, profileDescription, profileType, distance }: ProfileInterfaceProps) => {
+const ProfileInterface = ({ profileImages, profileName, profileDescription, profileType, distance, isAvailableForAdoption }: ProfileInterfaceProps) => {
 
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
 
@@ -27,7 +28,7 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, prof
         <View 
             className="flex-1 relative bg-primary"
         >
-            <View className="flex-row justify-center gap-2">
+            <View>
                 {profileType && profileType === 'seeker' && (
                     <Text className="absolute text-center text-primary/80 text-xl z-50 top-16 right-8 bg-authPrimary/50 px-2 py-1 rounded-xl">
                         seeker
@@ -75,6 +76,19 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, prof
                 resizeMode="stretch"
             />
         </View>
+
+        {isAvailableForAdoption && (
+            <View className='flex-row absolute bottom-52 left-0 right-0 items-center justify-center gap-2'>
+                <Text
+                    className='font-extralight text-xl text-center text-blue-100 bg-blue-500/40 px-3 py-1 rounded-xl'
+                >
+                    looking for a new home
+                </Text>
+                <TouchableOpacity className='bg-blue-500/40 px-2 py-1 rounded-full'>
+                    <Text className="font-extralight text-xl text-center text-blue-100">ⓘ</Text>
+                </TouchableOpacity>
+            </View>
+        )}
 
         <View className="absolute bottom-44 left-0 right-0 flex-row justify-center gap-2">
             {profileImages.map((img, idx) => (
