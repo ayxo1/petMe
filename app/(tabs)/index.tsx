@@ -18,7 +18,10 @@ export default function Index() {
     swipePass,
     fetchProfileBatch,
     getRemaningProfiles,
+    feedType,
+    reset
   } = useFeedStore();
+  
 
   const [isPreloading, setIsPreloading] = useState(true);
 
@@ -102,6 +105,8 @@ export default function Index() {
           : currentProfile.images[0],
       });
       setIsModal(true);
+      reset();
+      await fetchProfileBatch(feedType);
     };
   };
 
