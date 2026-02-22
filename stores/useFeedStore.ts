@@ -103,7 +103,6 @@ export const useFeedStore = create<FeedState>(
         },
     
         swipeLike: async (id: string) => {
-            const state = get();
             const currentUser = getCurrentUser();
             if(!currentUser) {
                 console.error('no user is logged in (swipeLike)');

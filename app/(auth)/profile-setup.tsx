@@ -3,6 +3,7 @@ import ButtonComponent from '@/components/ButtonComponent';
 import InputController from '@/components/controllers/InputController';
 import { profileSetupSchema } from '@/constants/schemas/profileSchemas';
 import { useAuthStore } from '@/stores/authStore';
+import { useFeedStore } from '@/stores/useFeedStore';
 import { ProfileSetupFormData } from '@/types/auth';
 import { FormInputData } from '@/types/components';
 import { getCityFromCoordinates, getCurrentLocation } from '@/utils/location';
@@ -34,6 +35,7 @@ const ProfileSetup = () => {
 
   const { updateProfile, user, isLoading, registrationState, setRegistrationState } = useAuthStore();
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
+  const { fetchProfileBatch, reset, feedType } = useFeedStore();
 
   const { initialData } = useLocalSearchParams<{ initialData: '0' | '1' }>()
   const isEditing = initialData === '1';
@@ -62,6 +64,14 @@ const ProfileSetup = () => {
 
       const coordinates = await getCurrentLocation();
       const locationData = await getCityFromCoordinates(coordinates);
+      // const coordinates = {
+      //   lat: 11.962197389522155,
+      //   lng: 108.44319558498574
+      // }
+      // const locationData = await getCityFromCoordinates({
+      //   lat: 11.962197389522155,
+      //   lng: 108.44319558498574
+      // });
 
       if (coordinates && locationData) {
         setValue('location', { city: locationData.city, coordinates });
@@ -131,6 +141,11 @@ const ProfileSetup = () => {
       await updateProfile(userUpdate);
       
       if (isEditing) {
+        if(formData.location.coordinates) {
+          console.log('very interesting');
+          reset();
+          await fetchProfileBatch(feedType);
+        }
         Alert.alert(
           'success!',
           'your profile is updated',
