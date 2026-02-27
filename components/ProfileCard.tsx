@@ -23,23 +23,26 @@ interface ProfileCardPropsWithIndex extends ProfileCardProps {
 
 const { width: wWidth, height } = Dimensions.get("window");
 const SWIPE_THRESHOLD = wWidth * 0.15;
-
-const SNAP_POINTS = [-wWidth, 0, wWidth];
-const aspectRatio = 722 / 368;
-const CARD_WIDTH = wWidth - 128;
-const CARD_HEIGHT = CARD_WIDTH * aspectRatio;
-const IMAGE_WIDTH = CARD_WIDTH * 0.9;
 const DURATION = 300;
-
 const END_POSITION = 0;
+const PAW_WIDTH = 80;
+const PAW_HEIGHT = 220;
 
 const ProfileCard = ({ profileImages, profileName, profileDescription, profileType, distance, isAvailableForAdoption, indexes, onSwipeLeft, onSwipeRight }: ProfileCardPropsWithIndex) => {
 
-  const offset = useSharedValue({ x: 0, y: 0 });
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(-height);
   const scale = useSharedValue(1);
   const rotateZ = useSharedValue(indexes.index === indexes.currentIndex ? 0 : Math.random() * 10);
+
+  // paw anim
+  const pawTranslateX = useSharedValue(wWidth);  // Start off-screen RIGHT
+  const pawTranslateY = useSharedValue(0);
+  const pawOpacity = useSharedValue(0);
+  const pawInitialX = useSharedValue(0);  // renamed from touchY for clarity
+  const pawRotation = useSharedValue(0);
+  const cardCenterX = wWidth / 2;
+  //
 
   useEffect(() => {
     const delay = indexes.reverseIndex * DURATION
@@ -65,25 +68,41 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, profileTy
 
 
   const gesture = Gesture.Pan()
+  .onStart((e) => {
+    const fromRight = e.absoluteX > cardCenterX;
+    
+    pawOpacity.value = 1;
+    pawRotation.value = fromRight ? -15 : 15;
+
+    pawInitialX.value = e.absoluteX - (PAW_WIDTH / 2);
+    pawTranslateX.value = pawInitialX.value;
+    const pawStopY = height * 0.78;
+    pawTranslateY.value = height;
+    pawTranslateY.value = withTiming(pawStopY, { duration: 200 });
+  })
   .onUpdate((e) => {
     translateX.value = e.translationX;
-    translateY.value = e.translationY;
+
+    // uncomment to restore the Y axis swiping
+    // translateY.value = e.translationY;
+    
+    pawTranslateX.value = pawInitialX.value + e.translationX;
 
     scale.value = interpolate(
       Math.abs(e.translationX),
       [0, SWIPE_THRESHOLD],
-      [1, 0.90]
-    )
+      [1, 0.95]
+    );
   })
   .onEnd((e) => {
     const swipedRight = e.translationX > SWIPE_THRESHOLD;
     const swipedLeft = e.translationX < -SWIPE_THRESHOLD;
     console.log({right: swipedRight, left: swipedLeft});
     
-    
     if(swipedRight || swipedLeft) {
       
-      translateX.value = withTiming(e.translationX + (swipedRight ? 400 : -400), { duration: 300 });
+      pawTranslateX.value = withTiming(swipedRight ? wWidth : -wWidth);
+      pawOpacity.value = withDelay(200, withTiming(0));
 
       scale.value = withTiming(0, { duration: 300 }, (finished) => {
         try {
@@ -96,6 +115,7 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, profileTy
           console.warn('scheduleOnRN swipeLeft error', error);
         }
       });
+
     } else {
       scale.value = withTiming(1, {
           duration: 100,
@@ -108,6 +128,9 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, profileTy
         easing: Easing.inOut(Easing.ease) 
       });
 
+      const retreatX = pawRotation.value === -15 ? wWidth : -120;
+      pawTranslateX.value = withTiming(retreatX, { duration: 150 });
+      pawOpacity.value = withDelay(150, withTiming(0));
     }
   });
 
@@ -138,6 +161,27 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, profileTy
 
   return (
     <View>
+
+      <View className="pointer-events-none absolute z-50 size-full">
+        <Animated.Image
+          source={images.orangePaw}
+          style={[
+            {
+              width: PAW_WIDTH,
+              height: PAW_HEIGHT,
+            }, 
+            useAnimatedStyle(() => ({
+              transform: [
+                { translateX: pawTranslateX.value },
+                { translateY: pawTranslateY.value },
+                { rotate: `${pawRotation.value}deg`}
+              ],
+              opacity: pawOpacity.value
+            }))
+          ]}
+        />
+      </View>
+
       <GestureDetector gesture={gesture}>
         <Animated.View
           style={animatedStyle}
@@ -145,7 +189,7 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, profileTy
           
         <TiltEffect>
 
-         <Animated.View
+        <Animated.View
           style={[
             likeOverlayStyle,
             {

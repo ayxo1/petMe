@@ -4,6 +4,7 @@ import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from "react";
 import { ImageBackground, ImageSourcePropType, Pressable, Text, TouchableOpacity, View } from "react-native";
+import Modal from "./Modal";
 
 interface ProfileInterfaceProps {
     profileImages: string[];
@@ -17,6 +18,7 @@ interface ProfileInterfaceProps {
 const ProfileInterface = ({ profileImages, profileName, profileDescription, profileType, distance, isAvailableForAdoption }: ProfileInterfaceProps) => {
 
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
+  const [adoptionModal, toggleAdoptionModal] = useState(false);
 
   const profileCover: ImageSourcePropType = { uri: profileImages[currentImageIdx] }
 
@@ -24,6 +26,20 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, prof
     <View
     className="h-[96.5%] overflow-hidden rounded-lg p-2 mt-6"
     >
+
+        {adoptionModal && (
+            <Modal 
+                isOpen={adoptionModal}
+                toggleModal={toggleAdoptionModal}
+                styleProps='bg-primary/50 w-96 h-72 justify-center items-center'
+            >
+                <View className="gap-2">
+                    <Text className="text-authPrimary font-bold">adoption status: available available</Text>
+                    <Text className="text-authPrimary font-bold">reason: yes</Text>
+                    <Text className="text-authPrimary font-bold">requirements: to love mr big</Text>
+                </View>
+            </Modal>
+        )}
 
         <View 
             className="flex-1 relative bg-primary"
@@ -80,12 +96,15 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, prof
         {isAvailableForAdoption && (
             <View className='flex-row absolute bottom-52 left-0 right-0 items-center justify-center gap-2'>
                 <Text
-                    className='font-extralight text-xl text-center text-blue-100 bg-blue-500/40 px-3 py-1 rounded-xl'
+                    className='font-extralight text-l text-center text-blue-100 bg-blue-500/40 px-3 py-1 rounded-xl border border-blue-100/20'
                 >
                     looking for a new home
                 </Text>
-                <TouchableOpacity className='bg-blue-500/40 px-2 py-1 rounded-full'>
-                    <Text className="font-extralight text-xl text-center text-blue-100">ⓘ</Text>
+                <TouchableOpacity 
+                    className='bg-blue-500/40 p-1 rounded-full border border-blue-100/20'
+                    onPress={() => toggleAdoptionModal(!adoptionModal)}
+                >
+                    <Text className="font-extralight text-l text-center text-blue-100">ⓘ</Text>
                 </TouchableOpacity>
             </View>
         )}

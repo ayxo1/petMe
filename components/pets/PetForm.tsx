@@ -227,6 +227,7 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
                         name="adoptionRequirements"
                         label='requirements'
                         placeholder="e.g., special food, etc."
+                        spellCheck={true}
                     />
                     <InputController 
                         control={control}
@@ -234,6 +235,7 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
                         name="adoptionReason"
                         label='reason'
                         placeholder="e.g., found a stray"
+                        spellCheck={true}
                     />
                     <View className="mb-4 flex-col items-center">
                         <Text className="label">adoption status</Text>
@@ -249,7 +251,7 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
                                 onPress={() => setValue('adoptionStatus', option.value as 'available' | 'pending' | 'adopted')}
                                 style={
                                 adoptionStatus === option.value
-                                    ? 'bg-primary flex-1'
+                                    ? 'bg-secondary flex-1'
                                     : 'bg-gray-200 flex-1'
                                 }
                             />
