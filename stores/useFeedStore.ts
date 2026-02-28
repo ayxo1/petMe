@@ -126,7 +126,11 @@ export const useFeedStore = create<FeedState>(
                 const remaining = get().feed.length - get().currentIndex;
                 
                 if (remaining < PREFETCH_THRESHOLD) {
-                    get().fetchProfileBatch();
+                    try {
+                        await get().fetchProfileBatch();     
+                    } catch (error) {
+                       console.log('usefeedstore, remaining < PREFETCH_THRESHOLD error, the feed is empty: ', error);   
+                    }
                 }
                 
                 console.log('match result issss ', response.isMatch);

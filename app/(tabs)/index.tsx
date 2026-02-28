@@ -22,7 +22,6 @@ export default function Index() {
     reset
   } = useFeedStore();
   
-
   const [isPreloading, setIsPreloading] = useState(true);
 
   const [isModal, setIsModal] = useState(false);
@@ -116,7 +115,10 @@ return (
     >
       <Modal
         isOpen={isModal}
-        onRequestClose={() => setIsModal(false)}
+        onRequestClose={() => {setIsModal(false)
+          // reset();
+          // fetchProfileBatch(feedType).catch(e => console.log('fetchProfileBatch Matchscreen modal error: ', e));
+        }}
         toggleModal={setIsModal}
       > 
         {matchScreenProps && (

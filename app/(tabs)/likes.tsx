@@ -6,6 +6,7 @@ import ProfileInterface from '@/components/ProfileInterface';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
 import { convertPBPetToPetProfile } from '@/stores/petStore';
+import { useFeedStore } from '@/stores/useFeedStore';
 import { useLikesStore } from '@/stores/useLikesStore';
 import { IncomingLikeFeedProfile } from '@/types/feed';
 import { PetProfile } from '@/types/pets';
@@ -22,6 +23,7 @@ const Likes = () => {
 
   const user = useAuthStore(state => state.user);
   const { fetchIncomingLikesProfiles, incomingLikes, removeLike } = useLikesStore();
+  const { reset, fetchProfileBatch, feedType } = useFeedStore();
   const [selectedPets, setSelectedPets] = useState<PetProfile[]>();
 
   const [selectedProfile, setSelectedProfile] = useState<IncomingLikeFeedProfile | null>();
@@ -89,6 +91,8 @@ const Likes = () => {
         if(isMatch.isMatch && isMatch.matchId) {
           console.log(isMatch, ' logging isMatch');
           setIsModal(true);
+          reset();
+          await fetchProfileBatch(feedType);
         };
   
         if (selectedProfile) {
@@ -110,9 +114,8 @@ const Likes = () => {
     useCallback(() => {
       const init = async () => {
         try {
-          if (incomingLikes.length === 0) {
-            await fetchIncomingLikesProfiles();
-          }
+          
+          await fetchIncomingLikesProfiles();
 
         } catch (error) {
           console.log('error fetching incomingLikes: ', error);
