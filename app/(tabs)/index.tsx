@@ -115,10 +115,8 @@ return (
     >
       <Modal
         isOpen={isModal}
-        onRequestClose={() => {setIsModal(false)
-          // reset();
-          // fetchProfileBatch(feedType).catch(e => console.log('fetchProfileBatch Matchscreen modal error: ', e));
-        }}
+        // onRequestClose={() => {setIsModal(false)
+        // }}
         toggleModal={setIsModal}
       > 
         {matchScreenProps && (
@@ -174,6 +172,7 @@ return (
                   indexes={{ index: cardIndex, reverseIndex: feed.length - cardIndex - 1, currentIndex }}
                   onSwipeLeft={arrIndex === 0 ? onSwipeLeft : undefined}
                   onSwipeRight={arrIndex === 0 ? onSwipeRight : undefined}
+                  isPaw={true}
                 />
                 
               </View>

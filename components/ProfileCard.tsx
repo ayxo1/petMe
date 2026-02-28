@@ -1,12 +1,9 @@
 import { icons, images } from "@/constants";
 import type { ProfileCardProps } from "@/types/components";
-import { Image } from "expo-image";
-import { LinearGradient } from 'expo-linear-gradient';
 import { useEffect } from "react";
-import { Dimensions, ImageBackground, ImageSourcePropType, Text, View } from "react-native";
+import { Dimensions, Text, View } from "react-native";
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withDelay, withTiming } from "react-native-reanimated";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { scheduleOnRN } from 'react-native-worklets';
 import { TiltEffect } from "./holoCard/TiltEffect";
 import ProfileInterface from "./ProfileInterface";
@@ -19,6 +16,7 @@ interface ProfileCardPropsWithIndex extends ProfileCardProps {
   };
   onSwipeLeft?: () => void;
   onSwipeRight?: () => void;
+  isPaw?: boolean
 };
 
 const { width: wWidth, height } = Dimensions.get("window");
@@ -28,7 +26,7 @@ const END_POSITION = 0;
 const PAW_WIDTH = 80;
 const PAW_HEIGHT = 220;
 
-const ProfileCard = ({ profileImages, profileName, profileDescription, profileType, distance, isAvailableForAdoption, indexes, onSwipeLeft, onSwipeRight }: ProfileCardPropsWithIndex) => {
+const ProfileCard = ({ profileImages, profileName, profileDescription, profileType, distance, isAvailableForAdoption, indexes, onSwipeLeft, onSwipeRight, isPaw = false }: ProfileCardPropsWithIndex) => {
 
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(-height);
@@ -36,10 +34,10 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, profileTy
   const rotateZ = useSharedValue(indexes.index === indexes.currentIndex ? 0 : Math.random() * 10);
 
   // paw anim
-  const pawTranslateX = useSharedValue(wWidth);  // Start off-screen RIGHT
+  const pawTranslateX = useSharedValue(-wWidth);  // start off-screen RIGHT
   const pawTranslateY = useSharedValue(0);
   const pawOpacity = useSharedValue(0);
-  const pawInitialX = useSharedValue(0);  // renamed from touchY for clarity
+  const pawInitialX = useSharedValue(0);
   const pawRotation = useSharedValue(0);
   const cardCenterX = wWidth / 2;
   //
@@ -128,8 +126,9 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, profileTy
         easing: Easing.inOut(Easing.ease) 
       });
 
-      const retreatX = pawRotation.value === -15 ? wWidth : -120;
+      const retreatX = pawRotation.value === -15 ? wWidth : 0;
       pawTranslateX.value = withTiming(retreatX, { duration: 150 });
+      pawTranslateY.value = withTiming(height, { duration: 150 });
       pawOpacity.value = withDelay(150, withTiming(0));
     }
   });
@@ -162,25 +161,27 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, profileTy
   return (
     <View>
 
-      <View className="pointer-events-none absolute z-50 size-full">
-        <Animated.Image
-          source={images.orangePaw}
-          style={[
-            {
-              width: PAW_WIDTH,
-              height: PAW_HEIGHT,
-            }, 
-            useAnimatedStyle(() => ({
-              transform: [
-                { translateX: pawTranslateX.value },
-                { translateY: pawTranslateY.value },
-                { rotate: `${pawRotation.value}deg`}
-              ],
-              opacity: pawOpacity.value
-            }))
-          ]}
-        />
-      </View>
+      {isPaw && (
+        <View className="pointer-events-none absolute z-50 size-full">
+          <Animated.Image
+            source={images.orangePaw}
+            style={[
+              {
+                width: PAW_WIDTH,
+                height: PAW_HEIGHT,
+              }, 
+              useAnimatedStyle(() => ({
+                transform: [
+                  { translateX: pawTranslateX.value },
+                  { translateY: pawTranslateY.value },
+                  { rotate: `${pawRotation.value}deg`}
+                ],
+                opacity: pawOpacity.value
+              }))
+            ]}
+          />
+        </View>
+      )}
 
       <GestureDetector gesture={gesture}>
         <Animated.View

@@ -49,7 +49,7 @@ const Index = () => {
   
       getMatchRowsData();
     }, [])
-  )
+  );
 
   return (
     <ScrollView

@@ -13,7 +13,7 @@ import { User } from '@/types/auth';
 import { PBMessage } from '@/types/pbTypes';
 import { PetProfile } from '@/types/pets';
 import { router, Stack, useLocalSearchParams } from "expo-router";
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Image, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { Bubble, BubbleProps, GiftedChat, IMessage, InputToolbar, InputToolbarProps } from 'react-native-gifted-chat';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -77,6 +77,8 @@ const ChatPage = () => {
 
   const [selectedPetProfile, setSelectedPetProfile] = useState<PetProfile | null>();
 
+  const unsubscribeRef = useRef<(() => void) | null>(null);
+
   const params = useLocalSearchParams<{ id: string; otherUserName: string; otherUserImage: string; otherUserId: string; otherUserType: string }>();
   const { id: matchId, otherUserName, otherUserImage, otherUserId, otherUserType } = params;
   
@@ -89,6 +91,10 @@ const ChatPage = () => {
 
   const unmatch = async () => {
     try {
+      if (unsubscribeRef.current) {
+        unsubscribeRef.current();
+        unsubscribeRef.current = null;
+      }
       await messagesAPI.unmatchProfile(matchId);
       router.push('/(tabs)/connect');
     } catch (error) {
@@ -103,9 +109,19 @@ const ChatPage = () => {
       if (!messages.length) return;
 
       if (messages) {
-        console.log(messages[0]);
-
-        await messagesAPI.sendMessage(matchId, userId, messages[0].text);
+        const messageSent = await messagesAPI.sendMessage(matchId, userId, messages[0].text);
+        if (messageSent.status) {
+          if (unsubscribeRef.current) {
+            unsubscribeRef.current();
+            unsubscribeRef.current = null;
+          }
+          Alert.alert('error occurred', 'looks like this match is no longer active', [
+            {
+              text: 'close',
+              onPress: () => router.replace('/(tabs)/connect')
+            }
+          ]);
+        }
       }
     };
     sendMessage();
@@ -153,11 +169,11 @@ const ChatPage = () => {
 
     retrieveChatMessages();
 
-    let unsubscribe: () => void;
+    // let unsubscribe: () => void;
 
     const trackMessages = async () => {
       try {
-        unsubscribe = await messagesAPI.subscribe(
+        const unsubscribe = await messagesAPI.subscribe(
           matchId, 
           userId, 
           async (incMsg) => {
@@ -172,6 +188,8 @@ const ChatPage = () => {
               checkUnreadStatus(userId);
             }
           });
+
+        unsubscribeRef.current = unsubscribe;
           
       } catch (error) {
         console.log('trackMessages error:', error);
@@ -181,7 +199,10 @@ const ChatPage = () => {
     trackMessages();
 
     return () => {
-      if (unsubscribe) unsubscribe();
+      if (unsubscribeRef.current) {
+        unsubscribeRef.current();
+        unsubscribeRef.current = null;
+      }
     }
   }, [matchId]);
 

@@ -25,9 +25,6 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
                 filter: `sender != "${userId}" && readAt = "" && (match.user1 = "${userId}" || match.user2 = "${userId}")`,
                 fields: 'id'
             });
-
-            // const unreadChatRoomIds = result.items.map(msg => msg.match);
-            // console.log('unread chat rooms ids logg: ', result);
             
             set({
                 hasUnreadMessages: result.totalItems > 0,
@@ -47,9 +44,17 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
             const unreadChatRoomIds = new Set<string>();
             result.forEach(msg => unreadChatRoomIds.add(msg.match));
 
-            set({
-                unreadChatRooms: [...unreadChatRoomIds]
-            })
+            const newUnread = [...unreadChatRoomIds];
+            const currentUnread = get().unreadChatRooms;
+            const hasChanged = 
+                newUnread.length !== currentUnread.length || 
+                newUnread.some(id => !currentUnread.includes(id));
+
+            if (hasChanged) {
+                set({
+                    unreadChatRooms: [...unreadChatRoomIds]
+                });
+            }
         } catch (error) {
             console.log('useChatStore, checkUnreadChatRooms error:', error);
         }

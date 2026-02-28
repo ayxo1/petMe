@@ -344,11 +344,15 @@ export const messagesAPI = {
   },
 
   sendMessage: async (matchId: string, senderId: string, content: string) => {
-    return await pb.collection('messages').create({
-      match: matchId,
-      sender: senderId,
-      content
-    });
+    const matchData = await pb.collection('matches').getOne(matchId);
+    console.log('matchData log: ', matchData.status);
+    if (matchData.status === 'active') {
+      return await pb.collection('messages').create({
+        match: matchId,
+        sender: senderId,
+        content
+      });
+    } else return { status: matchData.status }
   },
 
   getMessages: async (matchId: string): Promise<PBMessage[]> => {

@@ -148,7 +148,7 @@ const TabsLayout = () => {
           tabBarIcon: ({focused}) => (
             <>
             {hasUnreadMessages && (
-              <View className='absolute bottom-5 left-6 z-10 rounded-full py-1 px-2'>
+              <View className='absolute bottom-5 left-6 z-10 rounded-full'>
                 <Text className=''>🔴</Text>
               </View>
             )}
