@@ -40,25 +40,56 @@ const renderInputToolbar = (props: InputToolbarProps<IMessage>) => (
   />
 );
 
-const renderBubble = (props: BubbleProps<IMessage>) => (
-  <Bubble {...props} 
+const renderTick = (message: IMessage, userId: string) => {  
+  if (message.user._id !== userId) return null;
+
+  if (message.pending) {
+    return (
+      <View className='ml-2 p-1'>
+        <ActivityIndicator size={10} color={Colors.primary} />
+      </View>
+    );
+  }
+
+  if (message.sent) {
+    return (
+      <View className='ml-2'>
+        <Text className='text-sm text-green-500/70'>✓</Text>
+      </View>
+    );
+  }
+
+  return (
+    <View className='ml-2'>
+      <Text className='text-red-500 text-sm border rounded-full px-2 border-red-500/50'>!</Text>
+    </View>
+  );
+};
+
+const renderBubble = (props: BubbleProps<IMessage>) => {
+   return(
+  <Bubble {...props}
+    renderTicks={() => renderTick(props.currentMessage, (props.user?._id)?.toString() || '')}
     textStyle={{
       left: {
         fontSize: 16,
-        color: '#000000'
+        color: Colors.primary
       },
       right: {
         fontSize: 16,
-        color: '#000000'
+        color: Colors.primary
       }
     }}
     wrapperStyle={{
       left: {
-        backgroundColor: Colors.secondary
+        backgroundColor: '#a88c6c'
+      },
+      right: {
+        backgroundColor: Colors.authPrimary
       },
     }}
   />
-);
+)};
 
 const ChatPage = () => {
   const userId = useAuthStore(state => state.user?.id);
@@ -104,31 +135,52 @@ const ChatPage = () => {
   }
   
   const onSend = useCallback((messages: IMessage[] = []) => {
-  try {
-    const sendMessage = async () => {
-      if (!messages.length) return;
+    if (!messages.length) return;
 
-      if (messages) {
+    const newMessage = {
+      ...messages[0],
+      pending: true,
+      sent: false
+    };
+
+    setMessages(prev => GiftedChat.append(prev, [newMessage]));
+
+    const sendToPb = async () => {
+      try {  
         const messageSent = await messagesAPI.sendMessage(matchId, userId, messages[0].text);
+
         if (messageSent.status) {
+
           if (unsubscribeRef.current) {
             unsubscribeRef.current();
             unsubscribeRef.current = null;
           }
+
           Alert.alert('error occurred', 'looks like this match is no longer active', [
             {
               text: 'close',
               onPress: () => router.replace('/(tabs)/connect')
             }
           ]);
+          return;
         }
+        
+        setMessages(prev => prev.map(msg => msg._id === newMessage._id 
+          ? {...msg, pending: false, sent: true}
+          : msg
+        ));
+        
+      } catch (error) {
+        setMessages(prev => prev.map(msg => msg._id === newMessage._id
+          ? {...msg, pending: false, sent: false}
+          : msg
+        ));
+        Alert.alert('error', 'error occurred sending the message, please try again');
+        console.log('sendMessage error:', error);
       }
     };
-    sendMessage();
-  } catch (error) {
-    Alert.alert('error', 'error occurred sending the message, please try again');
-    console.log('sendMessage error:', error);
-  }
+
+    sendToPb();
   }, []);
 
   useEffect(() => {
@@ -143,6 +195,8 @@ const ChatPage = () => {
             // name: 'John Doe',
             // avatar: 'https://placeimg.com/140/140/any',
           },
+          pending: false,
+          sent: true
         }
       });
 
@@ -178,12 +232,13 @@ const ChatPage = () => {
           userId, 
           async (incMsg) => {
             setMessages(prev => {
+              if (incMsg.user._id === userId) return prev;
               if (prev.some(msg => msg._id === incMsg._id)) {
                 return prev;
               }
               return GiftedChat.append(prev, [incMsg]);
             });
-            if (incMsg._id !== userId) {
+            if (incMsg.user._id !== userId) {
               await messagesAPI.markMessagesAsRead(matchId, userId);
               checkUnreadStatus(userId);
             }
@@ -420,7 +475,7 @@ useEffect(() => {
         textInputProps={{
           style: { color: Colors.secondary }
         }}
-        onSend={(messages: any) => onSend(messages)}
+        onSend={(messages) => onSend(messages)}
         scrollToBottomOffset={insets.bottom}
         renderAvatar={null}
         renderInputToolbar={renderInputToolbar}
