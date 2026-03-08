@@ -324,7 +324,7 @@ useEffect(() => {
                 <TouchableOpacity
                   onPress={() => setIsPetlistVisible(!isPetlistVisible)}
                 >
-                  <Text className='text-primary border border-primary p-1 rounded-xl'>{isPetlistVisible ? 'hide pets' : 'see pets'}</Text>
+                  <Text className={`text-primary border border-primary p-1 rounded-xl ${isPetlistVisible && 'bg-red-500/70'}`}>{isPetlistVisible ? 'hide pets' : 'see pets'}</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -433,13 +433,14 @@ useEffect(() => {
               profileImages={selectedPetProfile.images}
               profileName={selectedPetProfile.name}
               profileDescription={selectedPetProfile.bio}
-              />
+            />
           </View>
         </Modal>
       )}
 
+
       {isPetlistVisible && (
-        <View className='items-center'>
+        <View className='absolute-center-x z-50'>
           <FlatList
             data={matchPetsList}
             horizontal
@@ -468,6 +469,7 @@ useEffect(() => {
           />
         </View>
       )}
+
 
       <GiftedChat
         user={{ _id: userId }}

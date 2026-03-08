@@ -2,6 +2,7 @@ import EventSource from "react-native-sse";
 // @ts-ignore
 global.EventSource = EventSource;
 
+// import { useAuthStore } from "@/stores/authStore";
 import { SignInFormData, SignUpFormData } from '@/types/auth';
 import { PBMatch, PBMessage, PBPet, PBUser } from '@/types/pbTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -24,9 +25,6 @@ export const pb = new PocketBase(PB_URL, store);
 
 const getFileName = (uri: string) => uri.split('/').pop() || 'photo.jpg';
 
-// allow all requests - test it later
-// pb.autoCancellation(false);
-
 // logger
 if (__DEV__) {
   pb.beforeSend = function (url, options) {
@@ -34,12 +32,24 @@ if (__DEV__) {
     console.log('pb request:', JSON.stringify(url, null, 2));
     return { url, options };
   };
+};
   
   pb.afterSend = function (response, data) {
-    console.log('pb response:', JSON.stringify(data, null, 2), JSON.stringify(response, null, 2));
+    if (response.status === 401 || response.status === 403) {
+      const { useAuthStore } = require('@/stores/authStore');
+      const { useFeedStore } = require('@/stores/useFeedStore');
+      if (useAuthStore.getState().isAuthenticated) {
+        useAuthStore.setState({ sessionExpired: true });
+        useFeedStore.getState().reset();
+        useAuthStore.getState().signOut();
+      }
+    }
+    if (__DEV__) {
+      console.log('pb response:', JSON.stringify(data, null, 2), JSON.stringify(response, null, 2));
+    }
     return data;
   };
-};
+
 //
 
 /**

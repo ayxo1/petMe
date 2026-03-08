@@ -56,8 +56,9 @@ export interface AuthState {
   isLoading: boolean;
   isHydrated: boolean;
   registrationState: RegistrationState;
+  sessionExpired: boolean;
 
-  init: () => void;
+  init: () => Promise<void>;
   hydrateUser: () => Promise<void>;
   signIn: (userData: SignInFormData) => Promise<void>;
   signUp: (userData: SignUpFormData) => Promise<void>;

@@ -94,19 +94,21 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, prof
         </View>
 
         {isAvailableForAdoption && (
-            <View className='flex-row absolute bottom-52 left-0 right-0 items-center justify-center gap-2'>
+            <TouchableOpacity 
+                className='flex-row absolute bottom-52 left-0 right-0 items-center justify-center gap-2'
+                onPress={() => toggleAdoptionModal(!adoptionModal)}
+            >
                 <Text
                     className='font-extralight text-l text-center text-blue-100 bg-blue-500/40 px-3 py-1 rounded-xl border border-blue-100/20'
                 >
                     looking for a new home
                 </Text>
-                <TouchableOpacity 
+                <View 
                     className='bg-blue-500/40 p-1 rounded-full border border-blue-100/20'
-                    onPress={() => toggleAdoptionModal(!adoptionModal)}
                 >
                     <Text className="font-extralight text-l text-center text-blue-100">ⓘ</Text>
-                </TouchableOpacity>
-            </View>
+                </View>
+            </TouchableOpacity>
         )}
 
         <View className="absolute bottom-44 left-0 right-0 flex-row justify-center gap-2">

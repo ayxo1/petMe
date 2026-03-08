@@ -35,11 +35,12 @@ export const useAuthStore = create<AuthState>()(
       isLoading: false,
       isHydrated: false,
       registrationState: 'not_started',
+      sessionExpired: false,
       
       init: async () => {
         if (!pb.authStore.isValid && get().isAuthenticated) {
           get().signOut(); 
-        } 
+        }
       },
 
       hydrateUser: async () => {
@@ -59,7 +60,6 @@ export const useAuthStore = create<AuthState>()(
             });
         } catch (error) {
             console.log(error, 'user hydration error');
-            get().signOut();
             throw error;
         }
       },
@@ -105,7 +105,6 @@ export const useAuthStore = create<AuthState>()(
             isLoading: false,
           });
           
-          // await usePetStore.setState({ pets: [], isHydrated: true });
         } catch (error) {
           set({ isLoading: false })
           console.log(JSON.stringify(error, null, 2), ' signup error AuthStore');

@@ -1,4 +1,3 @@
-import { pb } from '@/backend/config/pocketbase';
 import { icons } from '@/constants';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
@@ -6,7 +5,7 @@ import { usePetStore } from '@/stores/petStore';
 import { useChatStore } from '@/stores/useChatStore';
 import { useLikesStore } from '@/stores/useLikesStore';
 import { TabBarIconProps } from '@/types/components';
-import { Redirect, Tabs, useSegments } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
 import { useEffect } from 'react';
 import { Image, Text, View } from 'react-native';
 
@@ -23,10 +22,7 @@ const TabBarIcon = ({focused, icon, red = false}: TabBarIconProps) => (
 
 const TabsLayout = () => {
 
-  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
-  const user = useAuthStore(state => state.user);
-
-  const { registrationState } = useAuthStore();
+  const { user, isAuthenticated, registrationState } = useAuthStore();
   const { pets } = usePetStore();
   const { subscribeToLikesCount, unreadCount, fetchIncomingLikesProfiles } = useLikesStore();
   const { checkUnreadStatus, subscribeToMessages, hasUnreadMessages } = useChatStore();
@@ -36,30 +32,26 @@ const TabsLayout = () => {
   useEffect(() => {
     let unsubscribeLikes: () => void;
     let unsubscribeChatMessages: () => void;
-
     const init = async () => {
       try {
         await fetchIncomingLikesProfiles();
-
         if (user?.id) {
           unsubscribeLikes = await subscribeToLikesCount(user.id);
-
           await checkUnreadStatus(user.id);
-
           unsubscribeChatMessages = await subscribeToMessages(user.id);
         }
       } catch (error) {
-        console.log('error fetching incomingLikes / subscribeLikes/Chat: ', error);
+        console.log('error setting up subscriptions:', error);
       }
+    };
+    if (isAuthenticated && user?.id) {
+      init();
     }
-
-    if (isAuthenticated) init();
-
     return () => {
       if (unsubscribeLikes) unsubscribeLikes();
       if (unsubscribeChatMessages) unsubscribeChatMessages();
-    }
-  }, [isAuthenticated, user?.id])
+    };
+  }, [isAuthenticated, user?.id]);
 
   if (!user) return;
 
