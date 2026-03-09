@@ -33,7 +33,7 @@ const formInputData: FormInputData[] = [
 
 const ProfileSetup = () => {
 
-  const { updateProfile, user, isLoading, registrationState, setRegistrationState } = useAuthStore();
+  const { updateProfile, user, isLoading, registrationState } = useAuthStore();
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const { fetchProfileBatch, reset, feedType } = useFeedStore();
 
@@ -74,7 +74,10 @@ const ProfileSetup = () => {
       // });
 
       if (coordinates && locationData) {
-        setValue('location', { city: locationData.city, coordinates });
+        setValue('location', { city: locationData.city, coordinates }, {
+          shouldDirty: true,
+          shouldValidate: true,
+        });
       } else {
         Alert.alert('an error occurred retrieving coordinates, please try again');
         return;
@@ -141,31 +144,48 @@ const ProfileSetup = () => {
       await updateProfile(userUpdate);
       
       if (isEditing) {
+        // if coordinates are different now - refetch the feed with the new parameters
         if(formData.location.coordinates) {
-          console.log('very interesting');
           reset();
           await fetchProfileBatch(feedType);
+        }
+        // if user missclicked the profile type during the signup stage and went back to seeker
+        if (formData.accountType === 'seeker' && registrationState !== 'completed') {
+          await updateProfile({ regState: 'completed' });
         }
         Alert.alert(
           'success!',
           'your profile is updated',
           [{text: 'ok', onPress: () => router.replace('/')}]
         );
-      } else if((formData.accountType === 'owner' || formData.accountType === 'shelter') && registrationState !== 'completed') {
+        return;
+      } 
+      if ((formData.accountType === 'owner') && registrationState !== 'completed') {
+        await updateProfile({ regState: 'profile_set_up' });
         Alert.alert(
           'profile created!',
-          'now you can add your pets',
+          'now you can add your pet',
           [{text: 'ok', onPress: () => router.replace('/(auth)/pet-setup')}]
         );
-        if(registrationState !== 'profile_set_up') setRegistrationState('profile_set_up');
-
+        return;
+        // if(registrationState !== 'profile_set_up') {
+        //   setRegistrationState('profile_set_up');
+        // }
       } else if (formData.accountType === 'seeker') {
-        router.replace('/');
-        setRegistrationState('completed');
+        await updateProfile({ regState: 'completed' });
+        Alert.alert(
+          'profile created!',
+          'now you can browse pets and connect with owners!',
+          [{text: 'jump in it!', onPress: () => router.replace('/')}]
+        );
+        // router.replace('/');
+        return;
+        // setRegistrationState('completed');
       } 
     } catch (error) {
       console.log(error, 'profile setup error');
-      Alert.alert('error', `failed to ${isEditing ? 'update' : 'create'} profile, please try again`)
+      Alert.alert('error', `failed to ${isEditing ? 'update' : 'create'} profile, please try again`);
+      return;
     };
   };
 
@@ -196,7 +216,7 @@ const ProfileSetup = () => {
                 <ButtonComponent
                   key={option.value}
                   title={option.label}
-                  onPress={() => setValue('accountType', option.value as 'owner' | 'seeker' | 'shelter')}
+                  onPress={() => setValue('accountType', option.value as 'owner' | 'seeker' | 'shelter', { shouldDirty: true, shouldValidate: true})}
                   style={
                     accountType === option.value
                       ? 'bg-secondary'
@@ -278,6 +298,14 @@ const ProfileSetup = () => {
           {watch('location.city') && (
             <Text className='label text-secondary text-center'>(currently detected as {watch('location.city')})</Text>
           )}
+
+          <View className='h-5 mt-2'>
+            {errors.location && (
+              <Text className='text-red-500 text-center'>
+                  {errors.location.city?.message}
+              </Text>
+            )}
+          </View>
 
           <View
             className='flex-1 h-full'

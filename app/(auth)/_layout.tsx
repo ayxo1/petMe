@@ -9,7 +9,7 @@ const AuthLayout = () => {
   const pathName = usePathname();
   const isFullScreen = pathName.includes('pet-setup') || pathName.includes('profile-setup');
   const registrationState = useAuthStore(state => state.registrationState);
-  const showBackButton: boolean = registrationState === 'completed' && pathName.includes('pet-setup') || pathName.includes('profile-setup');
+  const showBackButton: boolean = registrationState === 'completed' && pathName.includes('pet-setup') || (registrationState === 'completed' && pathName.includes('profile-setup'));
 
   return (
     <View 

@@ -43,7 +43,7 @@ const SignIn = () => {
   const submit = async ({email, password}: SignInFormData) => {
     try {
       await signIn({email, password});
-      setRegistrationState('completed');
+      // setRegistrationState('completed');
       router.replace('/');
     } catch (error) {
       console.log(error);

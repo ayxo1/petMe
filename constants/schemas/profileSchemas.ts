@@ -18,7 +18,7 @@ export const profileSetupSchema = (isEditing: boolean, isRegistered: boolean = t
     .object({
       city: yup
         .string()
-        .required(),
+        .required('location is required to find nearby pets and owners'),
       coordinates: (isEditing)
         ? yup.object({
           lat: yup.number().required(),
@@ -28,7 +28,7 @@ export const profileSetupSchema = (isEditing: boolean, isRegistered: boolean = t
           lat: yup.number().required(),
           lng: yup.number().required()
         })
-        .required()
+        .required('location is required to find nearby pets and owners')
     })
     .required(),
   bio: yup

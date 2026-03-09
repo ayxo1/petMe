@@ -10,6 +10,7 @@ export interface User {
     city: string;
   }
   accountType?: 'owner' | 'seeker' | 'shelter';
+  regState: RegistrationState;
   createdAt: string;
   updatedAt?: string;
 }
@@ -22,6 +23,7 @@ export interface SignInFormData {
 export interface SignUpFormData extends SignInFormData {
   // username: string;
   passwordConfirm: string;
+  regState?: RegistrationState;
 }
 
 export interface ProfileSetupFormData {
@@ -37,16 +39,6 @@ export interface ProfileSetupFormData {
     }
   };
 }
-
-// export interface ProfileSetupSubmitData extends ProfileSetupFormData {
-//   location: {
-//     city: string;
-//   }
-//   coordinates: {
-//     lat: number;
-//     lng: number;
-//   };
-// }
 
 export type RegistrationState = 'not_started' | 'signed_up' | 'profile_set_up' | 'completed';
 

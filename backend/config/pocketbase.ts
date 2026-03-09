@@ -92,6 +92,7 @@ export const authAPI = {
       email,
       password,
       passwordConfirm,
+      regState: 'signed_up'
     });
 
     // auto login after signup

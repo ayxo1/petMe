@@ -36,7 +36,7 @@ const formInputData: FormInputData[] = [
 
 const SignUp = () => {
 
-  const { signUp, isLoading, setRegistrationState } = useAuthStore();
+  const { signUp, isLoading } = useAuthStore();
 
   const {
     control,
@@ -48,13 +48,10 @@ const SignUp = () => {
     resolver: yupResolver(authSignUpSchema)
   })
 
-  const submit = async (data: SignUpFormData) => {
-    console.log('submit pressed');
-    
+  const submit = async (data: SignUpFormData) => {    
     try {
       await signUp(data);
-
-      setRegistrationState('signed_up');
+      // setRegistrationState('signed_up');
       router.replace('/(auth)/profile-setup');
     } catch (error) {
       if (error instanceof ClientResponseError && error.response.data.email.message === 'Value must be unique.') {
@@ -84,7 +81,7 @@ const SignUp = () => {
             />
           </Fragment>
         ))}
-        <ButtonComponent 
+        <ButtonComponent
         title='submit' 
         onPress={handleSubmit(submit)}
         isLoading={isLoading}

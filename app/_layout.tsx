@@ -62,6 +62,7 @@ export default function RootLayout() {
       'you\'ve been logged in for a bit too long, please re-login to refresh all the data. thanks! :)',
       [{ text: 'ok' }]
     );
+    useAuthStore.setState({ sessionExpired: false });
   }, [sessionExpired])
 
   return (

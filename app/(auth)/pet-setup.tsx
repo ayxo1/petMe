@@ -11,21 +11,18 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 const PetSetup = () => {
 
   const { pets, addPet, updatePet } = usePetStore();
-  const { setRegistrationState, registrationState } = useAuthStore();
+  const { registrationState, updateProfile } = useAuthStore();
 
   const { id } = useLocalSearchParams<{ id: string }>();
   const petToEdit = pets.find(pet => pet.id === id);
-  const isEditing = !!petToEdit
+  const isEditing = !!petToEdit;
 
 
   const onSubmit = async (data: PetFormData) => {
     console.log('onSubmit pet-setup data: ', data);
     if (isEditing) {
-
       try {
-
         await updatePet(id, data);
-
         Alert.alert(
           'success!',
           `${data.name} is successfully updated!`,
@@ -33,18 +30,16 @@ const PetSetup = () => {
             {text: 'done', onPress: () => router.replace('/')}
           ]
         );
-
+        return;
       } catch (error) {
         console.log('updatePet pet-setup error:', error);
         Alert.alert('error', 'failed to update the pet, try again');
+        throw error;
       }
-
     } else {
-
       try {
-
         await addPet(data);
-  
+        await updateProfile({regState: 'completed'});
         Alert.alert(
           'success!',
           `${data.name} is successfully added!`,
@@ -53,14 +48,11 @@ const PetSetup = () => {
             {text: 'done', onPress: () => router.replace('/')}
           ]
         );
-  
-        if(registrationState !== 'completed') setRegistrationState('completed');
-
+        // if(registrationState !== 'completed') setRegistrationState('completed');
       } catch (error) {
-
         Alert.alert('error', 'failed to add the pet, try again');
         console.log(error, 'error adding the pet');
-
+        throw error;
       }
     }
   };

@@ -1,4 +1,5 @@
 import { RecordModel } from "pocketbase";
+import { RegistrationState } from "./auth";
 
 export interface PBUser extends RecordModel {
   email: string;
@@ -8,6 +9,7 @@ export interface PBUser extends RecordModel {
   images: string[];
   city: string;
   coordinates: { lat: number; lng: number };
+  regState: RegistrationState;
   created: string;
   updated: string;
 }

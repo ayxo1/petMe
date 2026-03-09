@@ -21,6 +21,7 @@ export const convertPBUserToUser = (pbUser: PBUser): User => {
       coordinates: pbUser.coordinates
     },
     accountType: pbUser.accountType,
+    regState: pbUser.regState,
     createdAt: pbUser.createdAt,
     updatedAt: pbUser.updatedAt
   };
@@ -55,8 +56,9 @@ export const useAuthStore = create<AuthState>()(
             const convertedUser = convertPBUserToUser(freshUserData as PBUser);
 
             set({
-                user: convertedUser,
-                isHydrated: true
+              user: convertedUser,
+              registrationState: convertedUser.regState,
+              isHydrated: true
             });
         } catch (error) {
             console.log(error, 'user hydration error');
@@ -74,9 +76,10 @@ export const useAuthStore = create<AuthState>()(
 
           const user = convertPBUserToUser(pbUser);
 
-          set({ 
+          set({
             isAuthenticated: true, 
             user,
+            registrationState: user.regState,
             isLoading: false,
           });
 
@@ -95,6 +98,7 @@ export const useAuthStore = create<AuthState>()(
             email: userData.email,
             password: userData.password,
             passwordConfirm: userData.passwordConfirm,
+            regState: 'signed_up'
           });
 
           const newUser = convertPBUserToUser(pbUser);
@@ -102,6 +106,7 @@ export const useAuthStore = create<AuthState>()(
           set({ 
             isAuthenticated: true, 
             user: newUser,
+            registrationState: newUser.regState,
             isLoading: false,
           });
           
@@ -137,13 +142,15 @@ export const useAuthStore = create<AuthState>()(
             images: profileData.images,
             bio: profileData.bio,
             city: profileData.location?.city,
-            coordinates: profileData.location?.coordinates
+            coordinates: profileData.location?.coordinates,
+            regState: profileData.regState
           });
           
           const updatedUser = convertPBUserToUser(pbUpdatedUser);
 
           set({
             user: updatedUser,
+            registrationState: updatedUser.regState,
             isLoading: false
           });
           
@@ -174,4 +181,4 @@ export const useAuthStore = create<AuthState>()(
       }),
     }
   )
-)
+);
