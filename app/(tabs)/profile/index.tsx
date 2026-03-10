@@ -1,4 +1,5 @@
 import AvatarComponent from '@/components/AvatarComponent';
+import BottomSheet from '@/components/BottomSheet';
 import ButtonComponent from '@/components/ButtonComponent';
 import Modal from '@/components/Modal';
 import ProfileInterface from '@/components/ProfileInterface';
@@ -12,7 +13,7 @@ import { PetProfile } from '@/types/pets';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, Stack } from 'expo-router';
 import { useState } from 'react';
-import { FlatList, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, Pressable, Modal as RNModal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 type AuthRoute = '/(auth)/profile-setup' | '/(auth)/pet-setup';
 
@@ -45,11 +46,12 @@ const LogOutButton = ({ signOut }: { signOut: () => void }) => {
 
 const Profile = () => {
 
-  const { user ,signOut, registrationState } = useAuthStore();
+  const { user, signOut, registrationState } = useAuthStore();
   
-  const [ petSettigsModal, togglePetSettingsModal ] = useState(false);
+  const [petSettigsModal, togglePetSettingsModal] = useState(false);
   const [profilePreview, toggleProfilePreview] = useState(false);
   const [selectedPetProfile, setSelectedPetProfile] = useState<PetProfile | null>();
+  const [settingsModal, toggleSettingsModal] = useState(false);
   
   const { pets, hydratePets } = usePetStore();
   const unsubChat = useChatStore(state => state.unsubscribeChat);
@@ -68,22 +70,35 @@ const Profile = () => {
 
   return (
     <>
-      <Stack.Screen 
+      <Stack.Screen
         options={{
           headerRight: () => (
-            <View className='flex-row flex-1 justify-between items-center'>            
-              <TouchableOpacity className='mb-2'>
+            <View className='flex-row items-center'>            
+              <TouchableOpacity className='mb-2'
+                onPress={() => toggleSettingsModal(!settingsModal)}
+              >
                 <Image 
                   source={icons.settings}
-                  className='size-9'
+                  className='size-11 mr-5 mt-2'
                   resizeMode='contain'
                 />
               </TouchableOpacity>
-              <LogOutButton signOut={signOut}/>
+              {/* <LogOutButton signOut={signOut}/> */}
             </View>
           )
         }}
       />
+
+      {settingsModal && <BottomSheet 
+        isOpen={settingsModal}  
+        toggleModal={toggleSettingsModal}
+      >
+        <View className='flex-1'>
+          <View className='flex-1 justify-end mb-20'>
+            <LogOutButton signOut={signOut}/>
+          </View>
+        </View>
+      </BottomSheet>}
 
       {profilePreview && (
         <TouchableOpacity

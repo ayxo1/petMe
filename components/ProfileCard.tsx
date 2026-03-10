@@ -63,8 +63,6 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, profileTy
     };
   }, [indexes, rotateZ])
 
-
-
   const gesture = Gesture.Pan()
   .onStart((e) => {
     const fromRight = e.absoluteX > cardCenterX;
