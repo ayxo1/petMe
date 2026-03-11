@@ -1,3 +1,4 @@
+import { pb } from '@/backend/config/pocketbase';
 import AvatarComponent from '@/components/AvatarComponent';
 import BottomSheet from '@/components/BottomSheet';
 import ButtonComponent from '@/components/ButtonComponent';
@@ -45,6 +46,7 @@ const LogOutButton = ({ signOut }: { signOut: () => void }) => {
 };  
 
 const Profile = () => {
+console.log(pb.authStore.record?.verified);
 
   const { user, signOut, registrationState } = useAuthStore();
   
@@ -94,6 +96,17 @@ const Profile = () => {
         toggleModal={toggleSettingsModal}
       >
         <View className='flex-1'>
+          {!pb.authStore.record?.verified && (
+            <View className='flex-row gap-2 items-center justify-between'>
+              <Text>your email is not verified*</Text>
+              <TouchableOpacity
+                className='border py-1 px-2 rounded-2xl'
+                onPress={() => router.replace('/(auth)/pin-entry')}
+              >
+                <Text>verify your email</Text>
+              </TouchableOpacity>
+            </View>
+          )}
           <View className='flex-1 justify-end mb-20'>
             <LogOutButton signOut={signOut}/>
           </View>
