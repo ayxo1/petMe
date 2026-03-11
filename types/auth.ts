@@ -40,7 +40,7 @@ export interface ProfileSetupFormData {
   };
 }
 
-export type RegistrationState = 'not_started' | 'signed_up' | 'profile_set_up' | 'completed';
+export type RegistrationState = 'not_started' | 'signed_up' | 'verified' | 'profile_set_up' | 'completed';
 
 export interface AuthState {
   isAuthenticated: boolean;

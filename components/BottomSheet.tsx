@@ -75,7 +75,7 @@ const BottomSheet = ({ isOpen, withInput, children, toggleModal, styleProps, ...
 
                         <Pressable
                             onPress={e => e.stopPropagation()}
-                            className={`w-full h-3/4 bg-primary/80 shadow items-center rounded-t-3xl ${styleProps}`}  
+                            className={`w-full h-3/4 bg-primary/80 shadow shadow-stone-300 items-center rounded-t-3xl ${styleProps}`}  
                         >      
                             <Pressable
                                 onPress={() => toggleModal(!isOpen)}

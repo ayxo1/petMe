@@ -2,7 +2,8 @@ import { RegistrationState, User } from "@/types/auth";
 
 interface RegistrationStateRoutes {
     'not_started': '/(auth)/signin',
-    'signed_up': '/(auth)/profile-setup',
+    'signed_up': '/(auth)/pin-entry',
+    'verified': '/(auth)/profile-setup'
     'profile_set_up': '/' | '/(auth)/pet-setup',
     'completed': '/'
 };
@@ -15,7 +16,8 @@ export const getRegistrationStateRoute = (
 ): RegistrationRoute => {
     const registrationStateRoute: RegistrationStateRoutes = {
         'not_started': '/(auth)/signin',
-        'signed_up': '/(auth)/profile-setup',
+        'signed_up': '/(auth)/pin-entry',
+        'verified': '/(auth)/profile-setup',
         'profile_set_up': user?.accountType === 'seeker' ? '/' : '/(auth)/pet-setup',
         'completed': '/'
     }

@@ -11,10 +11,11 @@ const InputComponent = ({
     keyboardType = 'default',
     labelStyling = '',
     multiline = false,
-    spellCheck = false
+    spellCheck = false,
+    textContentType = undefined
 }: InputComponentProps) => {
 
-    const [isFocused, setIsFocused] = useState(false);    
+    const [isFocused, setIsFocused] = useState(false);
 
   return (
     <View
@@ -39,6 +40,7 @@ const InputComponent = ({
         placeholderTextColor='#888'
         className={`input ${isFocused ? 'border-amber-700' : 'border-gray-300'}`}
         spellCheck={spellCheck}
+        textContentType={textContentType}
       />
     </View>
   )

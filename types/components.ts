@@ -25,8 +25,9 @@ export interface InputComponentProps {
   secureTextEntry?: boolean;
   keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
   labelStyling?: string;
-  multiline?: boolean
-  spellCheck?: boolean
+  multiline?: boolean;
+  spellCheck?: boolean;
+  textContentType?: 'oneTimeCode' | 'password' | undefined;
 }
 
 export interface FormInputControllerProps<

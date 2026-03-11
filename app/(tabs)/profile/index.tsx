@@ -13,7 +13,7 @@ import { PetProfile } from '@/types/pets';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, Stack } from 'expo-router';
 import { useState } from 'react';
-import { FlatList, Image, Pressable, Modal as RNModal, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 type AuthRoute = '/(auth)/profile-setup' | '/(auth)/pet-setup';
 
@@ -74,16 +74,16 @@ const Profile = () => {
         options={{
           headerRight: () => (
             <View className='flex-row items-center'>            
-              <TouchableOpacity className='mb-2'
+              <TouchableOpacity className='flex-row mb-2 items-center mt-2 gap-2'
                 onPress={() => toggleSettingsModal(!settingsModal)}
               >
+                <Text className='font-extralight text-sm'>settings</Text>
                 <Image 
                   source={icons.settings}
-                  className='size-11 mr-5 mt-2'
+                  className='size-11'
                   resizeMode='contain'
                 />
               </TouchableOpacity>
-              {/* <LogOutButton signOut={signOut}/> */}
             </View>
           )
         }}

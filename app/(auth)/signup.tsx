@@ -23,14 +23,16 @@ const formInputData: FormInputData[] = [
     placeholder: 'enter your password',
     label: 'password',
     keyboardType: "default",
-    secureTextEntry: true
+    secureTextEntry: true,
+    textContentType: 'oneTimeCode'
   },
   {
     name: 'passwordConfirm',
     placeholder: 'confirm your password',
     label: 'confirm password',
     keyboardType: "default",
-    secureTextEntry: true
+    secureTextEntry: true,
+    textContentType: 'oneTimeCode'
   },
 ];
 
@@ -46,22 +48,28 @@ const SignUp = () => {
     }
   } = useForm({
     resolver: yupResolver(authSignUpSchema)
-  })
+  });
 
   const submit = async (data: SignUpFormData) => {    
     try {
       await signUp(data);
       // setRegistrationState('signed_up');
-      router.replace('/(auth)/profile-setup');
+      // router.replace('/(auth)/profile-setup');      
+      // router.replace({
+      //   pathname: '/(auth)/pin-entry',
+      //   params: {
+      //     email: data.email
+      //   }
+      // });
     } catch (error) {
-      if (error instanceof ClientResponseError && error.response.data.email.message === 'Value must be unique.') {
+      if (error instanceof ClientResponseError && error.response?.data?.email?.message === 'Value must be unique.') {
         Alert.alert('an account with such email already exists');
       } else {
-        console.log(error, ' signup error');
+        console.log(error, 'signup error');
         Alert.alert('something went wrong, please try again');
       }
     }
-  }
+  };
 
   return (
     <View>
@@ -78,6 +86,7 @@ const SignUp = () => {
               label={inputController.label}
               keyboardType={inputController?.keyboardType}
               secureTextEntry={inputController.name === 'password' || inputController.name === 'passwordConfirm'}
+              textContentType={inputController.textContentType}
             />
           </Fragment>
         ))}

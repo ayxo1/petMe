@@ -9,6 +9,7 @@ import { AuthState, RegistrationState, SignInFormData, SignUpFormData, User } fr
 export const convertPBUserToUser = (pbUser: PBUser): User => {
   
   const imageUrls = pbUser.images.map(filename => stringImageToPbUrl(filename, 'users', pbUser.id));
+// console.log('email log:', pbUser.email);
 
   return {
     id: pbUser.id,
@@ -102,6 +103,7 @@ export const useAuthStore = create<AuthState>()(
           });
 
           const newUser = convertPBUserToUser(pbUser);
+          newUser.email = userData.email;
           
           set({ 
             isAuthenticated: true, 

@@ -16,7 +16,8 @@ const InputController = (
     secureTextEntry = false,
     labelStyling = '',
     multiline = false,
-    spellCheck = false
+    spellCheck = false,
+    textContentType = undefined
   }: FormInputControllerProps) => {
 
   return (
@@ -36,6 +37,7 @@ const InputController = (
               secureTextEntry={secureTextEntry}
               labelStyling={labelStyling}
               spellCheck={spellCheck}
+              textContentType={textContentType}
               // onBlur={onBlur}
             />
           )

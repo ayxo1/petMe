@@ -6,6 +6,33 @@ onRecordViewRequest((e) => {
     }
 }, 'users, superusers');
 
+onRecordAfterCreateSuccess((e) => {
+    const pin = Math.floor(1000 + Math.random() * 9000).toString();
+
+    const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+    e.record.set('verificationPin', pin);
+    e.record.set('pinExpiresAt', expiresAt);
+    $app.save(e.record);
+
+    try {
+        const mailClient = $app.newMailClient();
+        const message = new MailerMessage({
+            from: { address: 'petapetsupport@gmail.com', name: 'pet-a-pet app'},
+            to: [{ address: e.record.get('email') }],
+            subject: 'your pet-a-pet verification code',
+            html: `your code is: <strong>${pin}</strong>`
+        });
+    
+        mailClient.send(message);
+    } catch (error) {
+        console.log('onRecordAfterCreateSuccess, mail sending error:', error);
+        // set regStatus as verified anyways to later let user verify the mail manually in profile settings
+        e.record.set('regState', 'verified');
+        $app.save(e.record);
+    }
+}, 'users');
+
 //pet-feed endpoint
 routerAdd("GET", "/api/feed", (c) => {  
     
@@ -412,3 +439,63 @@ routerAdd("GET", "/api/likes", (c) => {
     });
 
 }, $apis.requireAuth('users'));
+
+routerAdd("POST", "/api/custom/verify-pin", (c) => {
+    const data = new DynamicModel({
+        email: '',
+        pin: ''
+    });
+    c.bindBody(data);
+
+    try {
+        const user = $app.findFirstRecordByData('users', 'email', data.email);
+
+        const storedPin = user.get('verificationPin');
+        const expiresAt = new Date(user.get('pinExpiresAt'));
+
+        if (storedPin !== data.pin || new Date() > expiresAt) {
+            return c.json(400, { error: 'invalid or expired PIN' });
+        }
+
+        user.set('verified', true);
+        user.set('verificationPin', '');
+        $app.save(user);
+
+        return c.json(200, { success: true });
+
+    } catch (error) {
+        return c.json(400, { error: 'user not found '});
+    }
+});
+
+routerAdd("POST", "/api/custom/resend-pin", (c) => {
+    const data = new DynamicModel({
+        email: ''
+    });
+    c.bindBody(data);
+    
+    try {
+        const user = $app.findFirstRecordByData('users', 'email', data.email);
+
+        const newPin = Math.floor(1000 + Math.random() * 9000).toString();
+        const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+        user.set('verificationPin', newPin);
+        user.set('pinExpiresAt', expiresAt);
+        $app.save(user);
+
+        const mailClient = $app.newMailClient();
+        const message = new MailerMessage({
+            from: { address: 'petapetsupport@gmail.com', name: 'pet-a-pet app'},
+            to: [{ address: data.email }],
+            subject: 'your new pet-a-pet verification code',
+            html: `your new code is: <strong>${newPin}</strong>`
+        });
+        mailClient.send(message);
+
+        return c.json(200, { success: true });
+    } catch (error) {
+        // success to not leak emails
+        return c.json(200, { success: true });
+    }
+});
