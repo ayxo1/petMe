@@ -71,7 +71,7 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, prof
 
                 <LinearGradient 
                     colors={['transparent', 'rgba(40, 40, 40, .9)']}
-                    start={{ x: 0, y: 0.7 }}
+                    start={{ x: 0, y: 0.55 }}
                     end={{ x: 0, y: 1 }}
                     style={{
                     height: '100%',
@@ -124,7 +124,7 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, prof
 
         <View className="absolute bottom-32 left-0 right-0">
             <Text
-                className="font-bold text-3xl text-secondary text-center"
+                className="font-bold text-3xl text-lighterSecondary text-center"
                 numberOfLines={1}
             >
                 {profileName}

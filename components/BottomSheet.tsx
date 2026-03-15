@@ -1,4 +1,5 @@
 import { icons } from '@/constants';
+import Colors from '@/constants/Colors';
 // import { Image } from 'expo-image';
 import React from 'react';
 import { Dimensions, Image, KeyboardAvoidingView, ModalProps, Platform, Pressable, Modal as RNModal, Text, View } from 'react-native';
@@ -75,16 +76,18 @@ const BottomSheet = ({ isOpen, withInput, children, toggleModal, styleProps, ...
 
                         <Pressable
                             onPress={e => e.stopPropagation()}
-                            className={`w-full h-3/4 bg-primary/80 shadow shadow-stone-300 items-center rounded-t-3xl ${styleProps}`}  
+                            className={`w-full h-3/4 bg-primary/55 shadow shadow-stone-300 items-center rounded-t-3xl ${styleProps}`}  
                         >      
                             <Pressable
                                 onPress={() => toggleModal(!isOpen)}
+                                className='border-b border-secondary/30 w-52 items-center'
                             >
                                 {/* <Text>⮟</Text> */}
                                     <Image 
                                         source={icons.backIcon}
-                                        className='size-9 -rotate-90'
+                                        className='size-9 -rotate-90 color-secondary'
                                         resizeMode='contain'
+                                        tintColor={Colors.secondary}
                                     />
                             </Pressable>
                             {content}

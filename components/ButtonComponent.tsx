@@ -30,7 +30,7 @@ const ButtonComponent = ({
             />
           ) : (
             <Text
-              className={`text-black text-base ${textStyle}`}
+              className={`text-white text-base ${textStyle}`}
             >{title}</Text>
           )}
         </View>

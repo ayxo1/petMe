@@ -4,6 +4,7 @@ import BottomSheet from '@/components/BottomSheet';
 import ButtonComponent from '@/components/ButtonComponent';
 import Modal from '@/components/Modal';
 import ProfileInterface from '@/components/ProfileInterface';
+import ProfileSettings from '@/components/ProfileSettings';
 import { icons } from '@/constants';
 import { useAuthStore } from '@/stores/authStore';
 import { usePetStore } from '@/stores/petStore';
@@ -18,7 +19,7 @@ import { FlatList, Image, ScrollView, Text, TouchableOpacity, View } from 'react
 
 type AuthRoute = '/(auth)/profile-setup' | '/(auth)/pet-setup';
 
-const LogOutButton = ({ signOut }: { signOut: () => void }) => {
+export const LogOutButton = ({ signOut }: { signOut: () => void }) => {
   const resetFeedStore = useFeedStore(state => state.reset);
   const resetLikesStore = useLikesStore(state => state.reset);
   const resetPetStore = usePetStore(state => state.reset);
@@ -79,7 +80,7 @@ console.log(pb.authStore.record?.verified);
               <TouchableOpacity className='flex-row mb-2 items-center mt-2 gap-2'
                 onPress={() => toggleSettingsModal(!settingsModal)}
               >
-                <Text className='font-extralight text-sm'>settings</Text>
+                <Text className='font-extralight text-white'>settings</Text>
                 <Image 
                   source={icons.settings}
                   className='size-11'
@@ -91,27 +92,17 @@ console.log(pb.authStore.record?.verified);
         }}
       />
 
-      {settingsModal && <BottomSheet 
+      {settingsModal && 
+      <BottomSheet 
         isOpen={settingsModal}  
         toggleModal={toggleSettingsModal}
       >
-        <View className='flex-1'>
-          {!pb.authStore.record?.verified && (
-            <View className='flex-row gap-2 items-center justify-between'>
-              <Text>your email is not verified*</Text>
-              <TouchableOpacity
-                className='border py-1 px-2 rounded-2xl'
-                onPress={() => router.replace('/(auth)/pin-entry')}
-              >
-                <Text>verify your email</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-          <View className='flex-1 justify-end mb-20'>
-            <LogOutButton signOut={signOut}/>
-          </View>
-        </View>
-      </BottomSheet>}
+        <ProfileSettings 
+          signOut={signOut}
+          modalOpen={settingsModal}
+        />
+      </BottomSheet>
+      }
 
       {profilePreview && (
         <TouchableOpacity

@@ -6,8 +6,9 @@ module.exports = {
     extend: {
       colors: {
         primary: '#FDF8EB',
-        secondary: '#e88c54',
-        authPrimary: '#f5c68d'
+        secondary: '#8283b3',
+        authPrimary: '#f5c68d',
+        lighterSecondary: '#cacbe6',
       }
     },
   },

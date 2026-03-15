@@ -26,6 +26,18 @@ const formInputData: FormInputData[] = [
     { name: 'bio', label: 'bio*', placeholder: 'describe your pet', spellCheck: true },
 ];
 
+export const speciesOptions: { 
+    value: PetSpecies; 
+    label: string;
+    icon: string
+}[] = [
+    { value: 'dog', label: 'dog', icon: '🐕'},
+    { value: 'cat', label: 'cat', icon: '🐈'},
+    { value: 'bird', label: 'bird', icon: '🐦'},
+    { value: 'rodent', label: 'rodent', icon: '🐿️'},
+    { value: 'other', label: 'other', icon: '👽'},
+];
+
 const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormProps) => {
 
     const {
@@ -94,18 +106,6 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
             shouldValidate: true
         });
     };
-
-    const speciesOptions: { 
-        value: PetSpecies; 
-        label: string;
-        icon: string
-    }[] = [
-        { value: 'dog', label: 'dog', icon: '🐕'},
-        { value: 'cat', label: 'cat', icon: '🐈'},
-        { value: 'bird', label: 'bird', icon: '🐦'},
-        { value: 'rodent', label: 'rodent', icon: '🐿️'},
-        { value: 'other', label: 'other', icon: '👽'},
-    ];
 
     return (
         <View className="flex-1 px-5 gap-3">

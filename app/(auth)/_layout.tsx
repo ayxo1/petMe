@@ -3,7 +3,7 @@ import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
 import { router, Slot, usePathname } from 'expo-router';
 import React from 'react';
-import { Dimensions, Image, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Image, ScrollView, TouchableOpacity, View } from 'react-native';
 
 const AuthLayout = () => {
   const pathName = usePathname();

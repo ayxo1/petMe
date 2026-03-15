@@ -220,7 +220,7 @@ const ProfileSetup = () => {
                   style={
                     accountType === option.value
                       ? 'bg-secondary'
-                      : 'bg-gray-200'
+                      : 'bg-lighterSecondary'
                   }
                 />
               ))}
