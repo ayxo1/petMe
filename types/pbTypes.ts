@@ -10,6 +10,12 @@ export interface PBUser extends RecordModel {
   city: string;
   coordinates: { lat: number; lng: number };
   regState: RegistrationState;
+  preferences: {
+    searchDistance: number;
+    showRescuePets: boolean;
+    showShelterPets: boolean;
+    preferredSpecies: string[];
+  };
   created: string;
   updated: string;
 }

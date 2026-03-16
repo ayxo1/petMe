@@ -1,4 +1,3 @@
-import { pb } from '@/backend/config/pocketbase';
 import AvatarComponent from '@/components/AvatarComponent';
 import BottomSheet from '@/components/BottomSheet';
 import ButtonComponent from '@/components/ButtonComponent';
@@ -47,8 +46,6 @@ export const LogOutButton = ({ signOut }: { signOut: () => void }) => {
 };  
 
 const Profile = () => {
-console.log(pb.authStore.record?.verified);
-
   const { user, signOut, registrationState } = useAuthStore();
   
   const [petSettigsModal, togglePetSettingsModal] = useState(false);
@@ -156,53 +153,52 @@ console.log(pb.authStore.record?.verified);
         )}
         <View>
           {/* profile preview */}
-          <View className='flex-row justify-center gap-6 m-4 items-center'>
-            <TouchableOpacity
-              className='p-2 border border-secondary rounded-2xl items-center'
-              onPress={() => toggleProfilePreview(!profilePreview)}
+          <View className='flex-row justify-center m-4 items-center'>
+            <View
+              className=' rounded-2xl items-center'
             >
-              <AvatarComponent 
-                uri={user.images[0]}
-                style='w-32 h-32 rounded-2xl p-1'
-              />
-              <Text className='text-secondary'>preview profile</Text>
-            </TouchableOpacity>
-
-            <View className='gap-4'>
-
-              <TouchableOpacity
-                className='p-2 border border-secondary rounded-2xl'
-                onPress={async() => {
-                await cleanUpBeforeNavigation('/(auth)/profile-setup', { initialData: '1' })
-              }}
-              >
-                <Text className='text-center text-secondary'>edit profile</Text>
-              </TouchableOpacity>
-
-              {user.accountType === 'owner' && (
+              <View className='shadow shadow-secondary/50 mb-2 flex-row items-center gap-6'>
                 <TouchableOpacity
-                  className={`p-2 border border-secondary rounded-2xl ${petSettigsModal && ' bg-authPrimary'}`}
-                  onPress={async () => {
-                    if (!petSettigsModal) await hydratePets(user.id);
-                    togglePetSettingsModal(!petSettigsModal);
-                  }}
+                  onPress={() => toggleProfilePreview(!profilePreview)}
                 >
-                  <Text className={`text-center ${petSettigsModal ? 'text-white' : 'text-secondary'}`}>add/edit pets</Text>
+                  <AvatarComponent
+                    uri={user.images[0]}
+                    style='w-32 h-32 rounded-2xl p-1'
+                  />
+                  <Text className='absolute-center-x bottom-1 bg-secondary/60 text-primary rounded-b-2xl px-[0.3rem] py-2'>preview profile</Text>
                 </TouchableOpacity>
-              )}
- 
+                <View className='gap-4'>
+                  <TouchableOpacity
+                    className='p-2 border border-secondary rounded-2xl bg-lighterSecondary/30'
+                    onPress={async() => {
+                      await cleanUpBeforeNavigation('/(auth)/profile-setup', { initialData: '1' })
+                    }}
+                  >
+                    <Text className='text-center text-secondary'>edit profile</Text>
+                  </TouchableOpacity>
+                  {user.accountType === 'owner' && (
+                    <TouchableOpacity
+                      className={`p-2 border border-secondary rounded-2xl ${petSettigsModal ? ' bg-authPrimary' : 'bg-lighterSecondary/30'}`}
+                      onPress={async () => {
+                        if (!petSettigsModal) await hydratePets(user.id);
+                        togglePetSettingsModal(!petSettigsModal);
+                      }}
+                    >
+                      <Text className={`text-center ${petSettigsModal ? 'text-white' : 'text-secondary'}`}>add/edit pets</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
             </View>
-
           </View>
-
         </View>
 
         <View
           className=' rounded-xl'
         >
           {petSettigsModal && (
-            <View>
-              <Text className='text-center font-extralight p-2 text-secondary'>tap on the profile icon to preview</Text>
+            <View className=''>
+              <Text className='text-center font-extralight p-2 text-secondary'>tap on the pet icon to preview</Text>
               <View
                 className='flex-row'
               >

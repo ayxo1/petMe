@@ -2,9 +2,10 @@ import { LogOutButton } from '@/app/(tabs)/profile';
 import { pb } from '@/backend/config/pocketbase';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
+import { useFeedStore } from '@/stores/useFeedStore';
 import Slider from '@react-native-community/slider';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Keyboard, Pressable, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { speciesOptions } from './pets/PetForm';
@@ -13,53 +14,106 @@ const ProfileSettings = ({ signOut, modalOpen }: { signOut: () => void, modalOpe
     
     const user = useAuthStore(state => state.user);
     if (!user) return;
-    
+    const { fetchProfileBatch, reset } = useFeedStore();
+    const updateProfile = useAuthStore(state => state.updateProfile);
+    const preferences = user.preferences;
+
     const [distance, setDistatance] = useState(0);
-    const [newEmail, setNewEmail] = useState('');
-    const [emailChangeLoader, setEmailChangeLoader] = useState(false);
-    const [currentPassword, setCurrentPassword] = useState('');
-    const [newPassword, setNewPassword] = useState('');
-    const [passwordChangeLoader, setPasswordChangeLoader] = useState(false);
+    const distanceRef = useRef(distance);
+    distanceRef.current = distance;
+
+    const [preferredSpecies, setPreferredSpecies] = useState<string[]>([]);
+    const preferredSpeciesRef = useRef(preferredSpecies);
+    preferredSpeciesRef.current = preferredSpecies;    
+
+    const [showRescuePets, setShowRescuePets] = useState(true);
+    const showRescueRef = useRef(showRescuePets);
+    showRescueRef.current = showRescuePets;
+
+    const [showShelterPets, setShowShelterPets] = useState(true);
+    const showShelterRef = useRef(showShelterPets);
+    showShelterRef.current = showShelterPets;
+
+    const [emailForm, setEmailForm] = useState({ newEmail: '', isLoading: false });
+    const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', isLoading: false });
 
     const onEmailChange = async () => {
-        if (newEmail && newEmail !== user.email) {
+        if (emailForm.newEmail && emailForm.newEmail !== user.email) {
             try {
-                setEmailChangeLoader(true);
-                await pb.collection('users').requestEmailChange(newEmail);
-                Alert.alert('check your email', `a confirmation link was sent to your new address (${newEmail})`);
+                setEmailForm({  ...emailForm, isLoading: true });
+                await pb.collection('users').requestEmailChange(emailForm.newEmail);
+                Alert.alert('check your email', `a confirmation link was sent to your new address (${emailForm.newEmail})`);
             } catch (error) {
                 console.log('profileSettings, onEmailChange error:', error);
                 Alert.alert('error', 'an error occurred setting a new email, please try again');
             } finally {
-                setEmailChangeLoader(false);
+                setEmailForm({  ...emailForm, isLoading: false });
             }
-        } else if (newEmail === user.email) {
+        } else if (emailForm.newEmail === user.email) {
             Alert.alert('the new email is identical to the old one', 'please check the new email address');
         } else Alert.alert('the new email field is empty', 'please type in the new email address that you want to set');
     };
 
     const onPasswordChange = async () => {
-        if (newPassword && newPassword !== currentPassword) {
+        if (passwordForm.newPassword && passwordForm.newPassword !== passwordForm.currentPassword) {
             try {
-                setPasswordChangeLoader(true);
+                setPasswordForm({  ...passwordForm, isLoading: true });
                 await pb.collection('users').update(user.id, {
-                    oldPassword: currentPassword,
-                    password: newPassword,
-                    passwordConfirm: newPassword
+                    oldPassword: passwordForm.currentPassword,
+                    password: passwordForm.newPassword,
+                    passwordConfirm: passwordForm.newPassword
                 });
-                Alert.alert('success!', 'your password is updated');
+                Alert.alert('success!', 'your password is updated. you will be redirected to re-login', 
+                    [
+                        {
+                            text: 'ok',
+                            onPress: () => signOut()
+                        }
+                    ]
+                );
             } catch (error) {
                 console.log('profileSettings, onPasswordChange error:', error);
                 Alert.alert('error', 'an error occurred setting a new password. make sure your current password is correct and the new one is different from the current one');
             } finally {
-                setPasswordChangeLoader(false);
+                setPasswordForm({  ...passwordForm, isLoading: false });
             }
-        } else if (newPassword === currentPassword) Alert.alert('error', 'the password you are trying to set is identical to the one you entered as the current password');
+        } else if (passwordForm.newPassword === passwordForm.currentPassword) Alert.alert('error', 'the password you are trying to set is identical to the one you entered as the current password');
     };
+console.log(speciesOptions.map(species => species.value));
 
-    const onDistanceChange = async () => {
+    useEffect(() => {
+        setDistatance(preferences.searchDistance);
+        setShowRescuePets(preferences.showRescuePets);
+        setShowShelterPets(preferences.showShelterPets);
+        setPreferredSpecies(preferences.preferredSpecies)
         
-    };
+        const saveChanges = async () => {
+            const updatedPreferences = {
+                ...preferences,
+                searchDistance: distanceRef.current,
+                showRescuePets: showRescueRef.current,
+                showShelterPets: showShelterRef.current,
+                preferredSpecies: preferredSpeciesRef.current
+            };
+            if (
+                preferences.searchDistance !== distanceRef.current ||
+                preferences.showRescuePets !== showRescueRef.current ||
+                preferences.showShelterPets !== showShelterRef.current ||
+                preferences.preferredSpecies !== preferredSpeciesRef.current
+            ) {
+                try {
+                    await updateProfile({ preferences: updatedPreferences });
+                    reset();
+                    await fetchProfileBatch();
+                } catch (error) {
+                    console.log('profileSettings, saveChanges error:', error);
+                }
+            }
+        }
+        return () => { 
+            saveChanges();
+        };
+    }, []);
 
   return (
     <ScrollView
@@ -106,6 +160,7 @@ const ProfileSettings = ({ signOut, modalOpen }: { signOut: () => void, modalOpe
                                     step={1}
                                     minimumTrackTintColor={Colors.secondary}
                                     onValueChange={(val) => setDistatance(val)}
+                                    value={distance}
                                 />
                             </View>
                         </View>
@@ -113,11 +168,21 @@ const ProfileSettings = ({ signOut, modalOpen }: { signOut: () => void, modalOpe
                             <Text className='font-bold mb-2'>search preferences:</Text>
                             <View className='p-2 flex-row justify-between items-center'>
                                 <Text className='font-light text-secondary'>show pets that look for a new home:</Text>
-                                <Switch />
+                                <Switch 
+                                    value={showRescuePets}
+                                    onValueChange={(val) => setShowRescuePets(val)}
+                                    trackColor={{ true: Colors.secondary, false: Colors.lighterSecondary}}
+                                    ios_backgroundColor={Colors.lighterSecondary}
+                                />
                             </View>
                             <View className='p-2 flex-row justify-between items-center'>
                                 <Text className='font-light text-secondary'>show shelter pets:</Text>
-                                <Switch />
+                                <Switch 
+                                    value={showShelterPets}
+                                    onValueChange={(val) => setShowShelterPets(val)}
+                                    trackColor={{ true: Colors.secondary, false: Colors.lighterSecondary}}
+                                    ios_backgroundColor={Colors.lighterSecondary}
+                                />
                             </View>
                             <View className='p-2 justify-between mt-2'>
                                 <Text className='font-light text-secondary mb-3'>mostly interested in:</Text>
@@ -133,7 +198,10 @@ const ProfileSettings = ({ signOut, modalOpen }: { signOut: () => void, modalOpe
                                         renderItem={({ item }) => (
                                             <TouchableOpacity
                                                 key={item.label}
-                                                className={`bg-gray-200 rounded-full px-4 py-3`}
+                                                className={`${preferredSpecies.includes(item.value) ? 'bg-secondary' : 'bg-lighterSecondary'} rounded-full px-4 py-3`}
+                                                onPress={() => setPreferredSpecies(prev => {
+                                                    return prev.includes(item.value) ? prev.filter(species => species !== item.value) : [...prev, item.value]
+                                                })}
                                             >
                                                 <Text>{item.icon} {item.label}</Text>
                                             </TouchableOpacity>
@@ -163,17 +231,17 @@ const ProfileSettings = ({ signOut, modalOpen }: { signOut: () => void, modalOpe
                                 className='border-b font-light w-44 p-1'
                                 placeholder='your new email'
                                 placeholderTextColor={'gray'}
-                                value={newEmail}
-                                onChangeText={(val) => setNewEmail(val)}
+                                value={emailForm.newEmail}
+                                onChangeText={(val) => setEmailForm({ ...emailForm, newEmail: val })}
                                 keyboardType='email-address'
                             />
                         </View>
                         <TouchableOpacity
                             className='py-1 px-2 rounded-2xl bg-secondary w-40 items-center'
                             onPress={onEmailChange}
-                            disabled={emailChangeLoader}
+                            disabled={emailForm.isLoading}
                         >
-                            <Text className='text-white'>{emailChangeLoader ? (
+                            <Text className='text-white'>{emailForm.isLoading ? (
                                 <ActivityIndicator size='small' color={Colors.lighterSecondary}/>
                             ) : 'confirm your email'}</Text>
                         </TouchableOpacity>
@@ -193,8 +261,8 @@ const ProfileSettings = ({ signOut, modalOpen }: { signOut: () => void, modalOpe
                             className='border-b font-light w-52 p-1'
                             placeholder='your current password'
                             placeholderTextColor={'gray'}
-                            value={currentPassword}
-                            onChangeText={(val) => setCurrentPassword(val)}
+                            value={passwordForm.currentPassword}
+                            onChangeText={(val) => setPasswordForm({ ...passwordForm, currentPassword: val })}
                             secureTextEntry
                             textContentType='oneTimeCode'
                         />
@@ -207,18 +275,18 @@ const ProfileSettings = ({ signOut, modalOpen }: { signOut: () => void, modalOpe
                             className='border-b font-light w-52 p-1'
                             placeholder='your new password'
                             placeholderTextColor={'gray'}
-                            value={newPassword}
-                            onChangeText={(val) => setNewPassword(val)}
+                            value={passwordForm.newPassword}
+                            onChangeText={(val) => setPasswordForm({ ...passwordForm, newPassword: val })}
                             secureTextEntry
                             textContentType='oneTimeCode'
                         />
                     </View>
                     <TouchableOpacity
                         className={`bg-secondary py-1 px-2 rounded-2xl mt-6 w-48 items-center ${!pb.authStore.record?.verified && 'bg-gray-500/50'}`}
-                        disabled={!pb.authStore.record?.verified && !passwordChangeLoader}
+                        disabled={!pb.authStore.record?.verified && !passwordForm.isLoading}
                         onPress={onPasswordChange}
                     >
-                        <Text className={`${!pb.authStore.record?.verified ? 'text-gray-400' : 'text-white'}`}>{passwordChangeLoader 
+                        <Text className={`${!pb.authStore.record?.verified ? 'text-gray-400' : 'text-white'}`}>{passwordForm.isLoading 
                         ? 
                             (<ActivityIndicator size='small' color={Colors.lighterSecondary}/>) 
                         :   'confirm new password'}

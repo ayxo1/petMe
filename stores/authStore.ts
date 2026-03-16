@@ -23,6 +23,12 @@ export const convertPBUserToUser = (pbUser: PBUser): User => {
     },
     accountType: pbUser.accountType,
     regState: pbUser.regState,
+    preferences: {
+      searchDistance: pbUser.preferences.searchDistance,
+      showRescuePets: pbUser.preferences.showRescuePets,
+      showShelterPets: pbUser.preferences.showShelterPets,
+      preferredSpecies: pbUser.preferences.preferredSpecies
+    },
     createdAt: pbUser.createdAt,
     updatedAt: pbUser.updatedAt
   };
@@ -99,7 +105,13 @@ export const useAuthStore = create<AuthState>()(
             email: userData.email,
             password: userData.password,
             passwordConfirm: userData.passwordConfirm,
-            regState: 'signed_up'
+            regState: 'signed_up',
+            preferences: {
+              "searchDistance": 50,
+              "showRescuePets": true,
+              "showShelterPets": true,
+              "preferredSpecies": ["dog", "cat", "bird", "rodent", "other"]
+            }
           });
 
           const newUser = convertPBUserToUser(pbUser);
@@ -145,7 +157,8 @@ export const useAuthStore = create<AuthState>()(
             bio: profileData.bio,
             city: profileData.location?.city,
             coordinates: profileData.location?.coordinates,
-            regState: profileData.regState
+            regState: profileData.regState,
+            preferences: profileData.preferences
           });
           
           const updatedUser = convertPBUserToUser(pbUpdatedUser);

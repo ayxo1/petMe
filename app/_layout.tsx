@@ -54,7 +54,7 @@ export default function RootLayout() {
       });
     }
     
-  }, [isAuthenticated, registrationState, user]);
+  }, [isAuthenticated, registrationState]);
   
   useEffect(() => {
     if (sessionExpired) Alert.alert(

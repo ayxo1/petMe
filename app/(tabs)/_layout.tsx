@@ -28,7 +28,6 @@ const TabsLayout = () => {
   const { checkUnreadStatus, subscribeToMessages, hasUnreadMessages } = useChatStore();
 
   const isNewOwner = registrationState === 'completed' && pets.length === 0 && user?.accountType === 'owner';
-console.log('reg state log: ', registrationState);
 
   useEffect(() => {
     let unsubscribeLikes: () => void;

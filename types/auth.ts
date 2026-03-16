@@ -11,6 +11,12 @@ export interface User {
   }
   accountType?: 'owner' | 'seeker' | 'shelter';
   regState: RegistrationState;
+  preferences: {
+    searchDistance: number;
+    showRescuePets: boolean;
+    showShelterPets: boolean;
+    preferredSpecies: string[];
+  };
   createdAt: string;
   updatedAt?: string;
 }
@@ -24,6 +30,12 @@ export interface SignUpFormData extends SignInFormData {
   // username: string;
   passwordConfirm: string;
   regState?: RegistrationState;
+  preferences?: {
+    searchDistance: number;
+    showRescuePets: boolean;
+    showShelterPets: boolean;
+    preferredSpecies: string[];
+  };
 }
 
 export interface ProfileSetupFormData {
