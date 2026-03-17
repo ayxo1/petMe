@@ -27,7 +27,8 @@ export const convertPBUserToUser = (pbUser: PBUser): User => {
       searchDistance: pbUser.preferences.searchDistance,
       showRescuePets: pbUser.preferences.showRescuePets,
       showShelterPets: pbUser.preferences.showShelterPets,
-      preferredSpecies: pbUser.preferences.preferredSpecies
+      preferredSpecies: pbUser.preferences.preferredSpecies,
+      showSeekers: pbUser.preferences.showSeekers
     },
     createdAt: pbUser.createdAt,
     updatedAt: pbUser.updatedAt
@@ -110,7 +111,8 @@ export const useAuthStore = create<AuthState>()(
               "searchDistance": 50,
               "showRescuePets": true,
               "showShelterPets": true,
-              "preferredSpecies": ["dog", "cat", "bird", "rodent", "other"]
+              "preferredSpecies": ["dog", "cat", "bird", "rodent", "other"],
+              "showSeekers": get().user?.accountType === 'owner' ? false : true
             }
           });
 

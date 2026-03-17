@@ -15,6 +15,7 @@ export interface PBUser extends RecordModel {
     showRescuePets: boolean;
     showShelterPets: boolean;
     preferredSpecies: string[];
+    showSeekers: boolean;
   };
   created: string;
   updated: string;

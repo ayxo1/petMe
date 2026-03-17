@@ -160,12 +160,13 @@ const Profile = () => {
               <View className='shadow shadow-secondary/50 mb-2 flex-row items-center gap-6'>
                 <TouchableOpacity
                   onPress={() => toggleProfilePreview(!profilePreview)}
+                  className='w-32'
                 >
                   <AvatarComponent
                     uri={user.images[0]}
                     style='w-32 h-32 rounded-2xl p-1'
                   />
-                  <Text className='absolute-center-x bottom-1 bg-secondary/60 text-primary rounded-b-2xl px-[0.3rem] py-2'>preview profile</Text>
+                  <Text className='absolute-center-x bottom-1 bg-secondary/60 text-primary rounded-b-2xl px-[0.32rem] p-2'>preview profile</Text>
                 </TouchableOpacity>
                 <View className='gap-4'>
                   <TouchableOpacity

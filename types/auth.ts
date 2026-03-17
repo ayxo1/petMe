@@ -16,6 +16,7 @@ export interface User {
     showRescuePets: boolean;
     showShelterPets: boolean;
     preferredSpecies: string[];
+    showSeekers: boolean;
   };
   createdAt: string;
   updatedAt?: string;
@@ -34,6 +35,7 @@ export interface SignUpFormData extends SignInFormData {
     searchDistance: number;
     showRescuePets: boolean;
     showShelterPets: boolean;
+    showSeekers: boolean;
     preferredSpecies: string[];
   };
 }

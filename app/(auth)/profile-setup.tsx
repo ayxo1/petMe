@@ -35,7 +35,7 @@ const ProfileSetup = () => {
 
   const { updateProfile, user, isLoading, registrationState } = useAuthStore();
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
-  const { fetchProfileBatch, reset, feedType } = useFeedStore();
+  const { fetchProfileBatch, reset } = useFeedStore();
 
   const { initialData } = useLocalSearchParams<{ initialData: '0' | '1' }>()
   const isEditing = initialData === '1';
@@ -147,7 +147,7 @@ const ProfileSetup = () => {
         // if coordinates are different now - refetch the feed with the new parameters
         if(formData.location.coordinates) {
           reset();
-          await fetchProfileBatch(feedType);
+          await fetchProfileBatch();
         }
         // if user missclicked the profile type during the signup stage and went back to seeker
         if (formData.accountType === 'seeker' && registrationState !== 'completed') {

@@ -37,6 +37,7 @@ onRecordAfterCreateSuccess((e) => {
 routerAdd("GET", "/api/feed", (c) => {  
     
     const user = c.auth;
+    const userPreferences = JSON.parse(user.get('preferences'));
     let userCoords = null;
     try {
         const currentUser = new DynamicModel({ coordinates: '' });
@@ -65,13 +66,9 @@ routerAdd("GET", "/api/feed", (c) => {
 
     let page = 1;
     let perPage = 20;
-    let rawTypes = 'pets';
 
     try {
         const rawQuery = (c.request && c.request.url && c.request.url.rawQuery) || "";
-
-        const typeMatch = rawQuery.match(/type=([^&]+)/);
-        if (typeMatch) rawTypes = decodeURIComponent(typeMatch[1]);
 
         const pageMatch = rawQuery.match(/[?&]page=(\d+)/);
         if (pageMatch) page = parseInt(pageMatch[1]);
@@ -83,20 +80,17 @@ routerAdd("GET", "/api/feed", (c) => {
         console.log("api/feed: Query parse error, using defaults:", e);
     }
 
-    const types = rawTypes.split(',');
     const limit = perPage;
     const offset = (page - 1) * perPage;
 
-    let adoptionStatuses = [];
-    if (types.includes('pets')) adoptionStatuses.push('false');
-    if (types.includes('rescue')) adoptionStatuses.push('true');
-    if (adoptionStatuses.length === 0) adoptionStatuses = ['true', 'false'];
-    const adoptionFilter = `isAvailableForAdoption IN (${adoptionStatuses.join(',')})`;
+    const rescueFilter = !userPreferences.showRescuePets ? 'AND isAvailableForAdoption = false' : '';
+    const shelterFilter = !userPreferences.showShelterPets ? "AND (SELECT accountType FROM users WHERE id = pets.owner) NOT LIKE '%shelter%'" : '';
+    const speciesFilter = userPreferences.preferredSpecies.length > 0
+        ? `AND species IN (${userPreferences.preferredSpecies.map(species => `'${species}'`).join(',')})`
+        : '';
 
     let queries = [];
     let bindParams = { userId: user.id, limit, offset };
-
-    if (types.includes('pets') || types.includes('rescue')) {
     queries.push(`
         SELECT 
             id, 
@@ -104,7 +98,7 @@ routerAdd("GET", "/api/feed", (c) => {
             bio, 
             images, 
             isAvailableForAdoption,
-            'pet' as type, 
+            'pet' as type,
             owner as ownerId,
             age,
             created,
@@ -113,23 +107,16 @@ routerAdd("GET", "/api/feed", (c) => {
             (SELECT coordinates FROM users WHERE id = pets.owner) as ownerCoordinates
         FROM pets
         WHERE owner != {:userId} 
-            AND ${adoptionFilter}
+            ${rescueFilter}
+            ${shelterFilter}
+            ${speciesFilter}
             AND id NOT IN (SELECT targetPet FROM swipes WHERE user = {:userId} AND swipeType = 'pet')
             AND owner NOT IN (SELECT user2 FROM matches WHERE user1 = {:userId} AND status = 'active')
             AND owner NOT IN (SELECT user1 FROM matches WHERE user2 = {:userId} AND status = 'active')
             AND (SELECT accountType FROM users WHERE id = pets.owner) NOT LIKE '%seeker%'
-        `);
-    }
+    `);
 
-    let accountPatterns = [];
-    if (types.includes('seekers')) accountPatterns.push('seeker');
-    if (types.includes('shelters')) accountPatterns.push('shelter');
-
-    const accountFilter = accountPatterns.length > 0
-        ? accountPatterns.map(pattern => `accountType LIKE '%${pattern}%'`).join(' OR ') 
-        : '1=1';
-
-    if (types.includes('users') || types.includes('seekers')) {
+    if (userPreferences.showSeekers) {
         queries.push(`
             SELECT id, 
             username as name, 
@@ -146,8 +133,8 @@ routerAdd("GET", "/api/feed", (c) => {
             
             FROM users
             WHERE id != {:userId}
+                AND accountType LIKE '%seeker%'
                 -- AND isHidden = FALSE
-                AND (${accountFilter})
                 AND id NOT IN (SELECT targetUser FROM swipes WHERE user = {:userId} AND swipeType = 'profile')
                 AND id NOT IN (SELECT user2 FROM matches WHERE user1 = {:userId} AND status = 'active')
                 AND id NOT IN (SELECT user1 FROM matches WHERE user2 = {:userId} AND status = 'active')
@@ -186,15 +173,22 @@ routerAdd("GET", "/api/feed", (c) => {
         try {
             const otherCoords = JSON.parse(profile.ownerCoordinates);
             const distance = haversine(userCoords.lat, userCoords.lng, otherCoords.lat, otherCoords.lng);
-            return { ...profile, distance: `${distance} km`};
+            return { ...profile, distance };
         } catch (error) {
             console.log('profilesWithDistance error, returning distance as null: ', error);
             return { ...profile, distance: null };
         }
     });
 
+    const filteredBySearchDistance = profilesWithDistance.filter(profile => profile.distance === null || profile.distance <= userPreferences.searchDistance);
+
+    const formattedProfiles = filteredBySearchDistance.map(profile => ({
+        ...profile,
+        distance: profile.distance !== null ? `${profile.distance} km` : null
+    }));
+
     return c.json(200, {
-        "items": profilesWithDistance,
+        "items": formattedProfiles,
         "page": page,
         "perPage": perPage
     });

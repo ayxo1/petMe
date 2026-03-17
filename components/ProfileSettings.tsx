@@ -34,6 +34,10 @@ const ProfileSettings = ({ signOut, modalOpen }: { signOut: () => void, modalOpe
     const showShelterRef = useRef(showShelterPets);
     showShelterRef.current = showShelterPets;
 
+    const [showSeekers, setShowSeekers] = useState(true);
+    const showSeekersRef = useRef(showSeekers);
+    showSeekersRef.current = showSeekers;
+
     const [emailForm, setEmailForm] = useState({ newEmail: '', isLoading: false });
     const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', isLoading: false });
 
@@ -79,13 +83,13 @@ const ProfileSettings = ({ signOut, modalOpen }: { signOut: () => void, modalOpe
             }
         } else if (passwordForm.newPassword === passwordForm.currentPassword) Alert.alert('error', 'the password you are trying to set is identical to the one you entered as the current password');
     };
-console.log(speciesOptions.map(species => species.value));
 
     useEffect(() => {
         setDistatance(preferences.searchDistance);
         setShowRescuePets(preferences.showRescuePets);
         setShowShelterPets(preferences.showShelterPets);
         setPreferredSpecies(preferences.preferredSpecies)
+        setShowSeekers(preferences.showSeekers);
         
         const saveChanges = async () => {
             const updatedPreferences = {
@@ -93,13 +97,15 @@ console.log(speciesOptions.map(species => species.value));
                 searchDistance: distanceRef.current,
                 showRescuePets: showRescueRef.current,
                 showShelterPets: showShelterRef.current,
-                preferredSpecies: preferredSpeciesRef.current
+                preferredSpecies: preferredSpeciesRef.current,
+                showSeekers: showSeekersRef.current
             };
             if (
                 preferences.searchDistance !== distanceRef.current ||
                 preferences.showRescuePets !== showRescueRef.current ||
                 preferences.showShelterPets !== showShelterRef.current ||
-                preferences.preferredSpecies !== preferredSpeciesRef.current
+                preferences.preferredSpecies !== preferredSpeciesRef.current ||
+                preferences.showSeekers !== showSeekersRef.current
             ) {
                 try {
                     await updateProfile({ preferences: updatedPreferences });
@@ -184,6 +190,17 @@ console.log(speciesOptions.map(species => species.value));
                                     ios_backgroundColor={Colors.lighterSecondary}
                                 />
                             </View>
+                            {user.accountType == 'owner' && (
+                                <View className='p-2 flex-row justify-between items-center'>
+                                    <Text className='font-light text-secondary'>show seeker profiles:</Text>
+                                    <Switch
+                                        value={showSeekers}
+                                        onValueChange={(val) => setShowSeekers(val)}
+                                        trackColor={{ true: Colors.secondary, false: Colors.lighterSecondary}}
+                                        ios_backgroundColor={Colors.lighterSecondary}
+                                    />
+                                </View>
+                            )}
                             <View className='p-2 justify-between mt-2'>
                                 <Text className='font-light text-secondary mb-3'>mostly interested in:</Text>
                                 <View

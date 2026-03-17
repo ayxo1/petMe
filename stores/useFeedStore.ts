@@ -7,7 +7,6 @@ interface FeedState {
     feed: FeedProfile[];
     currentIndex: number;
     isLoading: boolean;
-    feedType: string;
 
     fetchProfileBatch: (type?: string) => Promise<void>;
     swipeLike: (id: string) => Promise<{ isMatch: boolean; matchId?: string, isExisting?: boolean }>;
@@ -54,9 +53,8 @@ export const useFeedStore = create<FeedState>(
         feed: [],
         currentIndex: 0,
         isLoading: false,
-        feedType: 'pets,seekers,shelters,rescue',
     
-        fetchProfileBatch: async (type) => {
+        fetchProfileBatch: async () => {
             const state = get();
             if(state.isLoading) {
                 console.log('a batch is already loading');
@@ -77,7 +75,6 @@ export const useFeedStore = create<FeedState>(
 
                 const result = await pb.send<{ items: PBFeedRecord[] }>("/api/feed", {
                     params: {
-                        type: type ? type : state.feedType,
                         page: page.toString(),
                         perPage: BATCH_SIZE.toString()
                     }
