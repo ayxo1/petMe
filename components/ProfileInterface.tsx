@@ -43,7 +43,7 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, prof
             >
                 <View className="gap-4 bg-secondary/60 px-3 py-4 rounded-2xl border border-secondary">
                     <Text className="text-authPrimary font-bold">adoption status:
-                        <Text className="font-light text-primary"> {adoptionInfo.adoptionStatus}</Text>
+                        <Text className={`font-light ${adoptionInfo.adoptionStatus === 'available' ? 'text-green-400' : 'text-primary'}`}> {adoptionInfo.adoptionStatus}</Text>
                     </Text>
                     {adoptionInfo.adoptionDetails?.reason && 
                     <Text className="text-authPrimary font-bold">reason:

@@ -32,9 +32,14 @@ export const petFormSchema = yup.object({
         .required(),
     adoptionStatus: yup
         .string()
-        .transform(val => val === '' ? '' : val)
         .oneOf(['available', 'pending', 'adopted', ''])
-        .optional(),
+        .when('isAvailableForAdoption', {
+            is: true,
+            then: (schema) => schema.required('adoption status is required if you are looking for a new home for your pet'),
+            otherwise: (schema) => schema.optional(),
+        }),
+        // .transform(val => val === '' ? '' : val),
+        // .optional(),
     adoptionRequirements: yup
         .string()
         .optional(),

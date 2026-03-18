@@ -19,7 +19,6 @@ const PetSetup = () => {
 
 
   const onSubmit = async (data: PetFormData) => {
-    console.log('onSubmit pet-setup data: ', data);
     if (isEditing) {
       try {
         await updatePet(id, data);
@@ -27,7 +26,7 @@ const PetSetup = () => {
           'success!',
           `${data.name} is successfully updated!`,
           [
-            {text: 'done', onPress: () => router.replace('/')}
+            {text: 'done', onPress: () => router.replace('/(tabs)/profile')}
           ]
         );
         return;

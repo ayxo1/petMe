@@ -106,6 +106,7 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
             shouldValidate: true
         });
     };
+console.log(errors);
 
     return (
         <View className="flex-1 px-5 gap-3">
@@ -252,7 +253,7 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
                                 style={
                                 adoptionStatus === option.value
                                     ? 'bg-secondary flex-1'
-                                    : 'bg-gray-200 flex-1'
+                                    : 'bg-lighterSecondary flex-1'
                                 }
                             />
                             ))}
