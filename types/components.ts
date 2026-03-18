@@ -15,6 +15,13 @@ export interface ProfileCardProps {
   profileType?: string;
   distance?: string;
   isAvailableForAdoption?: boolean;
+  adoptionInfo: {
+    adoptionStatus?: 'available' | 'pending' | 'adopted';
+    adoptionDetails?: {
+      requirements?: string;
+      reason?: string;
+    };
+  }
 }
 
 export interface InputComponentProps {

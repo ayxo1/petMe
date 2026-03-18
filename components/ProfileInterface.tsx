@@ -13,9 +13,16 @@ interface ProfileInterfaceProps {
     profileType?: string
     distance?: string;
     isAvailableForAdoption?: boolean;
+    adoptionInfo: {
+        adoptionStatus?: 'available' | 'pending' | 'adopted';
+        adoptionDetails?: {
+        requirements?: string;
+        reason?: string;
+        };
+    }
 };
 
-const ProfileInterface = ({ profileImages, profileName, profileDescription, profileType, distance, isAvailableForAdoption }: ProfileInterfaceProps) => {
+const ProfileInterface = ({ profileImages, profileName, profileDescription, profileType, distance, isAvailableForAdoption, adoptionInfo }: ProfileInterfaceProps) => {
 
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
   const [adoptionModal, toggleAdoptionModal] = useState(false);
@@ -31,12 +38,21 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, prof
             <Modal 
                 isOpen={adoptionModal}
                 toggleModal={toggleAdoptionModal}
-                styleProps='bg-primary/50 w-96 h-72 justify-center items-center'
+                styleProps='mt-48 justify-center items-center max-w-96'
+                tint={false}
             >
-                <View className="gap-2">
-                    <Text className="text-authPrimary font-bold">adoption status: available available</Text>
-                    <Text className="text-authPrimary font-bold">reason: yes</Text>
-                    <Text className="text-authPrimary font-bold">requirements: to love mr big</Text>
+                <View className="gap-4 bg-secondary/60 px-3 py-4 rounded-2xl border border-secondary">
+                    <Text className="text-authPrimary font-bold">adoption status:
+                        <Text className="font-light text-primary"> {adoptionInfo.adoptionStatus}</Text>
+                    </Text>
+                    {adoptionInfo.adoptionDetails?.reason && 
+                    <Text className="text-authPrimary font-bold">reason:
+                        <Text className="font-light text-primary"> {adoptionInfo.adoptionDetails.reason}</Text>
+                    </Text>}
+                    {adoptionInfo.adoptionDetails?.requirements && 
+                    <Text className="text-authPrimary font-bold">requirements:
+                        <Text className="font-light text-primary"> {adoptionInfo.adoptionDetails.requirements}</Text>
+                    </Text>}
                 </View>
             </Modal>
         )}
@@ -46,7 +62,7 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, prof
         >
             <View>
                 {profileType && profileType === 'seeker' && (
-                    <Text className="absolute text-center text-primary/80 text-xl z-50 top-16 right-8 bg-authPrimary/50 px-2 py-1 rounded-xl">
+                    <Text className="absolute text-center text-primary text-xl z-50 top-16 right-8 bg-secondary/40 px-3 py-2 rounded-3xl border border-lighterSecondary/80">
                         seeker
                     </Text>
                 )}
@@ -99,14 +115,14 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, prof
                 onPress={() => toggleAdoptionModal(!adoptionModal)}
             >
                 <Text
-                    className='font-extralight text-l text-center text-blue-100 bg-blue-500/40 px-3 py-1 rounded-xl border border-blue-100/20'
+                    className='font-light text-l text-center text-white bg-authPrimary/60 px-3 py-1 rounded-xl border border-blue-100/20'
                 >
                     looking for a new home
                 </Text>
                 <View 
-                    className='bg-blue-500/40 p-1 rounded-full border border-blue-100/20'
+                    className='bg-authPrimary/60 px-2 py-1 rounded-full border border-blue-100/20'
                 >
-                    <Text className="font-extralight text-l text-center text-blue-100">ⓘ</Text>
+                    <Text className="font-extralight text-l text-center text-white">ⓘ</Text>
                 </View>
             </TouchableOpacity>
         )}
@@ -139,8 +155,8 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, prof
             className="absolute left-0 right-0 bottom-6 h-16 justify-start"
         >
             <Text
-            className="text-base mx-8 text-white"
-            numberOfLines={2}
+                className="text-base mx-8 text-white"
+                numberOfLines={2}
             >
             &#9829; {profileDescription}
             </Text>

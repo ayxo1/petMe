@@ -18,7 +18,6 @@ export default function Index() {
     swipePass,
     fetchProfileBatch,
     getRemaningProfiles,
-    feedType,
     reset
   } = useFeedStore();
   
@@ -105,7 +104,7 @@ export default function Index() {
       });
       setIsModal(true);
       reset();
-      await fetchProfileBatch(feedType);
+      await fetchProfileBatch();
     };
   };
 
@@ -169,6 +168,13 @@ return (
                   profileType={profile.type}
                   distance={profile.distance}
                   isAvailableForAdoption={profile.isAvailableForAdoption}
+                  adoptionInfo={{ 
+                    adoptionStatus: profile.adoptionStatus,
+                    adoptionDetails: { 
+                      requirements: profile.adoptionDetails?.requirements,
+                      reason: profile.adoptionDetails?.reason  
+                    }
+                  }}
                   indexes={{ index: cardIndex, reverseIndex: feed.length - cardIndex - 1, currentIndex }}
                   onSwipeLeft={arrIndex === 0 ? onSwipeLeft : undefined}
                   onSwipeRight={arrIndex === 0 ? onSwipeRight : undefined}

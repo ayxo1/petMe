@@ -12,6 +12,8 @@ import catPass from '../assets/icons/catPass.png';
 import dogLike from '../assets/icons/dogLike.png';
 import pawLike from '../assets/icons/paw-print.png';
 import appIcon from '../assets/images/icon.png';
+import mrBigDislike from '../assets/images/mrBigDislike.png';
+import mrBigLike from '../assets/images/mrBigLike.png';
 import orangePaw from '../assets/images/paw.png';
 import profileCardBorder from '../assets/images/profileCardBorder.png';
 
@@ -22,7 +24,9 @@ export const images = {
     penthouseKet,
     profileCardBorder,
     mrBigBlurhash,
-    orangePaw
+    orangePaw,
+    mrBigLike,
+    mrBigDislike
 };
 
 export const icons = {

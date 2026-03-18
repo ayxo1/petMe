@@ -1,7 +1,7 @@
-import { icons, images } from "@/constants";
+import { images } from "@/constants";
 import type { ProfileCardProps } from "@/types/components";
 import { useEffect } from "react";
-import { Dimensions, Text, View } from "react-native";
+import { Dimensions, Image, Text, View } from "react-native";
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { Easing, interpolate, useAnimatedStyle, useSharedValue, withDelay, withTiming } from "react-native-reanimated";
 import { scheduleOnRN } from 'react-native-worklets';
@@ -26,7 +26,7 @@ const END_POSITION = 0;
 const PAW_WIDTH = 80;
 const PAW_HEIGHT = 220;
 
-const ProfileCard = ({ profileImages, profileName, profileDescription, profileType, distance, isAvailableForAdoption, indexes, onSwipeLeft, onSwipeRight, isPaw = false }: ProfileCardPropsWithIndex) => {
+const ProfileCard = ({ profileImages, profileName, profileDescription, profileType, distance, isAvailableForAdoption, adoptionInfo, indexes, onSwipeLeft, onSwipeRight, isPaw = false }: ProfileCardPropsWithIndex) => {
 
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(-height);
@@ -93,7 +93,7 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, profileTy
   .onEnd((e) => {
     const swipedRight = e.translationX > SWIPE_THRESHOLD;
     const swipedLeft = e.translationX < -SWIPE_THRESHOLD;
-    console.log({right: swipedRight, left: swipedLeft});
+    // console.log({right: swipedRight, left: swipedLeft});
     
     if(swipedRight || swipedLeft) {
       
@@ -193,15 +193,20 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, profileTy
             likeOverlayStyle,
             {
               position: 'absolute',
-              top: '15%',
-              right: '20%',
+              top: '10%',
+              right: '5%',
               zIndex: 10,
             },
           ]}
           pointerEvents="none"
         >
-          <View>
-            <Text className="text-red-500 text-3xl">{'<3'}</Text>
+          <View className="transform -rotate-12">
+            <Image 
+              source={images.mrBigLike}
+              className='size-40'
+              resizeMode='cover'
+            />
+            {/* <Text className="text-red-400 text-3xl transform rotate-12">{': )'}</Text> */}
           </View>
         </Animated.View>
 
@@ -210,15 +215,20 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, profileTy
             dislikeOverlayStyle,
             {
               position: 'absolute',
-              top: '15%',
-              left: '20%',
+              top: '10%',
+              left: '5%',
               zIndex: 10,
             },
           ]}
           pointerEvents="none"
         >
-          <View>
-            <Text className="text-red-500 text-3xl">{'</3'}</Text>
+          <View className="transform rotate-12">
+            <Image 
+              source={images.mrBigDislike}
+              className='size-40'
+              resizeMode='cover'
+            />
+            {/* <Text className="text-red-400 text-3xl transform -rotate-12">{')`:'}</Text> */}
           </View>
         </Animated.View>
           
@@ -229,6 +239,7 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, profileTy
             profileType={profileType}
             distance={distance}
             isAvailableForAdoption={isAvailableForAdoption}
+            adoptionInfo={adoptionInfo}
           />
 
         </TiltEffect>

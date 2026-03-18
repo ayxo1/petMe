@@ -6,9 +6,10 @@ interface ModalComponentProps extends ModalProps {
     withInput?: boolean;
     toggleModal: (isOpen: boolean) => void;
     styleProps?: string;
+    tint?: boolean
 }
 
-const Modal = ({ isOpen, withInput, children, toggleModal, styleProps = 'bg-white/80', ...props }: ModalComponentProps) => {
+const Modal = ({ isOpen, withInput, children, toggleModal, styleProps = 'bg-white/80', tint = true, ...props }: ModalComponentProps) => {
     const styles = 'items-center justify-center rounded-2xl'
     const content = withInput
         ?   
@@ -34,7 +35,7 @@ const Modal = ({ isOpen, withInput, children, toggleModal, styleProps = 'bg-whit
         {...props}
     >
         <Pressable
-            className="flex-1 justify-center items-center bg-black/60"
+            className={`flex-1 justify-center items-center ${tint && 'bg-black/55'}`}
             onPress={() => toggleModal(!isOpen)}
         >
             <Pressable 

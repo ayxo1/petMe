@@ -20,6 +20,7 @@ const convertPBFeedRecordToFeedProfile = (record: PBFeedRecord): FeedProfile => 
     const collectionName = record.type === 'pet' ? 'pets' : 'users';
     let imageUrls: string[] = [];
     imageUrls = record.images.map(filename => `${pb.baseURL}/api/files/${collectionName}/${record.id}/${filename}`);
+    console.log(record);
     
     return {
         id: record.id,
