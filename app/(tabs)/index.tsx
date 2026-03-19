@@ -162,19 +162,7 @@ return (
               >
   
                 <ProfileCard
-                  profileImages={profile.images || []}
-                  profileName={profile.name}
-                  profileDescription={profile.bio}
-                  profileType={profile.type}
-                  distance={profile.distance}
-                  isAvailableForAdoption={profile.isAvailableForAdoption}
-                  adoptionInfo={{ 
-                    adoptionStatus: profile.adoptionStatus,
-                    adoptionDetails: { 
-                      requirements: profile.adoptionDetails?.requirements,
-                      reason: profile.adoptionDetails?.reason  
-                    }
-                  }}
+                  profile={profile}
                   indexes={{ index: cardIndex, reverseIndex: feed.length - cardIndex - 1, currentIndex }}
                   onSwipeLeft={arrIndex === 0 ? onSwipeLeft : undefined}
                   onSwipeRight={arrIndex === 0 ? onSwipeRight : undefined}

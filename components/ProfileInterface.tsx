@@ -1,4 +1,5 @@
 import { images } from "@/constants";
+import { FeedProfile } from "@/types/feed";
 import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -22,12 +23,11 @@ interface ProfileInterfaceProps {
     }
 };
 
-const ProfileInterface = ({ profileImages, profileName, profileDescription, profileType, distance, isAvailableForAdoption, adoptionInfo }: ProfileInterfaceProps) => {
-
+const ProfileInterface = ({ profile }: { profile: Partial<FeedProfile> }) => {
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
   const [adoptionModal, toggleAdoptionModal] = useState(false);
 
-  const profileCover: ImageSourcePropType = { uri: profileImages[currentImageIdx] }
+  const profileCover: ImageSourcePropType = { uri: profile.images ? profile.images[currentImageIdx] : ''}
 
   return (
     <View
@@ -41,17 +41,17 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, prof
                 styleProps='mt-48 justify-center items-center max-w-96'
                 tint={false}
             >
-                <View className="gap-4 bg-secondary/60 px-3 py-4 rounded-2xl border border-secondary">
+                <View className="gap-4 bg-secondary/40 px-3 py-4 rounded-2xl border border-lighterSecondary">
                     <Text className="text-authPrimary font-bold">adoption status:
-                        <Text className={`font-light ${adoptionInfo.adoptionStatus === 'available' ? 'text-green-400' : 'text-primary'}`}> {adoptionInfo.adoptionStatus}</Text>
+                        <Text className={`font-light ${profile.adoptionStatus === 'available' ? 'text-green-400' : 'text-primary'}`}> {profile.adoptionStatus}</Text>
                     </Text>
-                    {adoptionInfo.adoptionDetails?.reason && 
+                    {profile.adoptionDetails?.reason && 
                     <Text className="text-authPrimary font-bold">reason:
-                        <Text className="font-light text-primary"> {adoptionInfo.adoptionDetails.reason}</Text>
+                        <Text className="font-light text-primary"> {profile.adoptionDetails.reason}</Text>
                     </Text>}
-                    {adoptionInfo.adoptionDetails?.requirements && 
+                    {profile.adoptionDetails?.requirements && 
                     <Text className="text-authPrimary font-bold">requirements:
-                        <Text className="font-light text-primary"> {adoptionInfo.adoptionDetails.requirements}</Text>
+                        <Text className="font-light text-primary"> {profile.adoptionDetails.requirements}</Text>
                     </Text>}
                 </View>
             </Modal>
@@ -61,7 +61,7 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, prof
             className="flex-1 relative bg-primary"
         >
             <View>
-                {profileType && profileType === 'seeker' && (
+                {profile.type && profile.type === 'seeker' && (
                     <Text className="absolute text-center text-primary text-xl z-50 top-16 right-8 bg-secondary/40 px-3 py-2 rounded-3xl border border-lighterSecondary/80">
                         seeker
                     </Text>
@@ -71,7 +71,7 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, prof
             <Pressable
                 onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-                    setCurrentImageIdx(prev => ((prev + 1) === profileImages.length ? 0 : prev + 1));
+                    setCurrentImageIdx(prev => ((prev + 1) === profile.images?.length ? 0 : prev + 1));
                 }}
             >
 
@@ -109,7 +109,7 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, prof
             />
         </View>
 
-        {isAvailableForAdoption && (
+        {profile.isAvailableForAdoption && (
             <TouchableOpacity 
                 className='flex-row absolute bottom-52 left-0 right-0 items-center justify-center gap-2'
                 onPress={() => toggleAdoptionModal(!adoptionModal)}
@@ -117,7 +117,7 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, prof
                 <Text
                     className='font-light text-l text-center text-white bg-authPrimary/60 px-3 py-1 rounded-xl border border-blue-100/20'
                 >
-                    looking for a new home
+                    {adoptionModal ? 'close' : 'looking for a new home'}
                 </Text>
                 <View 
                     className='bg-authPrimary/60 px-2 py-1 rounded-full border border-blue-100/20'
@@ -128,7 +128,7 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, prof
         )}
 
         <View className="absolute bottom-44 left-0 right-0 flex-row justify-center gap-2">
-            {profileImages.map((img, idx) => (
+            {profile.images?.map((img, idx) => (
                 <Text
                     key={img}
                     className={`font-bold text-3xl text-center ${idx === currentImageIdx ? 'text-white' : 'text-white/50'}`}
@@ -139,16 +139,21 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, prof
         </View>
 
         <View className="absolute bottom-32 left-0 right-0">
+            {/* <View className="absolute left-28 bottom-8">
+                {profile.breed && (
+                    <Text className="p-1 rounded-2xl border border-lighterSecondary bg-secondary/20 font-extralight text-base text-lighterSecondary">{profile.breed}</Text>
+                )}
+            </View> */}
             <Text
                 className="font-bold text-3xl text-lighterSecondary text-center"
                 numberOfLines={1}
             >
-                {profileName}
+                {profile.name}{profile.type === 'pet' && `, ${profile.age}`}
             </Text>
         </View>
 
-        {distance && (<View className="absolute bottom-24 left-7 right-0">
-            <Text className="text-l text-authPrimary">📍 {distance} away from you</Text>
+        {profile.distance && (<View className="absolute bottom-24 left-7 right-0">
+            <Text className="text-l text-authPrimary">📍 {profile.distance} away from you</Text>
         </View>)}
 
         <View
@@ -158,7 +163,7 @@ const ProfileInterface = ({ profileImages, profileName, profileDescription, prof
                 className="text-base mx-8 text-white"
                 numberOfLines={2}
             >
-            &#9829; {profileDescription}
+            &#9829; {profile.bio}
             </Text>
         </View>
     </View>

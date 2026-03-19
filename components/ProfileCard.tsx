@@ -26,7 +26,7 @@ const END_POSITION = 0;
 const PAW_WIDTH = 80;
 const PAW_HEIGHT = 220;
 
-const ProfileCard = ({ profileImages, profileName, profileDescription, profileType, distance, isAvailableForAdoption, adoptionInfo, indexes, onSwipeLeft, onSwipeRight, isPaw = false }: ProfileCardPropsWithIndex) => {
+const ProfileCard = ({ profile, indexes, onSwipeLeft, onSwipeRight, isPaw = false }: ProfileCardPropsWithIndex) => {
 
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(-height);
@@ -233,13 +233,7 @@ const ProfileCard = ({ profileImages, profileName, profileDescription, profileTy
         </Animated.View>
           
           <ProfileInterface
-            profileImages={profileImages}
-            profileName={profileName}
-            profileDescription={profileDescription}
-            profileType={profileType}
-            distance={distance}
-            isAvailableForAdoption={isAvailableForAdoption}
-            adoptionInfo={adoptionInfo}
+            profile={profile}
           />
 
         </TiltEffect>

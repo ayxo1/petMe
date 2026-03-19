@@ -38,7 +38,7 @@ const InputComponent = ({
         onBlur={() => setIsFocused(false)}
         placeholder={placeholder}
         placeholderTextColor='#888'
-        className={`input ${isFocused ? 'border-amber-700' : 'border-gray-300'}`}
+        className={`input ${isFocused ? 'border-amber-700' : 'border-lighterSecondary'}`}
         spellCheck={spellCheck}
         textContentType={textContentType}
       />

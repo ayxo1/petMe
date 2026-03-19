@@ -62,7 +62,7 @@ const Profile = () => {
     if (unsubLikes) await unsubLikes(); 
     
     if (params) {
-      router.replace({ pathname: path, params });
+      router.push({ pathname: path, params });
     } else router.replace(path);
   }
   
@@ -89,16 +89,16 @@ const Profile = () => {
         }}
       />
 
-      {settingsModal && 
-      <BottomSheet 
-        isOpen={settingsModal}  
-        toggleModal={toggleSettingsModal}
-      >
-        <ProfileSettings 
-          signOut={signOut}
-          modalOpen={settingsModal}
-        />
-      </BottomSheet>
+      {settingsModal &&
+        <BottomSheet 
+          isOpen={settingsModal}  
+          toggleModal={toggleSettingsModal}
+        >
+          <ProfileSettings 
+            signOut={signOut}
+            modalOpen={settingsModal}
+          />
+        </BottomSheet>
       }
 
       {profilePreview && (
@@ -112,9 +112,7 @@ const Profile = () => {
           >
             <View className='w-full aspect-[0.55]'>
               <ProfileInterface 
-                profileImages={user.images}
-                profileName={user.username}
-                profileDescription={user.bio}
+                profile={{ images: user.images, name: user.username, bio: user.bio }}
               />
             </View>
           </Modal>
@@ -130,11 +128,9 @@ const Profile = () => {
           <View
             className='w-full aspect-[0.55]'
           >
-            <ProfileInterface 
-              profileImages={selectedPetProfile.images}
-              profileName={selectedPetProfile.name}
-              profileDescription={selectedPetProfile.bio}
-              />
+            <ProfileInterface
+              profile={{ images: selectedPetProfile.images, name: selectedPetProfile.name, bio: selectedPetProfile.bio }}
+            />
           </View>
         </Modal>
       )}

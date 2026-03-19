@@ -17,7 +17,7 @@ interface BottomSheetProps extends ModalProps {
 const { height } = Dimensions.get("window");
 const SWIPE_THRESHOLD = height/14;
 
-const BottomSheet = ({ isOpen, withInput, children, toggleModal, styleProps, ...props }: BottomSheetProps) => {
+const BottomSheet = ({ isOpen, withInput, children, toggleModal, styleProps = 'h-3/4', ...props }: BottomSheetProps) => {
 
     const translateY = useSharedValue(0);
     const closeModal = () => toggleModal(!isOpen);
@@ -74,24 +74,24 @@ const BottomSheet = ({ isOpen, withInput, children, toggleModal, styleProps, ...
                     className='flex-1 justify-end'
                 >
 
+                    <Pressable
+                        onPress={e => e.stopPropagation()}
+                        className={`w-full bg-primary/65 shadow shadow-stone-300 items-center rounded-t-3xl ${styleProps}`}  
+                    >      
                         <Pressable
-                            onPress={e => e.stopPropagation()}
-                            className={`w-full h-3/4 bg-primary/65 shadow shadow-stone-300 items-center rounded-t-3xl ${styleProps}`}  
-                        >      
-                            <Pressable
-                                onPress={() => toggleModal(!isOpen)}
-                                className='border-b border-secondary/30 w-52 items-center'
-                            >
-                                {/* <Text>⮟</Text> */}
-                                    <Image 
-                                        source={icons.backIcon}
-                                        className='size-9 -rotate-90 color-secondary'
-                                        resizeMode='contain'
-                                        tintColor={Colors.secondary}
-                                    />
-                            </Pressable>
-                            {content}
+                            onPress={() => toggleModal(!isOpen)}
+                            className='border-b border-secondary/30 w-52 items-center'
+                        >
+                            {/* <Text>⮟</Text> */}
+                            <Image 
+                                source={icons.backIcon}
+                                className='size-9 -rotate-90 color-secondary'
+                                resizeMode='contain'
+                                tintColor={Colors.secondary}
+                            />
                         </Pressable>
+                        {content}
+                    </Pressable>
 
             </Animated.View>
             </GestureDetector>

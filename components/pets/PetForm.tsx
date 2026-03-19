@@ -239,7 +239,7 @@ console.log(errors);
                         spellCheck={true}
                     />
                     <View className="mb-4 flex-col items-center">
-                        <Text className="label">adoption status</Text>
+                        <Text className="label">adoption status*</Text>
                         <View className="flex-row gap-2 mt-4">
                             {[
                             { value: 'available', label: 'available' },

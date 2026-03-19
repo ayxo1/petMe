@@ -1,15 +1,18 @@
+import { pb } from '@/backend/config/pocketbase';
 import ButtonComponent from '@/components/ButtonComponent';
 import InputController from '@/components/controllers/InputController';
+import InputComponent from '@/components/InputComponent';
+import Modal from '@/components/Modal';
 import { authSignInSchema } from '@/constants/schemas/authSchemas';
 import { useAuthStore } from '@/stores/authStore';
 import { SignInFormData } from '@/types/auth';
 import { FormInputData } from '@/types/components';
 import { yupResolver } from '@hookform/resolvers/yup';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Link, router } from 'expo-router';
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, Text, View } from 'react-native';
+import { Alert, Text, TouchableOpacity, View } from 'react-native';
+import { TextInput } from 'react-native-gesture-handler';
 
 const formInputData: FormInputData[] = [
   {
@@ -29,6 +32,9 @@ const formInputData: FormInputData[] = [
 const SignIn = () => {
 
   const { signIn, isLoading, setRegistrationState } = useAuthStore();
+
+  const [forgotPasswordModal, toggleForgotPasswordModal] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
 
   const {
     control,
@@ -64,6 +70,42 @@ const SignIn = () => {
       <View
         className='gap-3 rounded-lg p-5'
       >
+        
+        {forgotPasswordModal && (
+          <Modal
+            isOpen={forgotPasswordModal}
+            toggleModal={toggleForgotPasswordModal}
+            withInput
+            styleProps='bg-primary/90'
+          >
+            <View className='w-80 p-8 border border-secondary rounded-3xl'>
+              <View className='mb-6 p-2'>
+                <InputComponent 
+                  label='enter your email'
+                  placeholder='your email'
+                  labelStyling='text-secondary'
+                  keyboardType='email-address'
+                  value={resetEmail}
+                  onChangeText={(val) => setResetEmail(val)}
+                />
+              </View>
+              <ButtonComponent 
+                title='send a password reset link'
+                onPress={async () => {
+                  try {
+                    await pb.collection('users').requestPasswordReset(resetEmail);
+                    Alert.alert('a link to reset your password was sent to your email');
+                    toggleForgotPasswordModal(!forgotPasswordModal)
+                  } catch (error) {
+                    console.log('signup, otp error: ', error);
+                    Alert.alert('error', 'an error occurred, please double-check the email address and try again');
+                  }
+                }}
+              />
+            </View>
+          </Modal>
+        )}
+
         {formInputData.map((inputController, index) => (
           <Fragment key={index}>
             <InputController
@@ -82,26 +124,38 @@ const SignIn = () => {
           onPress={handleSubmit(submit)}
           isLoading={isLoading}
         />
-        <ButtonComponent 
+        {/* <ButtonComponent 
           title="Clear Cache (Dev Only)"
           onPress={async () => {
             await AsyncStorage.clear();
             Alert.alert('Cache cleared', 'Restart the app');
           }}
-        />
+        /> */}
       </View>
-      <View
-        className='flex justify-center flex-row mt-5 gap-2 border-t border-secondary p-3'
-      >
-        <Text className='text-xl'>
-          no account?
-        </Text>
-        <Link 
-          href={'/(auth)/signup'}
-          className='text-secondary text-xl'
+      <View>
+        <View
+          className='flex justify-center flex-row mt-5 gap-2 border-t border-secondary p-3'
         >
-          sign up
-        </Link>
+          <Text className='text-xl'>
+            no account?
+          </Text>
+          <Link 
+            href={'/(auth)/signup'}
+            className='text-secondary text-xl'
+          >
+            sign up
+          </Link>
+        </View>
+        <View
+          className='flex items-center border-secondary p-2'
+        >
+          <TouchableOpacity 
+            className='text-secondary text-l'
+            onPress={() => {toggleForgotPasswordModal(!forgotPasswordModal)}}
+          >
+            <Text className='text-xl text-secondary'>forgot password</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </Fragment>
   )

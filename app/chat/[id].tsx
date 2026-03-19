@@ -324,7 +324,7 @@ useEffect(() => {
                 <TouchableOpacity
                   onPress={() => setIsPetlistVisible(!isPetlistVisible)}
                 >
-                  <Text className={`text-primary border border-primary p-1 rounded-xl ${isPetlistVisible && 'bg-red-500/70'}`}>{isPetlistVisible ? 'hide pets' : 'see pets'}</Text>
+                  <Text className={`text-primary border border-lighterSecondary p-1 rounded-xl ${isPetlistVisible && 'bg-lighterSecondary text-secondary'}`}>{isPetlistVisible ? 'hide pets' : 'see pets'}</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -404,10 +404,8 @@ useEffect(() => {
           >
             {matchData && (
               <View className='w-full aspect-[0.55]'>
-                <ProfileInterface 
-                  profileImages={matchData.images}
-                  profileName={matchData.username}
-                  profileDescription={matchData.bio}
+                <ProfileInterface
+                  profile={{ images: matchData.images, name: matchData.username, bio: matchData.bio }}
                 />
               </View>
             )}
@@ -429,10 +427,8 @@ useEffect(() => {
           <View
             className='w-full aspect-[0.55]'
           >
-            <ProfileInterface 
-              profileImages={selectedPetProfile.images}
-              profileName={selectedPetProfile.name}
-              profileDescription={selectedPetProfile.bio}
+            <ProfileInterface
+              profile={{ images: selectedPetProfile.images, name: selectedPetProfile.name, bio: selectedPetProfile.bio }}
             />
           </View>
         </Modal>

@@ -1,5 +1,6 @@
 import { pb, petsAPI } from '@/backend/config/pocketbase';
 import AvatarComponent from '@/components/AvatarComponent';
+import BottomSheet from '@/components/BottomSheet';
 import Modal from '@/components/Modal';
 import ProfileCard from '@/components/ProfileCard';
 import ProfileInterface from '@/components/ProfileInterface';
@@ -23,7 +24,7 @@ const Likes = () => {
 
   const user = useAuthStore(state => state.user);
   const { fetchIncomingLikesProfiles, incomingLikes, removeLike } = useLikesStore();
-  const { reset, fetchProfileBatch, feedType } = useFeedStore();
+  const { reset, fetchProfileBatch } = useFeedStore();
   const [selectedPets, setSelectedPets] = useState<PetProfile[]>();
 
   const [selectedProfile, setSelectedProfile] = useState<IncomingLikeFeedProfile | null>();
@@ -33,6 +34,7 @@ const Likes = () => {
   const [activePetListOwnerId, setActivePetListOwnerId] = useState<string | null>();
 
   const [isModal, setIsModal] = useState(false);
+  const [isPetListModal, setIsPetListModal] = useState(false);
 
   const fetchPetListProfiles = async (ownerId: string) => {
     try {
@@ -92,7 +94,7 @@ const Likes = () => {
           console.log(isMatch, ' logging isMatch');
           setIsModal(true);
           reset();
-          await fetchProfileBatch(feedType);
+          await fetchProfileBatch();
         };
   
         if (selectedProfile) {
@@ -164,6 +166,7 @@ const Likes = () => {
           </View>
         </View>
       </Modal>
+
       <Modal 
         isOpen={!!selectedProfile}
         toggleModal={() => setSelectedProfile(null)}
@@ -173,10 +176,8 @@ const Likes = () => {
           <View
             className='w-full aspect-[0.55]'
           >
-            <ProfileCard 
-              profileImages={selectedProfile.images}
-              profileName={selectedProfile.name}
-              profileDescription={selectedProfile.bio}
+            <ProfileCard
+              profile={{ images: selectedProfile.images, name: selectedProfile.name, bio: selectedProfile.bio}}
               indexes={{index: 0, reverseIndex: 0, currentIndex: 0}}
               onSwipeLeft={onSwipeLeft}
               onSwipeRight={onSwipeRight}
@@ -187,18 +188,19 @@ const Likes = () => {
 
       <Modal 
         isOpen={!!selectedPetProfile}
-        toggleModal={() => setSelectedPetProfile(null)}
+        toggleModal={() => {
+          setSelectedPetProfile(null);
+          setActivePetListOwnerId(null);
+        }}
         styleProps='bg-transparent px-6'
       >
         {selectedPetProfile && (
           <View
             className='w-full aspect-[0.55]'
           >
-            <ProfileInterface 
-              profileImages={selectedPetProfile.images}
-              profileName={selectedPetProfile.name}
-              profileDescription={selectedPetProfile.bio}
-              />
+            <ProfileInterface
+              profile={{ images: selectedPetProfile.images, name: selectedPetProfile.name, bio: selectedPetProfile.bio }}
+            />
           </View>
         )}
       </Modal>
@@ -251,14 +253,16 @@ const Likes = () => {
                     onPress={async () => {
                       if (activePetListOwnerId === item.id) {
                         setActivePetListOwnerId(null);
+                        setIsPetListModal(false);
                       } else {
                         await fetchPetListProfiles(item.id);
                         setActivePetListOwnerId(item.id);
+                        setIsPetListModal(true);
                       }
                     }}
-                    className={`mt- mb-2 p-2 border border-secondary rounded-2xl ${activePetListOwnerId === item.id && 'bg-red-300'}`}
+                    className={`mt- mb-2 p-2 border border-secondary rounded-2xl ${activePetListOwnerId === item.id ? 'bg-authPrimary' : 'bg-secondary/30'}`}
                   >
-                    <Text>
+                    <Text className={activePetListOwnerId === item.id ? 'text-primary' : 'text-secondary'}>
                       {activePetListOwnerId === item.id ? 'close' : 'view pets'}
                     </Text>
                   </TouchableOpacity>
@@ -270,71 +274,110 @@ const Likes = () => {
           )}
         />
 
-        <View 
+        {/* <View 
           className='flex-row pt-2'
         >
-        </View>
+        </View> */}
 
 
       </View>
 
-          {activePetListOwnerId && selectedPets && (
-            <View className='absolute bottom-20 w-full z-10 h-56'>
+      {activePetListOwnerId && selectedPets && (
 
-              <View 
-                className="pt-2 border-t border-secondary/20 bg-primary w-full" 
-                style={{ 
-                  elevation: 20, 
-                  shadowColor: '#7a7773',
-                  shadowOffset: { width: 0, height: -5 },
-                  shadowOpacity: 0.15,
-                  shadowRadius: 10,
-                }}
+      <BottomSheet 
+        isOpen={isPetListModal}
+        toggleModal={() => {
+          setIsPetListModal(!isPetListModal);
+          setActivePetListOwnerId(null);
+        }}
+        styleProps='h-1/4'
+      >
+        <FlatList
+          data={selectedPets}
+          horizontal
+          contentContainerStyle={{ gap: 10, padding: 10 }}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <TouchableOpacity 
+              onPress={() => {
+                setIsPetListModal(!isPetListModal);
+                setSelectedPetProfile(item);
+              }}
+              className='ml-1.5 max-w-32'
+            >
+              <View
+                className='shadow rounded-full'
+                style={{ elevation: 5 }}
               >
-
-                <View>
-                  <Text
-                    className='text-xl font-bold text-secondary text-center'
-                  >
-                    {(incomingLikes.find(incProfile => incProfile.id === activePetListOwnerId))?.name || 'selected owner'}'s pets
-                  </Text>
-                </View>
-                <TouchableOpacity 
-                  className='absolute right-5 top-2 border rounded-full px-2 border-secondary'
-                  onPress={() => {                    
-                    setActivePetListOwnerId(null)}}
-                >
-                  <Text className='text-xl'>▼</Text>
-                </TouchableOpacity>
-                <FlatList
-                  data={selectedPets}
-                  horizontal
-                  contentContainerStyle={{ gap: 10, padding: 10 }}
-                  keyExtractor={(item) => item.id}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity 
-                      onPress={() => setSelectedPetProfile(item)}
-                      className='ml-1.5 max-w-32'
-                    >
-                      <View
-                        className='shadow rounded-full'
-                        style={{ elevation: 5 }}
-                      >
-                        <AvatarComponent 
-                          uri={item.images[0]}
-                          style='w-32 h-32 rounded-2xl'
-                        />
-                      </View>
-                      <Text className='text-center text-secondary font-bold p-2' numberOfLines={1} ellipsizeMode='tail'>
-                        {item.name}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
+                <AvatarComponent 
+                  uri={item.images[0]}
+                  style='w-32 h-32 rounded-2xl'
                 />
               </View>
-
-            </View>
+              <Text className='text-center text-secondary font-bold p-2' numberOfLines={1} ellipsizeMode='tail'>
+                {item.name}
+              </Text>
+            </TouchableOpacity>
           )}
+        />
+      </BottomSheet>
+        
+        /* <View className='absolute bottom-20 w-full z-10 h-56'>
+
+          <View 
+            className="pt-2 border-t border-secondary/20 bg-primary w-full" 
+            style={{ 
+              elevation: 20, 
+              shadowColor: '#7a7773',
+              shadowOffset: { width: 0, height: -5 },
+              shadowOpacity: 0.15,
+              shadowRadius: 10,
+            }}
+          >
+
+            <View>
+              <Text
+                className='text-xl font-bold text-secondary text-center'
+              >
+                {(incomingLikes.find(incProfile => incProfile.id === activePetListOwnerId))?.name || 'selected owner'}'s pets
+              </Text>
+            </View>
+            <TouchableOpacity 
+              className='absolute right-5 top-2 border rounded-full px-2 border-secondary'
+              onPress={() => {                    
+                setActivePetListOwnerId(null)}}
+            >
+              <Text className='text-xl'>▼</Text>
+            </TouchableOpacity>
+            <FlatList
+              data={selectedPets}
+              horizontal
+              contentContainerStyle={{ gap: 10, padding: 10 }}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity 
+                  onPress={() => setSelectedPetProfile(item)}
+                  className='ml-1.5 max-w-32'
+                >
+                  <View
+                    className='shadow rounded-full'
+                    style={{ elevation: 5 }}
+                  >
+                    <AvatarComponent 
+                      uri={item.images[0]}
+                      style='w-32 h-32 rounded-2xl'
+                    />
+                  </View>
+                  <Text className='text-center text-secondary font-bold p-2' numberOfLines={1} ellipsizeMode='tail'>
+                    {item.name}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+
+        </View> */
+      )}
           
     </SafeAreaView>
   )

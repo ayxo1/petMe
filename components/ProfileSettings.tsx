@@ -6,8 +6,8 @@ import { useFeedStore } from '@/stores/useFeedStore';
 import Slider from '@react-native-community/slider';
 import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Keyboard, Pressable, ScrollView, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
+import { ActivityIndicator, Alert, Keyboard, Pressable, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import { speciesOptions } from './pets/PetForm';
 
 const ProfileSettings = ({ signOut, modalOpen }: { signOut: () => void, modalOpen: boolean; }) => {
