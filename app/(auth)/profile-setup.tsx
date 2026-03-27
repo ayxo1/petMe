@@ -204,33 +204,34 @@ const ProfileSetup = () => {
         <View
           className='gap-2 rounded-lg p-5'
         >
-          <View>
-
-            <Text className="label">I am a...*</Text>
-            <View className="flex-row gap-2 mt-2 justify-center">
-              {[
-                { value: 'owner', label: '🐾 Owner' },
-                { value: 'seeker', label: '💝 Seeker' },
-                { value: 'shelter', label: '🏠 Shelter' },
-              ].filter(option => isEditing ? (option.value !== 'shelter') : option).map((option) => (
-                <ButtonComponent
-                  key={option.value}
-                  title={option.label}
-                  onPress={() => setValue('accountType', option.value as 'owner' | 'seeker' | 'shelter', { shouldDirty: true, shouldValidate: true})}
-                  style={
-                    accountType === option.value
-                      ? 'bg-secondary'
-                      : 'bg-lighterSecondary'
-                  }
-                />
-              ))}
-            </View>
+          {!(isEditing && user.accountType === 'shelter') && (
+            <View>
+              <Text className="label">I am a...*</Text>
+              <View className="flex-row gap-2 mt-2 justify-center">
+                {[
+                  { value: 'owner', label: '🐾 Owner' },
+                  { value: 'seeker', label: '💝 Seeker' },
+                  { value: 'shelter', label: '🏠 Shelter' },
+                ].filter(option => isEditing ? (option.value !== 'shelter') : option).map((option) => (
+                  <ButtonComponent
+                    key={option.value}
+                    title={option.label}
+                    onPress={() => setValue('accountType', option.value as 'owner' | 'seeker' | 'shelter', { shouldDirty: true, shouldValidate: true})}
+                    style={
+                      accountType === option.value
+                        ? 'bg-secondary'
+                        : 'bg-lighterSecondary'
+                    }
+                  />
+                ))}
+              </View>
               {errors.accountType && (
                 <Text className="text-red-500 text-center mt-2">
                   {errors.accountType.message}
                 </Text>
               )}
-          </View>
+            </View>
+          )}
 
           <View className="mt-2 flex-row gap-2 items-center justify-center">
             {profileImages && profileImages.map(image =>                
