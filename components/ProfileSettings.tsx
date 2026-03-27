@@ -1,4 +1,4 @@
-import { LogOutButton } from '@/app/(tabs)/profile';
+// import { LogOutButton } from '@/app/(tabs)/profile';
 import { pb } from '@/backend/config/pocketbase';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
@@ -10,7 +10,7 @@ import { ActivityIndicator, Alert, Keyboard, Pressable, Switch, Text, TextInput,
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import { speciesOptions } from './pets/PetForm';
 
-const ProfileSettings = ({ signOut, modalOpen }: { signOut: () => void, modalOpen: boolean; }) => {
+const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => void, LogOutButton: () => React.JSX.Element, modalOpen: boolean; }) => {
     
     const user = useAuthStore(state => state.user);
     if (!user) return;
@@ -314,7 +314,7 @@ const ProfileSettings = ({ signOut, modalOpen }: { signOut: () => void, modalOpe
             </View>
             
             <View className='flex-1 justify-end mb-20 border-t py-4'>
-                <LogOutButton signOut={signOut}/>
+                <LogOutButton />
             </View>
         </Pressable>
     </ScrollView>

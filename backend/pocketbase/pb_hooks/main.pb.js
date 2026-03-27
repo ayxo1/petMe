@@ -42,7 +42,7 @@ routerAdd("GET", "/api/feed", (c) => {
     try {
         const currentUser = new DynamicModel({ coordinates: '' });
         $app.db().newQuery(
-            `SELECT coordinates FROM users WHERE id = {:userId}`
+            `SELECT COALESCE(coordinates, '') as coordinates FROM users WHERE id = {:userId}`
         ).bind({ userId: user.id }).one(currentUser);
 
         userCoords = JSON.parse(currentUser.coordinates);

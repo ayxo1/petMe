@@ -24,11 +24,11 @@ export const convertPBUserToUser = (pbUser: PBUser): User => {
     accountType: pbUser.accountType,
     regState: pbUser.regState,
     preferences: {
-      searchDistance: pbUser.preferences.searchDistance,
-      showRescuePets: pbUser.preferences.showRescuePets,
-      showShelterPets: pbUser.preferences.showShelterPets,
-      preferredSpecies: pbUser.preferences.preferredSpecies,
-      showSeekers: pbUser.preferences.showSeekers
+      searchDistance: pbUser.preferences?.searchDistance,
+      showRescuePets: pbUser.preferences?.showRescuePets,
+      showShelterPets: pbUser.preferences?.showShelterPets,
+      preferredSpecies: pbUser.preferences?.preferredSpecies,
+      showSeekers: pbUser.preferences?.showSeekers
     },
     createdAt: pbUser.createdAt,
     updatedAt: pbUser.updatedAt
@@ -108,11 +108,11 @@ export const useAuthStore = create<AuthState>()(
             passwordConfirm: userData.passwordConfirm,
             regState: 'signed_up',
             preferences: {
-              "searchDistance": 50,
-              "showRescuePets": true,
-              "showShelterPets": true,
-              "preferredSpecies": ["dog", "cat", "bird", "rodent", "other"],
-              "showSeekers": get().user?.accountType === 'owner' ? false : true
+              searchDistance: 50,
+              showRescuePets: true,
+              showShelterPets: true,
+              preferredSpecies: ["dog", "cat", "bird", "rodent", "other"],
+              showSeekers: get().user?.accountType === 'owner' ? false : true
             }
           });
 

@@ -1,4 +1,7 @@
 import backIcon from '@/assets/icons/backIcon.png';
+import copyIcon from '@/assets/icons/copyIcon.png';
+import googleMap from '@/assets/icons/googleMap.png';
+import map from '@/assets/icons/map.png';
 import profile from '@/assets/icons/profile.png';
 import search from '@/assets/icons/search.png';
 import settings from '@/assets/icons/settings.png';
@@ -38,5 +41,8 @@ export const icons = {
     catPass,
     dogLike,
     backIcon,
-    pawLike
+    pawLike,
+    map,
+    googleMap,
+    copyIcon
 };

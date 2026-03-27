@@ -73,3 +73,14 @@ export interface AuthState {
   setRegistrationState: (state: RegistrationState) => void;
   setLoading: (loading: boolean) => void;
 }
+
+export interface ShelterProfile {
+  id: string;
+  owner: string;
+  name: string;
+  image: string;
+  description: string;
+  address: string;
+  createdAt: string;
+  updatedAt?: string;
+}

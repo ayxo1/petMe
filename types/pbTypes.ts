@@ -100,3 +100,13 @@ export interface PBMessage extends RecordModel {
   created: string;
   updated: string;
 }
+
+export interface PBShelterProfile extends RecordModel {
+  owner: string;
+  name: string;
+  image: string;
+  description: string;
+  address: string;
+  createdAt: string;
+  updatedAt?: string;
+}

@@ -130,27 +130,27 @@ console.log(errors);
             </View>
 
             <View>
-            {petImages === undefined || petImages.length < 3 ? (
-                <TouchableOpacity 
-                    className="flex-row justify-start w-28 items-center"
-                    onPress={pickImage}
-                >
-                    <Text className="label">load a photo</Text>
-                    <Text className="text-l">(+)</Text>
-                </TouchableOpacity>
-            ) : (
-                <Text className="label text-secondary text-center">you uploaded the maximum number of pictures</Text>
-            )}
-                
-            <View className='h-5 mt-2'>
-                {errors.images && (
-                    <Text className='text-red-500 text-center'>
-                        {errors.images.message}
-                    </Text>
+                {petImages === undefined || petImages.length < 3 ? (
+                    <TouchableOpacity 
+                        className="flex-row justify-start w-28 items-center"
+                        onPress={pickImage}
+                    >
+                        <Text className="label">load a photo</Text>
+                        <Text className="text-l">(+)</Text>
+                    </TouchableOpacity>
+                ) : (
+                    <Text className="label text-secondary text-center">you uploaded the maximum number of pictures</Text>
                 )}
+                
+                <View className='h-5 mt-2'>
+                    {errors.images && (
+                        <Text className='text-red-500 text-center'>
+                            {errors.images.message}
+                        </Text>
+                    )}
+                </View>
             </View>
-
-            </View>
+            
             {/* species  */}
             <View className="mb-6">
                 <View className="">

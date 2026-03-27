@@ -94,8 +94,10 @@ const SignIn = () => {
                 onPress={async () => {
                   try {
                     await pb.collection('users').requestPasswordReset(resetEmail);
-                    Alert.alert('a link to reset your password was sent to your email');
-                    toggleForgotPasswordModal(!forgotPasswordModal)
+                    Alert.alert('a link to reset your password was sent to your email', '', [{
+                      text: 'ok',
+                      onPress: () => toggleForgotPasswordModal(!forgotPasswordModal)
+                    }]);
                   } catch (error) {
                     console.log('signup, otp error: ', error);
                     Alert.alert('error', 'an error occurred, please double-check the email address and try again');

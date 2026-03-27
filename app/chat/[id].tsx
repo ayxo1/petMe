@@ -132,7 +132,7 @@ const ChatPage = () => {
       console.log('unmatch error: ', error);
       Alert.alert('error occurred while unmatching, please try again');
     }
-  }
+  };
   
   const onSend = useCallback((messages: IMessage[] = []) => {
     if (!messages.length) return;
@@ -223,8 +223,6 @@ const ChatPage = () => {
 
     retrieveChatMessages();
 
-    // let unsubscribe: () => void;
-
     const trackMessages = async () => {
       try {
         const unsubscribe = await messagesAPI.subscribe(
@@ -282,7 +280,7 @@ useEffect(() => {
     }
   };
   fetchMatchWithPets();
-}, [])
+}, []);
 
   return (
     <View className={`flex-1 mb-6`}>

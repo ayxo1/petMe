@@ -1,15 +1,15 @@
 import Colors from "@/constants/Colors";
 import { Stack } from "expo-router";
 
-const ConnectLayout = () => {
-
+const ChatLayout = () => {
+     
     return (
-        <Stack>
-            <Stack.Screen
-                name="index"
-                options={
-                    {
-                    title: 'connect',
+        <Stack
+            screenOptions={{ headerShown: false }}
+        >
+            <Stack.Screen 
+                name="[id]"
+                options={{
                     contentStyle: {
                         backgroundColor: Colors.primary,
                     },
@@ -17,11 +17,10 @@ const ConnectLayout = () => {
                         backgroundColor: Colors.secondary
                     },
                     headerTintColor: Colors.primary,
-                    }
-                }
+                }}
             />
         </Stack>
     )
 };
 
-export default ConnectLayout;
+export default ChatLayout;

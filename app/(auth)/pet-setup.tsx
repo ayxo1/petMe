@@ -47,7 +47,6 @@ const PetSetup = () => {
             {text: 'done', onPress: () => router.replace('/')}
           ]
         );
-        // if(registrationState !== 'completed') setRegistrationState('completed');
       } catch (error) {
         Alert.alert('error', 'failed to add the pet, try again');
         console.log(error, 'error adding the pet');

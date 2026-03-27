@@ -16,7 +16,7 @@ import { router, Stack } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
-type AuthRoute = '/(auth)/profile-setup' | '/(auth)/pet-setup';
+type AuthRoute = '/(auth)/profile-setup' | '/(auth)/pet-setup' | '/(auth)/shelter-setup';
 
 export const LogOutButton = ({ signOut }: { signOut: () => void }) => {
   const resetFeedStore = useFeedStore(state => state.reset);
@@ -97,6 +97,7 @@ const Profile = () => {
           <ProfileSettings 
             signOut={signOut}
             modalOpen={settingsModal}
+            LogOutButton={() => LogOutButton({ signOut })}
           />
         </BottomSheet>
       }
@@ -182,6 +183,16 @@ const Profile = () => {
                       }}
                     >
                       <Text className={`text-center ${petSettigsModal ? 'text-white' : 'text-secondary'}`}>add/edit pets</Text>
+                    </TouchableOpacity>
+                  )}
+                  {user.accountType === 'shelter' && (
+                    <TouchableOpacity
+                      className={`p-2 border border-secondary rounded-2xl ${petSettigsModal ? ' bg-authPrimary' : 'bg-lighterSecondary/30'}`}
+                      onPress={async () => {
+                        await cleanUpBeforeNavigation('/(auth)/shelter-setup', { initialData: '1' })
+                      }}
+                    >
+                      <Text className={`text-center ${petSettigsModal ? 'text-white' : 'text-secondary'}`}>edit shelter profile</Text>
                     </TouchableOpacity>
                   )}
                 </View>

@@ -4,7 +4,7 @@ import InputController from '@/components/controllers/InputController';
 import { profileSetupSchema } from '@/constants/schemas/profileSchemas';
 import { useAuthStore } from '@/stores/authStore';
 import { useFeedStore } from '@/stores/useFeedStore';
-import { ProfileSetupFormData } from '@/types/auth';
+import { ProfileSetupFormData, User } from '@/types/auth';
 import { FormInputData } from '@/types/components';
 import { getCityFromCoordinates, getCurrentLocation } from '@/utils/location';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -96,10 +96,7 @@ const ProfileSetup = () => {
 
   const pickImage = async () => {
       const result = await ImagePicker.launchImageLibraryAsync({
-          mediaTypes: ['images'],
-          // allowsEditing: true,
-          // aspect: [4, 3],
-          // quality: 0.6
+          mediaTypes: ['images']
       });
       if(!result.canceled) {
         const converted = await ImageManipulator.manipulateAsync(
@@ -128,7 +125,7 @@ const ProfileSetup = () => {
 
   const submit = async (formData: ProfileSetupFormData) => {
     try {
-      const userUpdate = {
+      const userUpdate: Partial<User> = {
         username: formData.username,
         accountType: formData.accountType,
         images: formData.images,
@@ -136,52 +133,55 @@ const ProfileSetup = () => {
           city: formData.location.city,
           ...(formData.location.coordinates && { coordinates: formData.location.coordinates })
         },
-        bio: formData.bio
+        bio: formData.bio,
+        regState: isEditing && registrationState === 'completed' 
+        ? 'completed'
+        : formData.accountType === 'seeker' 
+          ? 'completed' 
+          : 'profile_set_up'
       };
 
       const userId = user?.id;
       if(!userId) throw new Error('user not found');
       await updateProfile(userUpdate);
       
-      if (isEditing) {
+      if (isEditing && registrationState === 'completed') {
         // if coordinates are different now - refetch the feed with the new parameters
         if(formData.location.coordinates) {
           reset();
           await fetchProfileBatch();
         }
-        // if user missclicked the profile type during the signup stage and went back to seeker
-        if (formData.accountType === 'seeker' && registrationState !== 'completed') {
-          await updateProfile({ regState: 'completed' });
-        }
         Alert.alert(
           'success!',
           'your profile is updated',
-          [{text: 'ok', onPress: () => router.replace('/')}]
+          [{text: 'ok', onPress: () => router.replace('/profile')}]
         );
         return;
+        // if user missclicked the profile type during the signup stage and went back to seeker
       } 
-      if ((formData.accountType === 'owner') && registrationState !== 'completed') {
-        await updateProfile({ regState: 'profile_set_up' });
-        Alert.alert(
-          'profile created!',
-          'now you can add your pet',
-          [{text: 'ok', onPress: () => router.replace('/(auth)/pet-setup')}]
-        );
-        return;
-        // if(registrationState !== 'profile_set_up') {
-        //   setRegistrationState('profile_set_up');
-        // }
-      } else if (formData.accountType === 'seeker') {
-        await updateProfile({ regState: 'completed' });
-        Alert.alert(
-          'profile created!',
-          'now you can browse pets and connect with owners!',
-          [{text: 'jump in it!', onPress: () => router.replace('/')}]
-        );
-        // router.replace('/');
-        return;
-        // setRegistrationState('completed');
-      } 
+
+      if (isEditing && registrationState !== 'completed') {
+        if (formData.accountType === 'seeker') {
+          Alert.alert(
+            'profile created!',
+            'now you can browse pets and connect with owners!',
+            [{text: 'jump in it!', onPress: () => router.replace('/')}]
+          );
+        } else if (formData.accountType === 'shelter') {
+          Alert.alert(
+            'profile created!',
+            'now you can set up a page for your shelter!',
+            [{text: 'proceed', onPress: () => router.replace('/(auth)/shelter-setup')}]
+          );
+        } else if (formData.accountType === 'owner') {
+          Alert.alert(
+            'profile created!',
+            'now you can set up a page for your pet!',
+            [{text: 'proceed', onPress: () => router.replace('/(auth)/pet-setup')}]
+          );
+        }
+      }
+
     } catch (error) {
       console.log(error, 'profile setup error');
       Alert.alert('error', `failed to ${isEditing ? 'update' : 'create'} profile, please try again`);

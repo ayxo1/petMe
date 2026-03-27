@@ -7,25 +7,25 @@ import { Dimensions, Image, ScrollView, TouchableOpacity, View } from 'react-nat
 
 const AuthLayout = () => {
   const pathName = usePathname();
-  const isFullScreen = pathName.includes('pet-setup') || pathName.includes('profile-setup');
+  const isFullScreen = pathName.includes('pet-setup') || pathName.includes('profile-setup') || pathName.includes('shelter-setup');
   const registrationState = useAuthStore(state => state.registrationState);
   const showBackButton: boolean = registrationState === 'completed' && pathName.includes('pet-setup') || (registrationState === 'completed' && pathName.includes('profile-setup'));
 
   return (
     <View 
-        className='flex-1 bg-primary'
+      className='flex-1 bg-primary'
     >
       {showBackButton && (
         <View className='absolute top-12 left-6 z-50'>
           <TouchableOpacity
-              onPress={() => router.replace('/(tabs)/profile')}
+            onPress={() => router.replace('/(tabs)/profile')}
           >
-              <Image
-                  source={icons.backIcon}
-                  className='size-9'
-                  resizeMode='contain'
-                  tintColor={Colors.secondary}
-              />
+            <Image
+              source={icons.backIcon}
+              className='size-9'
+              resizeMode='contain'
+              tintColor={Colors.secondary}
+            />
           </TouchableOpacity>
         </View>
       )}
@@ -45,7 +45,7 @@ const AuthLayout = () => {
         </View>
       </ScrollView>
     </View>
-  )
-}
+  );
+};
 
 export default AuthLayout;

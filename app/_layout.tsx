@@ -2,6 +2,7 @@ import { pb } from "@/backend/config/pocketbase";
 import Colors from "@/constants/Colors";
 import { useAuthStore } from "@/stores/authStore";
 import { usePetStore } from "@/stores/petStore";
+import { useShelterStore } from "@/stores/shelterStore";
 import { getRegistrationStateRoute } from "@/utils/routingHelper";
 import { router, Stack } from "expo-router";
 import { useEffect } from "react";
@@ -18,6 +19,7 @@ export default function RootLayout() {
   const hydrateUser = useAuthStore(state => state.hydrateUser);
   const sessionExpired = useAuthStore(state => state.sessionExpired);
   const hydratePets = usePetStore(state => state.hydratePets);
+  const hydrateShelter = useShelterStore(state => state.hydrateShelter);
 
   useEffect(() => {
     const startUp = async () => {
@@ -34,8 +36,9 @@ export default function RootLayout() {
       } catch (error) {
         console.log('root layout, hydrateUser error:', error);
       }
-      if (user) {
+      if (user && user.regState === 'completed') {
         hydratePets(user.id);
+        if (user?.accountType === 'shelter') hydrateShelter(user.id);
       }
     };
     startUp();
@@ -63,7 +66,7 @@ export default function RootLayout() {
       [{ text: 'ok' }]
     );
     useAuthStore.setState({ sessionExpired: false });
-  }, [sessionExpired])
+  }, [sessionExpired]);
 
   return (
     <GestureHandlerRootView>
@@ -72,4 +75,4 @@ export default function RootLayout() {
       />
     </GestureHandlerRootView>
   );
-}
+};

@@ -15,35 +15,37 @@ interface MatchScreenPageProps {
 const MatchScreen = ({modalOpen, matchScreenProps} : MatchScreenPageProps) => {
     
   return (
-        <View className="items-center justify-center px-2 py-4">
+        <View className="items-center justify-center px-2.5 py-12 border border-authPrimary/30 rounded-3xl">
             
             <View>
-                <Text className="text-2xl color-secondary text-center font-bold">{matchScreenProps.isExisting ? `looks like you already matched with ${matchScreenProps.username} over a different pet previously!` : 'it is a match!'}</Text>
+                <View>
+                    <Text className="text-2xl color-secondary text-center font-bold">{matchScreenProps.isExisting ? `looks like you already matched with ${matchScreenProps.username} over a different pet previously!` : 'it is a match!'}</Text>
+                </View>
+        
+                <View
+                    className='flex justify-end items-center flex-row mt-5 gap-2 p-3'
+                >
+                    <View
+                        className="rounded-xl p-2 bg-secondary/50 shadow shadow-secondary/80"
+                    >   
+                        <Link 
+                            href={'/(tabs)/connect'}
+                            onPressOut={() => modalOpen(false)}
+                        >
+                            <Text className="text-primary">message them!</Text>
+                        </Link>
+                    </View>
+                    <View
+                        className="bg-authPrimary/40 rounded-xl p-2 shadow shadow-secondary/60"
+                    >
+                        <Pressable
+                            onPress={() => modalOpen(false)}
+                        >
+                            <Text className="text-primary">continue exploring</Text>
+                        </Pressable>
+                    </View>
+                </View>
             </View>
-    
-            <View
-                className='flex justify-end items-center flex-row mt-5 gap-2 p-3'
-                >
-                <View
-                className="rounded-xl p-2 bg-primary"
-                >   
-                    <Link 
-                        href={'/(tabs)/connect'}
-                        onPressOut={() => modalOpen(false)}
-                    >
-                        <Text className="text-secondary">message them!</Text>
-                    </Link>
-                </View>
-                <View
-                className="bg-primary rounded-xl p-2"
-                >
-                    <Pressable
-                    onPress={() => modalOpen(false)}
-                    >
-                        <Text className="text-secondary">continue exploring</Text>
-                    </Pressable>
-                </View>
-        </View>
     </View>
   )
 }

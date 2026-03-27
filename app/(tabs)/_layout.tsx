@@ -44,14 +44,14 @@ const TabsLayout = () => {
         console.log('error setting up subscriptions:', error);
       }
     };
-    if (isAuthenticated && user?.id) {
+    if (isAuthenticated && user?.id && user.regState === 'completed') {
       init();
     }
     return () => {
       if (unsubscribeLikes) unsubscribeLikes();
       if (unsubscribeChatMessages) unsubscribeChatMessages();
     };
-  }, [isAuthenticated, user?.id]);
+  }, [isAuthenticated, user?.id, user?.regState]);
 
   if (!user) return;
 

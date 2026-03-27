@@ -3,13 +3,30 @@ import MatchScreen from "@/components/MatchScreen";
 import Modal from "@/components/Modal";
 import ProfileCard from "@/components/ProfileCard";
 import { images } from "@/constants";
+import { useAuthStore } from "@/stores/authStore";
 import { useFeedStore } from "@/stores/useFeedStore";
 import { assetPreloader, imagePreloader } from "@/utils/assetPreloader";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { ActivityIndicator, Image, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
+
+  const user = useAuthStore(state => state.user);
+  if (user?.accountType === 'shelter') return (
+    <View className="flex-1">
+      <SafeAreaView className="flex-1 items-center justify-center p-6 gap-4">
+          <Text className="text-2xl font-bold text-gray-600 text-center p-2">
+            since shelters can't swipe on seekers and owners directly, here's a picture of mr big
+          </Text>
+          <Image 
+            className="size-1/2"
+            source={images.mrBigLike}
+            resizeMode="cover"
+          />
+        </SafeAreaView>
+    </View>
+  );
 
   const {
     feed,
@@ -117,6 +134,7 @@ return (
         // onRequestClose={() => {setIsModal(false)
         // }}
         toggleModal={setIsModal}
+        styleProps="bg-lighterSecondary/80"
       > 
         {matchScreenProps && (
             <MatchScreen

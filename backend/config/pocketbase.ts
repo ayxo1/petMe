@@ -4,7 +4,7 @@ global.EventSource = EventSource;
 
 // import { useAuthStore } from "@/stores/authStore";
 import { SignInFormData, SignUpFormData } from '@/types/auth';
-import { PBMatch, PBMessage, PBPet, PBUser } from '@/types/pbTypes';
+import { PBMatch, PBMessage, PBPet, PBShelterProfile, PBUser } from '@/types/pbTypes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import PocketBase, { AsyncAuthStore } from 'pocketbase';
 import { IMessage } from 'react-native-gifted-chat';
@@ -23,7 +23,7 @@ const store = new AsyncAuthStore({
 
 export const pb = new PocketBase(PB_URL, store);
 
-const getFileName = (uri: string) => uri.split('/').pop() || 'photo.jpg';
+const getFileName = (uri: string) => uri.split('/').pop() || `photo${Math.random()}.jpg`;
 
 // logger
 if (__DEV__) {
@@ -87,12 +87,13 @@ export const signOut = (): void => {
  * authAPI
  */
 export const authAPI = {
-  signUp: async ({ email, password, passwordConfirm }: SignUpFormData): Promise<PBUser> => {
+  signUp: async ({ email, password, passwordConfirm, preferences }: SignUpFormData): Promise<PBUser> => {
     const user = await pb.collection('users').create({
       email,
       password,
       passwordConfirm,
-      regState: 'signed_up'
+      regState: 'signed_up',
+      preferences
     });
 
     // auto login after signup
@@ -344,7 +345,7 @@ export const swipesAPI = {
 
     matchesWithMessages.sort((a, b) => new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime());
 
-    return matchesWithMessages as matchesWithMessages[];
+    return matchesWithMessages;
   }
 };
 
@@ -423,4 +424,67 @@ export const reportsAPI = {
       description: reportDescription
     });
   }
+};
+
+export const shelterAPI = {
+  getUserShelter: async (userId: string): Promise<PBShelterProfile> => {
+    const record = await pb.collection('shelters').getList(1, 1, {
+      filter: `owner = "${userId}"`
+    });
+    return record.items[0] as PBShelterProfile;
+  },
+
+  createShelter: async (data: Partial<PBShelterProfile>): Promise<PBShelterProfile> => {
+    const formData = new FormData();
+
+    // handle text fields
+    Object.keys(data).forEach(key => {
+      if (key !== 'image' && data[key] !== undefined) {
+        formData.append(key, data[key].toString());
+      }
+    });
+
+    if (data.image) {
+      formData.append('image', {
+        uri: data.image,
+        name: getFileName(data.image),
+        type: 'image/jpeg'
+      });
+    }
+
+    const shelter = await pb.collection('shelters').create(formData);
+
+    return shelter as PBShelterProfile;
+  },
+
+  updateShelterProfile: async (shelterId: string, data: Partial<PBShelterProfile>): Promise<PBShelterProfile> => {
+    const formData = new FormData();
+
+    Object.keys(data).forEach(key => {
+      if (key !== 'image' && data[key] !== undefined) {
+        const value = data[key];
+        if (typeof value === 'object') {
+          formData.append(key, JSON.stringify(value))
+        } else formData.append(key, data[key].toString());
+      }
+    });
+
+    if (data.image && data.image.length > 0) {
+      if (data.image.includes('file://')) {
+        formData.append('image', {
+          uri: data.image,
+          name: getFileName(data.image),
+          type: 'image/jpeg'
+        });
+      } else {
+        const fileName = data.image.split('/').pop()?.split('?')[0];
+        if (fileName) formData.append('image', fileName);
+      }
+    }
+    
+    const updated = await pb.collection('shelters').update(shelterId, formData);
+
+    return updated as PBShelterProfile;
+  },
+
 };

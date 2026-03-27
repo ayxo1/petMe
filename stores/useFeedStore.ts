@@ -56,6 +56,9 @@ export const useFeedStore = create<FeedState>(
         isLoading: false,
     
         fetchProfileBatch: async () => {
+            const { useAuthStore } = require('@/stores/authStore');            
+            if (useAuthStore.getState().registrationState !== 'completed') return;
+            
             const state = get();
             if(state.isLoading) {
                 console.log('a batch is already loading');
