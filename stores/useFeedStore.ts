@@ -16,7 +16,7 @@ interface FeedState {
     reset: () => void;
 };
 
-const convertPBFeedRecordToFeedProfile = (record: PBFeedRecord): FeedProfile => {    
+export const convertPBFeedRecordToFeedProfile = (record: PBFeedRecord): FeedProfile => {    
     const collectionName = record.type === 'pet' ? 'pets' : 'users';
     let imageUrls: string[] = [];
     imageUrls = record.images.map(filename => `${pb.baseURL}/api/files/${collectionName}/${record.id}/${filename}`);
@@ -84,14 +84,13 @@ export const useFeedStore = create<FeedState>(
                     }
                 });
                 
-                const newPets = result.items.map(convertPBFeedRecordToFeedProfile);
+                const newProfiles = result.items.map(convertPBFeedRecordToFeedProfile);
 
                 set(state => {
-                    // idempotency life
-                    const uniqueNewPets = newPets.filter(newPet => !state.feed.some(existing => existing.id === newPet.id));
+                    const uniqueNewProfiles = newProfiles.filter(newProfile => !state.feed.some(existing => existing.id === newProfile.id));
 
                     return {
-                        feed: [...state.feed, ...uniqueNewPets],
+                        feed: [...state.feed, ...uniqueNewProfiles],
                         isLoading: false
                     };
                 });

@@ -82,10 +82,10 @@ const renderBubble = (props: BubbleProps<IMessage>) => {
     }}
     wrapperStyle={{
       left: {
-        backgroundColor: '#a88c6c'
+        backgroundColor: Colors.authPrimary
       },
       right: {
-        backgroundColor: Colors.authPrimary
+        backgroundColor: Colors.secondary
       },
     }}
   />

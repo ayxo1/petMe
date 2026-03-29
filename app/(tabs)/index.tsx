@@ -86,14 +86,14 @@ export default function Index() {
     };
   }, [remaining, currentIndex, feed]);
 
-  useEffect(() => {
-    const dbIp = process.env.EXPO_PUBLIC_POCKETBASE_HOST;
+  // useEffect(() => {
+  //   const dbIp = process.env.EXPO_PUBLIC_POCKETBASE_HOST;
     
-    fetch(`http://${dbIp}:8090/api/health`)
-    .then(res => res.json())
-    .then(data => console.log('pb connected ', data))
-    .catch(error => console.error(error));
-  }, []);  
+  //   fetch(`http://${dbIp}:8090/api/health`)
+  //   .then(res => res.json())
+  //   .then(data => console.log('pb connected ', data))
+  //   .catch(error => console.error(error));
+  // }, []);  
 
   const onSwipeLeft = () => {
     console.log('swiping left ', currentProfile.name);
@@ -131,8 +131,6 @@ return (
     >
       <Modal
         isOpen={isModal}
-        // onRequestClose={() => {setIsModal(false)
-        // }}
         toggleModal={setIsModal}
         styleProps="bg-lighterSecondary/80"
       > 
@@ -194,4 +192,4 @@ return (
       )}
     </View>
   );
-}
+};

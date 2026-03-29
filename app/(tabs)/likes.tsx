@@ -125,7 +125,7 @@ const Likes = () => {
       }
       init();      
     }, [])
-  )
+  );
 
   return (
     <SafeAreaView
@@ -233,7 +233,7 @@ const Likes = () => {
                     />
                   </View>
                   <Text
-                    className='absolute top-2 right-5 border border-secondary/20 rounded-xl px-2 py-1 bg-authPrimary/40'
+                    className='absolute top-2 right-5 border border-secondary/30 rounded-xl px-2 py-1 bg-authPrimary/60'
                   >{item.type}</Text>
                   <View className='items-center'>
                     <View className='flex-row items-center gap-2'>
@@ -292,6 +292,9 @@ const Likes = () => {
         }}
         styleProps='h-1/4'
       >
+        {selectedPets.length === 0 && (
+          <Text className='p-8 font-bold text-secondary'>the owner hasn't added any pets yet</Text>
+        )}
         <FlatList
           data={selectedPets}
           horizontal

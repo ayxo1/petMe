@@ -4,7 +4,7 @@ import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from "react";
-import { ImageBackground, ImageSourcePropType, Pressable, Text, TouchableOpacity, View } from "react-native";
+import { ImageSourcePropType, Pressable, Text, TouchableOpacity, View } from "react-native";
 import Modal from "./Modal";
 
 interface ProfileInterfaceProps {
@@ -102,10 +102,13 @@ const ProfileInterface = ({ profile }: { profile: Partial<FeedProfile> }) => {
             className="absolute inset-0"
             pointerEvents="none"
         >
-            <ImageBackground
+            <Image
                 source={images.profileCardBorder}
                 className="size-full"
-                resizeMode="stretch"
+                // resizeMode="stretch"
+                contentFit="fill"
+                style={{ width: '100%', height: '100%' }}
+                cachePolicy='memory-disk'
             />
         </View>
 

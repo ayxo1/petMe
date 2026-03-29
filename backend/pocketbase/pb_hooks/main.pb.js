@@ -150,9 +150,11 @@ routerAdd("GET", "/api/feed", (c) => {
     }
 
     const finalQuery = `
-        ${queries.join(' UNION ')}
-        ORDER BY created DESC
-        LIMIT {:limit} OFFSET {:offset}
+        SELECT * FROM (
+            ${queries.join(' UNION ')}
+        )
+        ORDER BY RANDOM()
+        LIMIT {:limit}
     `;
 
     const result = arrayOf(new DynamicModel({
@@ -417,7 +419,7 @@ routerAdd("GET", "/api/likes", (c) => {
             AND u.id NOT IN (SELECT targetUser FROM swipes WHERE user = {:userId} AND action = 'pass')
         GROUP BY u.id
         ORDER BY s.created DESC
-        LIMIT {:limit} OFFSET {:offset}
+        LIMIT {:limit}
     `;
 
     const result = arrayOf(new DynamicModel({
@@ -505,3 +507,133 @@ routerAdd("POST", "/api/custom/resend-pin", (c) => {
         return c.json(200, { success: true });
     }
 });
+
+routerAdd("GET", "/api/rescue-feed", (c) => {
+
+    const user = c.auth;
+    let userCoords = null;
+    const userPreferences = JSON.parse(user.get('preferences'));
+    try {
+        const currentUser = new DynamicModel({ coordinates: '' });
+        $app.db().newQuery(
+            `SELECT COALESCE(coordinates, '') as coordinates FROM users WHERE id = {:userId}`
+        ).bind({ userId: user.id }).one(currentUser);
+
+        userCoords = JSON.parse(currentUser.coordinates);
+    } catch (error) {
+        console.log('currentUser.coordinates error: ', error);
+    }
+
+    const toRad = deg => deg * (Math.PI / 180);
+    const haversine = (lat1, lng1, lat2, lng2) => {
+        const R = 6371;
+        const dLat = toRad(lat2 - lat1);
+        const dLng = toRad(lng2 - lng1);
+        const a = 
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+            Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+        return Math.round(R * c);
+    };
+
+    let page = 1;
+    let perPage = 20;
+
+    try {
+        const rawQuery = (c.request && c.request.url && c.request.url.rawQuery) || "";
+
+        const pageMatch = rawQuery.match(/[?&]page=(\d+)/);
+        if (pageMatch) page = parseInt(pageMatch[1]);
+
+        const perPageMatch = rawQuery.match(/[?&]perPage=(\d+)/);
+        if (perPageMatch) perPage = parseInt(perPageMatch[1]);
+
+    } catch (e) {
+        console.log("api/rescue-feed: Query parse error, using defaults:", e);
+    }
+
+    const limit = perPage;
+    const offset = (page - 1) * perPage;
+
+    let bindParams = { userId: user.id, limit, offset };
+    const finalQuery = `
+        SELECT 
+            id,
+            name,
+            bio,
+            images,
+            breed,
+            isAvailableForAdoption,
+            adoptionStatus,
+            adoptionRequirements,
+            adoptionReason,
+            'pet' as type,
+            owner as ownerId,
+            age,
+            created,
+            (SELECT username FROM users WHERE id = pets.owner) as ownerName,
+            (SELECT images FROM users WHERE id = pets.owner) as ownerImage,
+            (SELECT coordinates FROM users WHERE id = pets.owner) as ownerCoordinates
+        FROM pets
+        WHERE owner != {:userId}
+            AND isAvailableForAdoption = true
+            AND (SELECT accountType FROM users WHERE id = pets.owner) NOT LIKE '%shelter%'
+            AND id NOT IN (SELECT targetPet FROM swipes WHERE user = {:userId} AND swipeType = 'pet')
+            AND owner NOT IN (SELECT user2 FROM matches WHERE user1 = {:userId} AND status = 'active')
+            AND owner NOT IN (SELECT user1 FROM matches WHERE user2 = {:userId} AND status = 'active')
+            AND (SELECT accountType FROM users WHERE id = pets.owner) NOT LIKE '%seeker%'
+        ORDER BY RANDOM()
+        LIMIT {:limit}
+    `;
+
+    const result = arrayOf(new DynamicModel({
+        'id': '',
+        'name': '',
+        'bio': '',
+        'images': [],
+        'breed': '',
+        'isAvailableForAdoption': false,
+        'adoptionStatus': '',
+        'adoptionRequirements': '',
+        'adoptionReason': '',
+        'type': '',
+        'ownerName': '',
+        'ownerImage': '',
+        'ownerId': '',
+        'ownerCoordinates': '',
+        'age': 0,
+        'created': ''
+    }));
+
+    $app.db().newQuery(finalQuery).bind(bindParams).all(result);
+
+
+    const profilesWithDistance = result.map(profile => {
+        
+    if (!userCoords || !profile.ownerCoordinates) return { ...profile, distance: null }
+        try {
+            const otherCoords = JSON.parse(profile.ownerCoordinates);
+            const distance = haversine(userCoords.lat, userCoords.lng, otherCoords.lat, otherCoords.lng);
+            return { ...profile, distance };
+        } catch (error) {
+            console.log('profilesWithDistance error, returning distance as null: ', error);
+            return { ...profile, distance: null };
+        }
+    });
+
+    const filteredBySearchDistance = profilesWithDistance.filter(profile => profile.distance === null || profile.distance <= userPreferences.searchDistance);
+
+    const formattedProfiles = filteredBySearchDistance.map(profile => ({
+        ...profile,
+        distance: profile.distance !== null ? `${profile.distance} km` : null
+    }));
+
+    return c.json(200, {
+        "items": formattedProfiles,
+        "page": page,
+        "perPage": perPage
+    });
+
+}, $apis.requireAuth('users'));
