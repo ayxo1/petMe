@@ -96,15 +96,12 @@ export default function Index() {
   // }, []);  
 
   const onSwipeLeft = () => {
-    console.log('swiping left ', currentProfile.name);
     if(!currentProfile) return;
 
     swipePass(currentProfile.id);
   };
 
-  const onSwipeRight = async () => {
-    console.log('swiping right ', currentProfile.name);
-    
+  const onSwipeRight = async () => {    
     if(!currentProfile) return;
 
     const isMatch = (await swipeLike(currentProfile.id));
@@ -144,7 +141,7 @@ return (
       {isPreloading ? (
         <SafeAreaView className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#3b3a38" />
-          <Text className="text-gray-600 mt-4 text-lg">Loading pets...</Text>
+          <Text className="text-gray-600 mt-4 text-lg">Loading profiles...</Text>
         </SafeAreaView>
       ) : (!currentProfile || remaining === 0) ? (
         <SafeAreaView className="flex-1 items-center justify-center">
