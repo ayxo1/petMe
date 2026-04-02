@@ -28,6 +28,7 @@ const ProfileInterface = ({ profile }: { profile: Partial<FeedProfile> }) => {
   const [adoptionModal, toggleAdoptionModal] = useState(false);
 
   const profileCover: ImageSourcePropType = { uri: profile.images ? profile.images[currentImageIdx] : ''}
+console.log(profile);
 
   return (
     <View
@@ -41,9 +42,9 @@ const ProfileInterface = ({ profile }: { profile: Partial<FeedProfile> }) => {
                 styleProps='mt-48 justify-center items-center max-w-96'
                 tint={false}
             >
-                <View className="gap-4 bg-secondary/40 px-3 py-4 rounded-2xl border border-lighterSecondary">
+                <View className="gap-4 bg-secondary/60 px-3 py-4 rounded-2xl border border-lighterSecondary">
                     <Text className="text-authPrimary font-bold">adoption status:
-                        <Text className={`font-light ${profile.adoptionStatus === 'available' ? 'text-green-400' : 'text-primary'}`}> {profile.adoptionStatus}</Text>
+                        <Text className={`font-light ${profile.adoptionStatus === 'available' ? 'text-green-400' : 'text-primary'}`}> {profile.adoptionStatus === 'available' ? 'looking for a home' : profile.adoptionStatus}</Text>
                     </Text>
                     {profile.adoptionDetails?.reason && 
                     <Text className="text-authPrimary font-bold">reason:

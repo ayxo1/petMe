@@ -260,7 +260,8 @@ export const petsAPI = {
   
 };
 
-interface matchesWithMessages extends PBMatch {
+interface matchesWithMessagesAndShelters extends PBMatch {
+  shelterName?: string;
   lastMessage: string;
   lastMessageTime: string;
 }
@@ -310,14 +311,14 @@ export const swipesAPI = {
     return requests.filter(request => !preApprovedUsers.includes(request.user));
   },
 
-  getUserMatches: async (userId: string): Promise<matchesWithMessages[]> => {
+  getUserMatches: async (userId: string): Promise<matchesWithMessagesAndShelters[]> => {
     const matches: PBMatch[] = await pb.collection('matches').getFullList({
       filter: `(user1 = "${userId}" || user2 = "${userId}") && status = "active"`,
       expand: 'user1,user2,pet1,pet2',
       sort: '-created'
     });
-
-    const matchesWithMessages = await Promise.all(matches.map(async (match) => {
+    
+    const matchesWithMessagesAndShelters = await Promise.all(matches.map(async (match) => {
       try {
         const lastMsgList = await pb.collection('messages').getList(1, 1, {
           filter: `match = "${match.id}"`,
@@ -326,26 +327,36 @@ export const swipesAPI = {
         });
 
         const lastMsg = lastMsgList.items[0];
+        let shelterName;
+
+        if (match.expand?.user2.accountType === 'shelter') {
+          const shelterData = await pb.collection('shelters').getList(1, 1, {
+            filter: `owner = "${match.user2}"`
+          });          
+          shelterName = shelterData.items[0].name;
+        }
 
         return {
           ...match,
+          shelterName,
           lastMessage: lastMsg ? lastMsg.content : '',
           lastMessageTime: lastMsg ? lastMsg.created : match.created
         };
       } catch (error) {
-        console.log('matchesWithMessages, pocketbase.ts error: ', error);
+        console.log('matchesWithMessagesAndShelters, pocketbase.ts error: ', error);
 
         return {
           ...match,
+          shelterName: undefined,
           lastMessage: 'error retrieving a message',
           lastMessageTime: match.created
         };
       }
     }));
 
-    matchesWithMessages.sort((a, b) => new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime());
+    matchesWithMessagesAndShelters.sort((a, b) => new Date(b.lastMessageTime).getTime() - new Date(a.lastMessageTime).getTime());
 
-    return matchesWithMessages;
+    return matchesWithMessagesAndShelters;
   }
 };
 

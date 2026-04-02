@@ -34,7 +34,7 @@ onRecordAfterCreateSuccess((e) => {
 }, 'users');
 
 //pet-feed endpoint
-routerAdd("GET", "/api/feed", (c) => {  
+routerAdd("GET", "/api/feed", (c) => {
     
     const user = c.auth;
     const userPreferences = JSON.parse(user.get('preferences'));
@@ -360,9 +360,7 @@ routerAdd("POST", "/api/unmatch", (c) => {
         console.log('api/unmatch error:', error);   
     }
 
-    
     return c.json(200, { "unmatchedUser": matchId });
-
 
 }, $apis.requireAuth('users'));
 
@@ -636,4 +634,36 @@ routerAdd("GET", "/api/rescue-feed", (c) => {
         "perPage": perPage
     });
 
+}, $apis.requireAuth('users'));
+
+routerAdd("POST", "/api/shelter-connect", (c) => {
+
+    const user = c.auth;
+    const data = new DynamicModel({ shelterOwnerId: '' });
+    c.bindBody(data);
+
+    if (user.id === data.shelterOwnerId) {
+        return c.json(400, { error: 'trying to message your own shelter' });
+    }
+
+    try {
+        const existing = $app.findFirstRecordByFilter(
+            'matches',
+            `(user1 = {:userId} && user2 = {:ownerId} || user1 = {:ownerId} && user2 = {:userId})`,
+            { userId: user.id, ownerId: data.shelterOwnerId }
+        );
+        return c.json(200, { matchId: existing.id, isExisting: true });
+    } catch (error) {
+        console.log('no existing match found');
+    }
+
+    const matchesCollection = $app.findCollectionByNameOrId('matches');
+    const match = new Record(matchesCollection);
+    match.set('user1', user.id);
+    match.set('user2', data.shelterOwnerId);
+    match.set('status', 'active');
+    $app.save(match);
+
+    return c.json(200, { matchId: match.id, isExisting: false });
+    
 }, $apis.requireAuth('users'));

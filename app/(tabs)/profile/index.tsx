@@ -161,7 +161,7 @@ const Profile = () => {
                 >
                   <AvatarComponent
                     uri={user.images[0]}
-                    style='w-32 h-32 rounded-2xl p-1'
+                    style='size-32 rounded-2xl p-1'
                   />
                   <Text className='absolute-center-x bottom-1 bg-secondary/60 text-primary rounded-b-2xl px-[0.32rem] p-2'>preview profile</Text>
                 </TouchableOpacity>
@@ -174,7 +174,7 @@ const Profile = () => {
                   >
                     <Text className='text-center text-secondary'>edit profile</Text>
                   </TouchableOpacity>
-                  {user.accountType === 'owner' && (
+                  {user.accountType !== 'seeker' && (
                     <TouchableOpacity
                       className={`p-2 border border-secondary rounded-2xl ${petSettigsModal ? ' bg-authPrimary' : 'bg-lighterSecondary/30'}`}
                       onPress={async () => {
@@ -187,12 +187,12 @@ const Profile = () => {
                   )}
                   {user.accountType === 'shelter' && (
                     <TouchableOpacity
-                      className={`p-2 border border-secondary rounded-2xl ${petSettigsModal ? ' bg-authPrimary' : 'bg-lighterSecondary/30'}`}
+                      className='p-2 border border-secondary rounded-2xl bg-lighterSecondary/30'
                       onPress={async () => {
                         await cleanUpBeforeNavigation('/(auth)/shelter-setup', { initialData: '1' })
                       }}
                     >
-                      <Text className={`text-center ${petSettigsModal ? 'text-white' : 'text-secondary'}`}>edit shelter profile</Text>
+                      <Text className='text-center text-secondary'>edit shelter profile</Text>
                     </TouchableOpacity>
                   )}
                 </View>

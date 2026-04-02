@@ -1,32 +1,18 @@
+import { pb } from '@/backend/config/pocketbase';
+import Modal from '@/components/Modal';
+import ProfileInterface from '@/components/ProfileInterface';
 import { icons, images } from '@/constants';
 import Colors from '@/constants/Colors';
+import { convertPBUserToUser } from '@/stores/authStore';
+import { convertPBPetToPetProfile } from '@/stores/petStore';
+import { User } from '@/types/auth';
+import { PBPet, PBUser } from '@/types/pbTypes';
 import { PetProfile } from '@/types/pets';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useState } from 'react';
-import { FlatList, Image as RNImage, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, Image as RNImage, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-const dummyPetList = [
-  {
-    id: '123421',
-    image: images.ket,
-    name: 'some shelter',
-    bio: 'some random words',
-  },
-  {
-    id: '1234',
-    image: images.ket,
-    name: 'some shelter 2',
-    bio: 'yada yada words',
-  },
-  {
-    id: '123333',
-    image: images.ket,
-    name: 'some shelter 3',
-    bio: 'hmm very many words here hmm very many words here hmm very many words here',
-  },
-];
 
 const BackIcon = () => {
   return (
@@ -47,9 +33,61 @@ const BackIcon = () => {
  
 const ShelterPage = () => {
   const params = useLocalSearchParams();
-  const { id, image, orgName, description, address } = params;
+  const { id, image, name, description, address, owner } = params;
 
+  const [shelterOwner, setShelterOwner] = useState<User>();
+  const [shelterPets, setShelterPets] = useState<PetProfile[]>([]);
   const [selectedPetProfile, setSelectedPetProfile] = useState<PetProfile | null>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isProfileShown, toggleIsProfileShown] = useState(false);
+
+  const connectShelter = async () => {
+    try {
+      const result = await pb.send<{ matchId: string; isExisting: boolean }>('/api/shelter-connect', {
+        method: 'POST',
+        body: { shelterOwnerId: owner }
+      });
+      router.push({
+        pathname: '/chat/[id]',
+        params: { 
+          id: result.matchId,
+          otherUserName: shelterOwner?.username,
+          otherUserImage: shelterOwner?.images[0],
+          otherUserId: owner,
+          otherUserType: 'shelter'
+        }
+      });
+    } catch (error) {
+      console.log('connectShelter error, shelters/[id].tsx: ', error);
+      Alert.alert('an error occurred whilte trying to message, please try again');
+    }
+  };
+
+  useEffect(() => {
+    const fetchShelterPets = async () => {
+      try {
+        setIsLoading(true);
+        const pbPets: PBPet[] = await pb.collection('pets').getFullList({
+          filter: `owner = "${owner}"`,
+        });
+        const convertedPets = pbPets.map(convertPBPetToPetProfile);
+        setShelterPets(convertedPets);
+
+        if (typeof owner === 'string') {
+          const pbOwnerData: PBUser = await pb.collection('users').getOne(owner);
+          const convertedOwnerData: User = convertPBUserToUser(pbOwnerData);
+          setShelterOwner(convertedOwnerData);
+        }
+        
+      } catch (error) {
+        console.log('fetchShelterPets error, shelters/[id].tsx: ', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchShelterPets();
+  }, []);
 
   return (
     <SafeAreaView
@@ -58,6 +96,33 @@ const ShelterPage = () => {
     >
       <BackIcon />
 
+      {isLoading && (
+        <ActivityIndicator 
+          className='absolute-center'
+        />
+      )}
+
+      {isProfileShown && (
+        <Modal
+          isOpen={isProfileShown}
+          toggleModal={() => {
+            setSelectedPetProfile(null);
+            toggleIsProfileShown(false);
+          }}
+          styleProps='bg-transparent px-6'
+        >
+          {selectedPetProfile && (
+            <View
+              className='w-full aspect-[0.55]'
+            >
+              <ProfileInterface
+                profile={{ images: selectedPetProfile.images, name: selectedPetProfile.name, bio: selectedPetProfile.bio }}
+              />
+            </View>
+          )}
+        </Modal>
+      )}
+
       <ScrollView
         contentContainerStyle={
           { alignItems: 'center' }
@@ -65,87 +130,63 @@ const ShelterPage = () => {
       >
 
         <View 
-          className='bg-primary shadow shadow-secondary/10 rounded-2xl p-4 m-6 w-96 gap-4 items-center'
+          className='bg-primary shadow shadow-secondary/10 rounded-2xl p-4 m-6 w-96 gap-2 items-center'
         >
-          <View className='size-28 items-center justify-center'>
+          <View className='size-36 items-center justify-center'>
             <Image
-              source={images.ket}
+              source={`${pb.baseURL}/api/files/shelters/${id}/${image}`}
               contentFit='cover'
               style={{ width: '100%', height: '100%', borderRadius: 16 }}
             />
+            <TouchableOpacity 
+              className='absolute self-center left-40 border border-green-700 rounded-2xl'
+              onPress={connectShelter}
+            >
+              <Text className='p-2 text-green-700'>message</Text>
+            </TouchableOpacity>
           </View>
 
-          <Text className='text-secondary font-bold text-center'>{orgName}</Text>
 
-          <View className='items-start gap-3'>
-            <Text className='text-secondary font-bold'>info: {description}</Text>
-            <Text className='text-secondary font-bold'>address: {address}</Text>
+          <Text className='text-secondary font-bold text-center mb-2'>{name}</Text>
+
+          <View className='items-start gap-4'>
+            <Text className='text-secondary font-bold'>
+                info: <Text className='font-light text-black/80'>{description}</Text>
+            </Text>
+            <Text className='text-secondary font-bold'>
+              address: <Text className='font-light text-black/80'>{address}</Text>
+            </Text>
           </View>
         </View>
 
 
         <View className='items-center w-full'>
-          {/* <FlatList
-          data={dummyPetList}
-          renderItem={({ item }) => (
-              <TouchableOpacity
-              className='min-w-full max-w-full p-2'
-              >
-              <View
-                  className='w-full flex-row gap-4 items-center bg-primary/90 shadow shadow-secondary/20 rounded-2xl p-1 border border-lighterSecondary/40'
-              >
 
-                  <View className='size-24'>
-                      <Image
-                          source={item.image}
-                          contentFit='cover'
-                          placeholder={images.mrBigBlurhash}
-                          style={{ width: '100%', height: '100%', borderRadius: 16 }}
-                      />
-                  </View>
-
-                  <View className='gap-2 w-44'>
-                      <Text className='text-secondary font-bold'>{item.name}</Text>
-                      <Text className='font-light'>{item.bio}</Text>
-                  </View>
-
-                  <View className='items-center gap-2 max-w-24'>
-                      <TouchableOpacity className='items-center'>
-                          <Text className='font-light text-secondary text-center'>open map</Text>
-                      </TouchableOpacity>
-                  </View>
-
-              </View>
-              </TouchableOpacity>
-          )}
-          /> */}
-          {dummyPetList.map(item => (
+          {shelterPets.map(item => (
             <TouchableOpacity
               className='w-full p-2'
               key={item.id}
+              onPress={() => {
+                setSelectedPetProfile(item);
+                toggleIsProfileShown(true);
+              }}
             >
               <View
-                className='w-full flex-row gap-4 items-center bg-primary/90 shadow shadow-secondary/20 rounded-2xl p-1 border border-lighterSecondary/40'
+                className='w-full flex-row gap-4 items-center bg-primary/90 shadow shadow-secondary/20 rounded-2xl p-1 border border-lighterSecondary/40 max-w-full'
               >
 
                 <View className='size-24'>
                   <Image
-                    source={item.image}
+                    source={item.images[0]}
                     contentFit='cover'
                     placeholder={images.mrBigBlurhash}
                     style={{ width: '100%', height: '100%', borderRadius: 16 }}
                   />
                 </View>
 
-                <View className='gap-2 w-44'>
+                <View className='gap-2 max-w-72'>
                   <Text className='text-secondary font-bold'>{item.name}</Text>
                   <Text className='font-light'>{item.bio}</Text>
-                </View>
-
-                <View className='items-center gap-2 max-w-24'>
-                  <TouchableOpacity className='items-center'>
-                      <Text className='font-light text-secondary text-center'>open map</Text>
-                  </TouchableOpacity>
                 </View>
 
               </View>

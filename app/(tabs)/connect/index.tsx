@@ -1,4 +1,4 @@
-import { swipesAPI } from '@/backend/config/pocketbase';
+import { shelterAPI, swipesAPI } from '@/backend/config/pocketbase';
 import ChatRow from '@/components/ChatRow';
 import { useAuthStore } from '@/stores/authStore';
 import { useChatStore } from '@/stores/useChatStore';
@@ -26,23 +26,25 @@ const Index = () => {
       
       const getMatchRowsData = async () => {
         const matchData = await swipesAPI.getUserMatches(userId);
-  
-        const rows = matchData.map(match => {
+
+        const rows = matchData.map((match) => {
           const isUser1Me = match.user1 === userId;
           const matchedUser: PBUser = isUser1Me ? match.expand?.user2 : match.expand?.user1;
   
           const targetPet: PBPet = isUser1Me ? match.expand?.pet2 : match.expand?.pet1;
           const displayPetName: string = targetPet?.name || matchedUser.accountType;
-  
+
           return {
             matchId: match.id,
             matchedUser,
             petName: displayPetName,
+            shelterName: match.shelterName,
             lastMessage: match.lastMessage,
             lastMessageTime: match.lastMessageTime
           };
           
         });
+
         setMatchRows(rows);
         setIsLoading(false);
       };
@@ -57,15 +59,17 @@ const Index = () => {
       contentContainerStyle={{ paddingBottom: 40 }}
     > 
       {matchRows?.length === 0 && (
-        <SafeAreaView className="flex-1 p-2 items-center justify-center">
+        <SafeAreaView className="flex-1 px-2 items-center justify-center">
           <Text className="text-2xl font-bold text-gray-600 text-center max-w-96">
             {user?.accountType === 'owner' 
               ? 'Swipe on profiles to connect with more pets and seekers!' 
-              : 'Swipe on profiles to connect with more pets!'
+              : (user?.accountType === 'seeker' 
+                ? 'Swipe on profiles to connect with more pets!' 
+                : 'people interested in your pets will be able to connect with you')
             }
             {"\n"}
             {"\n"}
-            You will be able to chat with them on this page
+            you will be able to chat on this page
           </Text>
         </SafeAreaView>
       )}
@@ -82,7 +86,7 @@ const Index = () => {
         renderItem={({item}) => <ChatRow {...item}/>}
       />
     </ScrollView>
-  )
-}
+  );
+};
 
 export default Index;

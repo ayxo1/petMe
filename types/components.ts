@@ -62,6 +62,7 @@ export interface MatchRowData {
   matchId: string;
   matchedUser: PBUser;
   petName: string;
+  shelterName?: string;
   lastMessage?: string;
   lastMessageTime?: string;
 }

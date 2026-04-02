@@ -58,10 +58,10 @@ export const useAuthStore = create<AuthState>()(
             if (!currentId) {
               return;
             }
-            const freshUserData = await pb.collection('users').getOne(currentId);
+            const freshUserData: PBUser = await pb.collection('users').getOne(currentId);
             pb.authStore.save(pb.authStore.token, freshUserData);
 
-            const convertedUser = convertPBUserToUser(freshUserData as PBUser);
+            const convertedUser = convertPBUserToUser(freshUserData);
 
             set({
               user: convertedUser,
@@ -110,7 +110,7 @@ export const useAuthStore = create<AuthState>()(
             preferences: {
               searchDistance: 50,
               showRescuePets: true,
-              showShelterPets: true,
+              showShelterPets: false,
               preferredSpecies: ["dog", "cat", "bird", "rodent", "other"],
               showSeekers: get().user?.accountType === 'owner' ? false : true
             }

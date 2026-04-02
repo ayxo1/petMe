@@ -1,40 +1,39 @@
+import { pb } from '@/backend/config/pocketbase';
 import { icons, images } from '@/constants';
 import Colors from '@/constants/Colors';
+import { ShelterProfile } from '@/types/auth';
+import { PBShelterProfile } from '@/types/pbTypes';
 import * as Clipboard from 'expo-clipboard';
 import { Image } from 'expo-image';
 import * as Linking from 'expo-linking';
 import { router } from 'expo-router';
-import React, { useRef, useState } from 'react';
-import { FlatList, Image as RNImage, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, FlatList, Image as RNImage, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-const dummyShelterList = [
-  {
-    id: '123421',
-    image: images.ket,
-    orgName: 'some shelter',
-    description: 'some random words',
-    address: '12s st, asd adsa asfas fas fa fasf sadasda'
-  },
-  {
-    id: '1234',
-    image: images.ket,
-    orgName: 'some shelter 2',
-    description: 'yada yada words',
-    address: '12s st, asd'
-  },
-  {
-    id: '123333',
-    image: images.ket,
-    orgName: 'some shelter 3',
-    description: 'hmm very many words here hmm very many words here hmm very many words here',
-    address: '12s st, asd'
-  },
-];
 
 const Rescue = () => {
   const [isCopied, setIsCopied] = useState<{ status: boolean; id: string }>({ status: false, id: '' });
   const copyTimeoutRef = useRef<number | null>(null);
+
+  const [shelterList, setShelterList] = useState<ShelterProfile[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchShelterProfiles = async () => {
+      try {
+        setIsLoading(true);
+        const pbShelters: PBShelterProfile[] = await pb.collection('shelters').getFullList({
+          sort: '-created'
+        });
+        setShelterList(pbShelters);
+      } catch (error) {
+        console.log('fetchShelterProfiles error, rescue.tsx: ', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchShelterProfiles();
+  }, []);
 
   return (
     <SafeAreaView
@@ -56,9 +55,16 @@ const Rescue = () => {
 
       <Text className='mt-4 p-1 font-bold text-secondary'>Browse shelter pets: </Text>
 
+      
       <View className='items-center'>
+        {isLoading && (
+          <ActivityIndicator
+            className='absolute-center'
+          />
+        )}
+
         <FlatList 
-          data={dummyShelterList}
+          data={shelterList}
           renderItem={({ item, index }) => (
             <TouchableOpacity
               className={`min-w-full max-w-full p-2 ${index === 0 && 'mt-2'}`}
@@ -68,12 +74,12 @@ const Rescue = () => {
               })}
             >
               <View
-                className='w-full flex-row gap-3 items-center bg-primary/90 shadow shadow-secondary/40 rounded-2xl p-2 '
+                className='w-full flex-row gap-3 items-center bg-primary/90 shadow shadow-secondary/40 rounded-2xl p-2 max-w-full'
               >
 
                 <View className='size-28'>
                   <Image
-                    source={item.image}
+                    source={`${pb.baseURL}/api/files/shelters/${item.id}/${item.image}`}
                     contentFit='cover'
                     placeholder={images.mrBigBlurhash}
                     style={{ width: '100%', height: '100%', borderRadius: 16 }}
@@ -81,7 +87,7 @@ const Rescue = () => {
                 </View>
 
                 <View className='gap-2 w-44 p-1'>
-                  <Text className='text-secondary font-bold'>{item.orgName}</Text>
+                  <Text className='text-secondary font-bold'>{item.name}</Text>
                   <Text className='font-light'>{item.description}</Text>
                 </View>
 

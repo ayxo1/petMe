@@ -3,10 +3,10 @@ import Colors from '@/constants/Colors';
 import { useChatStore } from '@/stores/useChatStore';
 import { MatchRowData } from '@/types/components';
 import { Link } from 'expo-router';
-import { Image, ImageSourcePropType, Text, TouchableHighlight, View } from 'react-native';
+import { ImageSourcePropType, Text, TouchableHighlight, View } from 'react-native';
 import AvatarComponent from './AvatarComponent';
 
-const ChatRow = ({ matchId, matchedUser, petName, lastMessage }: MatchRowData) => {  
+const ChatRow = ({ matchId, matchedUser, petName, shelterName, lastMessage }: MatchRowData) => {  
   
   const profilePic: ImageSourcePropType = { uri: `${pb.baseURL}/api/files/users/${matchedUser.id}/${matchedUser.images[0]}`};
 
@@ -15,15 +15,15 @@ const ChatRow = ({ matchId, matchedUser, petName, lastMessage }: MatchRowData) =
     
   return (
     <Link href={{
-        pathname: '/chat/[id]',
-        params: {
-          id: matchId,
-          otherUserName: matchedUser.username,
-          otherUserImage: profilePic.uri,
-          otherUserId: matchedUser.id,
-          otherUserType: matchedUser.accountType
-        }
-      }} asChild
+      pathname: '/chat/[id]',
+      params: {
+        id: matchId,
+        otherUserName: matchedUser.username,
+        otherUserImage: profilePic.uri,
+        otherUserId: matchedUser.id,
+        otherUserType: matchedUser.accountType
+      }
+    }} asChild
     >
       <TouchableHighlight underlayColor={Colors.secondary}>
         <View className='flex-row items-center p-2'>
@@ -45,8 +45,12 @@ const ChatRow = ({ matchId, matchedUser, petName, lastMessage }: MatchRowData) =
               <Text className='text-xl'>
                 {matchedUser.username}
               </Text>
-              <Text className='text-base text-secondary'>
-                {(petName === 'seeker' || petName === 'owner') ? `(${petName})` : `(${petName}'s owner)`}
+              <Text className={`text-base ${shelterName ? 'text-authPrimary' : 'text-secondary'}`}>
+                {(petName === 'seeker' || petName === 'owner') 
+                  ? `(${petName})` 
+                  : (petName === 'shelter' 
+                    ? `(${shelterName} shelter)`
+                    : `(${petName}'s owner)`)}
               </Text>
             </View>
             <Text
@@ -58,7 +62,7 @@ const ChatRow = ({ matchId, matchedUser, petName, lastMessage }: MatchRowData) =
         </View>
       </TouchableHighlight>
     </Link>
-  )
+  );
 };
 
 export default ChatRow;
