@@ -37,6 +37,7 @@ onRecordAfterCreateSuccess((e) => {
 routerAdd("GET", "/api/feed", (c) => {
     
     const user = c.auth;
+    
     const userPreferences = JSON.parse(user.get('preferences'));
     let userCoords = null;
     try {
@@ -118,9 +119,10 @@ routerAdd("GET", "/api/feed", (c) => {
             AND owner NOT IN (SELECT user2 FROM matches WHERE user1 = {:userId} AND status = 'active')
             AND owner NOT IN (SELECT user1 FROM matches WHERE user2 = {:userId} AND status = 'active')
             AND (SELECT accountType FROM users WHERE id = pets.owner) NOT LIKE '%seeker%'
+            AND adoptionStatus != 'adopted'
     `);
 
-    if (userPreferences.showSeekers) {
+    if (userPreferences.showSeekers && user.get('accountType') === 'owner') {
         queries.push(`
             SELECT id, 
             username as name, 
@@ -343,6 +345,7 @@ routerAdd("POST", "/api/swipe", (c) => {
 }, $apis.requireAuth('users'));
 
 routerAdd("POST", "/api/unmatch", (c) => {
+    const user = c.auth;
     const data = new DynamicModel({
         'matchId': '',
     });
@@ -351,7 +354,11 @@ routerAdd("POST", "/api/unmatch", (c) => {
     const { matchId } = data;
 
     try {
-        const match = $app.findRecordById('matches', matchId);        
+        const match = $app.findRecordById('matches', matchId);
+        
+        if (match.get('user1') !== user.id && match.get('user2') !== user.id) {
+            return c.json(400, { "api/unmatch error" : "unauthorized unmatch request party" });
+        }
     
         match.set('status', 'unmatched');
     
@@ -368,8 +375,6 @@ routerAdd("GET", "/api/likes", (c) => {
     const user = c.auth;
     let page = 1;
     let perPage = 20;
-    const limit = perPage;
-    const offset = (page - 1) * perPage;
 
     try {
         const rawQuery = (c.request && c.request.url && c.request.url.rawQuery) || "";
@@ -383,6 +388,9 @@ routerAdd("GET", "/api/likes", (c) => {
     } catch (e) {
         console.log("api/likes: Query parse error, using defaults:", e);
     }
+
+    const limit = perPage;
+    const offset = (page - 1) * perPage;
 
     const query = `
         SELECT 
@@ -582,6 +590,7 @@ routerAdd("GET", "/api/rescue-feed", (c) => {
             AND owner NOT IN (SELECT user2 FROM matches WHERE user1 = {:userId} AND status = 'active')
             AND owner NOT IN (SELECT user1 FROM matches WHERE user2 = {:userId} AND status = 'active')
             AND (SELECT accountType FROM users WHERE id = pets.owner) NOT LIKE '%seeker%'
+            AND adoptionStatus != 'adopted'
         ORDER BY RANDOM()
         LIMIT {:limit}
     `;

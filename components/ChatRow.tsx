@@ -46,10 +46,10 @@ const ChatRow = ({ matchId, matchedUser, petName, shelterName, lastMessage }: Ma
                 {matchedUser.username}
               </Text>
               <Text className={`text-base ${shelterName ? 'text-authPrimary' : 'text-secondary'}`}>
-                {(petName === 'seeker' || petName === 'owner') 
-                  ? `(${petName})` 
-                  : (petName === 'shelter' 
-                    ? `(${shelterName} shelter)`
+                {matchedUser.accountType === 'seeker'
+                  ? '(seeker)'
+                  : (matchedUser.accountType === 'shelter' 
+                    ? `(${shelterName ? `${shelterName} shelter` : 'shelter'})`
                     : `(${petName}'s owner)`)}
               </Text>
             </View>

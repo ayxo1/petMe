@@ -37,10 +37,8 @@ if (__DEV__) {
   pb.afterSend = function (response, data) {
     if (response.status === 401 || response.status === 403) {
       const { useAuthStore } = require('@/stores/authStore');
-      const { useFeedStore } = require('@/stores/useFeedStore');
       if (useAuthStore.getState().isAuthenticated) {
         useAuthStore.setState({ sessionExpired: true });
-        useFeedStore.getState().reset();
         useAuthStore.getState().signOut();
       }
     }
@@ -327,13 +325,16 @@ export const swipesAPI = {
         });
 
         const lastMsg = lastMsgList.items[0];
+
+        const matchedUser = match.user2 === userId ? match.expand?.user1 : match.expand?.user2;
         let shelterName;
 
-        if (match.expand?.user2.accountType === 'shelter') {
+        if (matchedUser.accountType === 'shelter') {
+          const shelterOwnerId = match.user2 === userId ? match.user1 : match.user2;
           const shelterData = await pb.collection('shelters').getList(1, 1, {
-            filter: `owner = "${match.user2}"`
+            filter: `owner = "${shelterOwnerId}"`
           });          
-          shelterName = shelterData.items[0].name;
+          shelterName = shelterData.items[0].name || 'shelter';
         }
 
         return {
@@ -368,7 +369,6 @@ export const messagesAPI = {
 
   sendMessage: async (matchId: string, senderId: string, content: string) => {
     const matchData = await pb.collection('matches').getOne(matchId);
-    console.log('matchData log: ', matchData.status);
     if (matchData.status === 'active') {
       return await pb.collection('messages').create({
         match: matchId,

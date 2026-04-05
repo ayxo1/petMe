@@ -105,6 +105,7 @@ const Rescue = () => {
         setIsModal(true);
         setRescueProfiles([]);
         setCurrentIndex(0);
+        setHasMore(true);
         await fetchRescueBatch([]);
         return;
       }
@@ -177,9 +178,9 @@ const Rescue = () => {
       )}
 
       {!isLoading && visibleCards.length === 0 && (
-        <View className='absolute-center items-center'>
+        <View className='ml-2 absolute-center items-center'>
           <Text className="text-2xl font-bold text-gray-600">
-            No more profiles currently! 🐾
+            No more profiles currently!
           </Text>
           <Text className="text-gray-500 mt-2">
             Check back later for more pets

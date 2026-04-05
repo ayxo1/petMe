@@ -108,7 +108,7 @@ const ChatPage = () => {
 
   const [selectedPetProfile, setSelectedPetProfile] = useState<PetProfile | null>();
 
-  const unsubscribeRef = useRef<(() => void) | null>(null);
+  const unsubscribeRef = useRef<(() => Promise<void>) | null>(null);
 
   const params = useLocalSearchParams<{ id: string; otherUserName: string; otherUserImage: string; otherUserId: string; otherUserType: string }>();
   const { id: matchId, otherUserName, otherUserImage, otherUserId, otherUserType } = params;
@@ -122,12 +122,15 @@ const ChatPage = () => {
 
   const unmatch = async () => {
     try {
+      await messagesAPI.unmatchProfile(matchId);
       if (unsubscribeRef.current) {
-        unsubscribeRef.current();
+        try {
+          await unsubscribeRef.current();
+        } catch (error) {
+        }
         unsubscribeRef.current = null;
       }
-      await messagesAPI.unmatchProfile(matchId);
-      router.push('/(tabs)/connect');
+      router.replace('/(tabs)/connect');
     } catch (error) {
       console.log('unmatch error: ', error);
       Alert.alert('error occurred while unmatching, please try again');
@@ -361,9 +364,11 @@ useEffect(() => {
                           <View className='flex-row justify-center gap-2'>
                             <ButtonComponent
                               title='yes'
-                              onPress={() => {
-                                unmatch();
-                                toggleUnmatchModal(!unmatchModal);
+                              onPress={async () => {
+                                await unmatch();
+                                
+                                // toggleUnmatchModal(!unmatchModal);
+                                // toggleIsReportModal(!isReportModal);
                               }}
                               style='bg-red-900'
                               textStyle='text-primary'

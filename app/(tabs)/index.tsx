@@ -55,7 +55,8 @@ export default function Index() {
           await fetchProfileBatch();
         };
         
-        const firstBatch = feed.slice(0, VISIBLE_STACK_SIZE);
+        const freshFeed = useFeedStore.getState().feed;
+        const firstBatch = freshFeed.slice(0, VISIBLE_STACK_SIZE);
         const imageUris = firstBatch.flatMap((petProfile) => petProfile.images || []).filter(Boolean);
 
         await Promise.all([
@@ -86,15 +87,6 @@ export default function Index() {
     };
   }, [remaining, currentIndex, feed]);
 
-  // useEffect(() => {
-  //   const dbIp = process.env.EXPO_PUBLIC_POCKETBASE_HOST;
-    
-  //   fetch(`http://${dbIp}:8090/api/health`)
-  //   .then(res => res.json())
-  //   .then(data => console.log('pb connected ', data))
-  //   .catch(error => console.error(error));
-  // }, []);  
-
   const onSwipeLeft = () => {
     if(!currentProfile) return;
 
@@ -107,7 +99,6 @@ export default function Index() {
     const isMatch = (await swipeLike(currentProfile.id));
     
     if(isMatch.isMatch && isMatch.matchId) {
-      console.log(isMatch, ' logging isMatch');
       setmatchScreenProps({
         matchId: isMatch.matchId,
         isExisting: isMatch.isExisting || false,

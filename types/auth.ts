@@ -68,7 +68,7 @@ export interface AuthState {
   hydrateUser: () => Promise<void>;
   signIn: (userData: SignInFormData) => Promise<void>;
   signUp: (userData: SignUpFormData) => Promise<void>;
-  signOut: () => void;
+  signOut: () => Promise<void>;
   updateProfile: (profileData: Partial<User>) => Promise<void>;
   setRegistrationState: (state: RegistrationState) => void;
   setLoading: (loading: boolean) => void;

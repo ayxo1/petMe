@@ -112,7 +112,7 @@ export const useAuthStore = create<AuthState>()(
               showRescuePets: true,
               showShelterPets: false,
               preferredSpecies: ["dog", "cat", "bird", "rodent", "other"],
-              showSeekers: get().user?.accountType === 'owner' ? false : true
+              showSeekers: true
             }
           });
 
@@ -133,14 +133,24 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      signOut: () => {
+      signOut: async () => {
+        const resetProfileFeed = require('@/stores/useFeedStore').useFeedStore.getState().reset;
+        resetProfileFeed();
+        const resetPetStore = require('@/stores/petStore').usePetStore.getState().reset;
+        resetPetStore();
+        const resetShelterStore = require('@/stores/shelterStore').useShelterStore.getState().reset;
+        resetShelterStore();
+        const resetChatStore = require('@/stores/useChatStore').useChatStore.getState().reset;
+        await resetChatStore();
+        const resetLikesStore = require('@/stores/useLikesStore').useLikesStore.getState().reset;
+        await resetLikesStore();
         pbSignOut();
 
-        set({ 
-          isAuthenticated: false, 
+        set({
+          isAuthenticated: false,
           user: null,
           isLoading: false,
-          registrationState: 'not_started'
+          registrationState: 'not_started',
         });
       },
 

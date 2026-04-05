@@ -36,9 +36,10 @@ export default function RootLayout() {
       } catch (error) {
         console.log('root layout, hydrateUser error:', error);
       }
-      if (user && user.regState === 'completed') {
-        hydratePets(user.id);
-        if (user?.accountType === 'shelter') hydrateShelter(user.id);
+      const freshUser = useAuthStore.getState().user;
+      if (freshUser && freshUser.regState === 'completed') {
+        hydratePets(freshUser.id);
+        if (freshUser?.accountType === 'shelter') hydrateShelter(freshUser.id);
       }
     };
     startUp();

@@ -18,25 +18,25 @@ import { FlatList, Image, ScrollView, Text, TouchableOpacity, View } from 'react
 
 type AuthRoute = '/(auth)/profile-setup' | '/(auth)/pet-setup' | '/(auth)/shelter-setup';
 
-export const LogOutButton = ({ signOut }: { signOut: () => void }) => {
-  const resetFeedStore = useFeedStore(state => state.reset);
-  const resetLikesStore = useLikesStore(state => state.reset);
-  const resetPetStore = usePetStore(state => state.reset);
-  const resetChatStore = useChatStore(state => state.reset);
+export const LogOutButton = ({ signOut }: { signOut: () => Promise<void> }) => {
+  // const resetFeedStore = useFeedStore(state => state.reset);
+  // const resetLikesStore = useLikesStore(state => state.reset);
+  // const resetPetStore = usePetStore(state => state.reset);
+  // const resetChatStore = useChatStore(state => state.reset);
  
   return (
     <View>
       <ButtonComponent 
         title='sign out'
         onPress={async () => {
-          await resetChatStore();
-          await resetLikesStore();
+          // await resetChatStore();
+          // await resetLikesStore();
           
-          resetFeedStore();
-          resetPetStore();
+          // resetFeedStore();
+          // resetPetStore();
 
           await AsyncStorage.clear();
-          signOut();
+          await signOut();
         }}
         style='bg-red-600'
         textStyle='color-white'
