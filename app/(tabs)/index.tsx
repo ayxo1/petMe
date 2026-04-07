@@ -4,10 +4,14 @@ import Modal from "@/components/Modal";
 import ProfileCard from "@/components/ProfileCard";
 import { images } from "@/constants";
 import { useAuthStore } from "@/stores/authStore";
+import { convertPBShelterToShelterProfile } from "@/stores/shelterStore";
 import { useFeedStore } from "@/stores/useFeedStore";
+import { ShelterProfile } from "@/types/auth";
+import { PBShelterProfile } from "@/types/pbTypes";
 import { assetPreloader, imagePreloader } from "@/utils/assetPreloader";
+import { Link, router } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Image, Text, View } from "react-native";
+import { ActivityIndicator, Image, Pressable, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
@@ -40,8 +44,11 @@ export default function Index() {
   
   const [isPreloading, setIsPreloading] = useState(true);
 
+  const [currentShelterProfile, setCurrentShelterProfile] = useState<ShelterProfile | undefined>()
   const [isModal, setIsModal] = useState(false);
-  const [matchScreenProps, setmatchScreenProps] = useState<{ matchId: string; isExisting: boolean, username: string; image: string; }>();
+  const [isShelterModal, setIsShelterModal] = useState(false);
+  const [shelterModalProps, setShelterModalProps] = useState<{ swipedProfileId: string; petName: string; shelterName: string; shelterId: string; }>()
+  const [matchScreenProps, setMatchScreenProps] = useState<{ matchId: string; isExisting: boolean, username: string; image: string; }>();
 
   const VISIBLE_STACK_SIZE = 4;
   const currentProfile = feed[currentIndex];
@@ -96,13 +103,34 @@ export default function Index() {
   const onSwipeRight = async () => {    
     if(!currentProfile) return;
 
+    if (currentProfile.isShelterPet) {
+      await swipePass(currentProfile.id);
+      try {
+        const shelterData: { items: PBShelterProfile[] } = await pb.collection('shelters').getList(1, 1, {
+          filter: `owner = "${currentProfile.ownerId}"`
+        });
+        const pbShelterProfile = convertPBShelterToShelterProfile(shelterData.items[0]);
+        setCurrentShelterProfile(pbShelterProfile);
+        setShelterModalProps({
+          swipedProfileId: currentProfile.id,
+          petName: currentProfile.name,
+          shelterId: shelterData.items[0].id,
+          shelterName: shelterData.items[0].name
+        });
+        setIsShelterModal(true);
+      } catch (error) {
+        console.error('onSwipeRight, tabs/index, if (currentProfile.isShelterPet) error: ', error);
+      }
+      return;
+    }
+    
     const isMatch = (await swipeLike(currentProfile.id));
     
     if(isMatch.isMatch && isMatch.matchId) {
-      setmatchScreenProps({
+      setMatchScreenProps({
         matchId: isMatch.matchId,
         isExisting: isMatch.isExisting || false,
-        username: currentProfile.type === 'pet' ? currentProfile?.ownerName as string : currentProfile.name,
+        username: currentProfile.type === 'pet' ? (currentProfile?.ownerName || '') : currentProfile.name,
         image: currentProfile.type === 'pet' 
           ? `${pb.baseURL}/api/files/users/${currentProfile.ownerId}/${currentProfile.ownerImage}`
           : currentProfile.images[0],
@@ -123,12 +151,85 @@ return (
         styleProps="bg-lighterSecondary/80"
       > 
         {matchScreenProps && (
-            <MatchScreen
-              modalOpen={setIsModal}
-              matchScreenProps={matchScreenProps}
+          <MatchScreen
+            modalOpen={setIsModal}
+            matchScreenProps={matchScreenProps}
           />
         )}
       </Modal>
+
+      {isShelterModal && (
+        <Modal
+          isOpen={isShelterModal}
+          toggleModal={(val) => {
+            setIsShelterModal(val);
+            
+          }}
+          styleProps="bg-lighterSecondary/80 border border-authPrimary/30 rounded-3xl"
+        > 
+          <View className="max-w-[90%] items-center justify-center py-12">
+              
+            <View>
+
+              <View className="gap-4">
+                <Text className="text-xl color-primary text-center font-bold">the pet you swiped on is a member of {shelterModalProps?.shelterName ? `the ${shelterModalProps?.shelterName}` : 'a'} shelter!</Text>
+                <Text className="text-l text-center">you can connect with the 
+                  <Text className="text-primary font-bold"> {shelterModalProps?.shelterName} </Text>
+                  shelter to find out more about {shelterModalProps?.petName}</Text>
+              </View>
+      
+              <View
+                className='flex-row justify-center mt-6 gap-4'
+              >
+                <View
+                  className="rounded-xl p-2 bg-secondary/80 shadow shadow-secondary/80"
+                >   
+
+                  {currentShelterProfile && (
+                    <TouchableOpacity 
+                      onPress={() => router.push({
+                        pathname: '/shelters/[id]',
+                        params: { ...currentShelterProfile }
+                      })}
+                      onPressOut={() => setIsShelterModal(!isShelterModal)}
+                    >
+                      <Text className="text-primary">connect with the shelter</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+
+                <View
+                  className="bg-authPrimary/80 rounded-xl p-2 shadow shadow-secondary/60"
+                >
+                  <Pressable
+                    onPress={() => {
+                      setIsShelterModal(!isShelterModal);
+                    }}
+                  >
+                    <Text className="text-primary">maybe later</Text>
+                  </Pressable>
+                </View>
+
+              </View>
+
+              <View className="items-center mt-4">
+                <View
+                  className="bg-authPrimary/80 rounded-xl p-2 shadow shadow-secondary/60"
+                >
+                  <Pressable
+                    onPress={() => {
+                      setIsShelterModal(!isShelterModal);
+                    }}
+                  >
+                    <Text className="text-primary">continue exploring</Text>
+                  </Pressable>
+                </View>
+              </View>
+
+            </View>
+          </View>
+        </Modal>
+      )}
       {isPreloading ? (
         <SafeAreaView className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#3b3a38" />

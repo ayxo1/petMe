@@ -11,6 +11,7 @@ export interface FeedProfile {
     createdAt: string;
     updatedAt: string;
 
+    isShelterPet: boolean;
     age?: number;
     species?: string;
     breed?: string;

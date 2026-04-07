@@ -134,7 +134,7 @@ const ShelterPage = () => {
         >
           <View className='size-36 items-center justify-center'>
             <Image
-              source={`${pb.baseURL}/api/files/shelters/${id}/${image}`}
+              source={image}
               contentFit='cover'
               style={{ width: '100%', height: '100%', borderRadius: 16 }}
             />

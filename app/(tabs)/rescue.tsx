@@ -1,6 +1,7 @@
 import { pb } from '@/backend/config/pocketbase';
 import { icons, images } from '@/constants';
 import Colors from '@/constants/Colors';
+import { convertPBShelterToShelterProfile } from '@/stores/shelterStore';
 import { ShelterProfile } from '@/types/auth';
 import { PBShelterProfile } from '@/types/pbTypes';
 import * as Clipboard from 'expo-clipboard';
@@ -25,7 +26,8 @@ const Rescue = () => {
         const pbShelters: PBShelterProfile[] = await pb.collection('shelters').getFullList({
           sort: '-created'
         });
-        setShelterList(pbShelters);
+        const convertedShelters = pbShelters.map(convertPBShelterToShelterProfile)
+        setShelterList(convertedShelters);
       } catch (error) {
         console.log('fetchShelterProfiles error, rescue.tsx: ', error);
       } finally {
@@ -79,7 +81,7 @@ const Rescue = () => {
 
                 <View className='size-28'>
                   <Image
-                    source={`${pb.baseURL}/api/files/shelters/${item.id}/${item.image}`}
+                    source={item.image}
                     contentFit='cover'
                     placeholder={images.mrBigBlurhash}
                     style={{ width: '100%', height: '100%', borderRadius: 16 }}
@@ -93,7 +95,7 @@ const Rescue = () => {
 
                 <View className='items-center gap-3 max-w-24 p-1'>
                   {isCopied.status && isCopied.id === item.id && (
-                    <View className='absolute -left-8 -top-5 bg-secondary/60 px-2 py-1 rounded-md'>
+                    <View className='absolute -left-10 -top-5 bg-secondary/60 px-2 py-1 rounded-md'>
                       <Text className='text-primary'>copied</Text>
                     </View>
                   )}
@@ -112,19 +114,20 @@ const Rescue = () => {
                   >
                     <RNImage
                       source={icons.copyIcon}
-                      className='size-4 absolute -left-5 top-0'
+                      className='size-4 absolute -left-5 -top-1'
                       resizeMode='contain'
                       tintColor={Colors.secondary}
                     />
+                    <Text className='absolute-center-y -left-6'>📍</Text>
                     <Text 
                       className='font-light text-secondary text-start' 
                       lineBreakMode='tail' 
-                      numberOfLines={2} 
+                      numberOfLines={4} 
                       >
-                        {item.address}
+                      {item.address}
                     </Text>
                   </TouchableOpacity>
-                  <TouchableOpacity 
+                  {/* <TouchableOpacity 
                     className='items-center gap-1'
                     onPress={() => Linking.openURL('https://maps.app.goo.gl/UH3u1v1PUHS3wCs4A')}
                   >
@@ -134,7 +137,7 @@ const Rescue = () => {
                       resizeMode='contain'
                     />
                     <Text className='font-light text-secondary text-center'>open map</Text>
-                  </TouchableOpacity>
+                  </TouchableOpacity> */}
                 </View>
 
               </View>

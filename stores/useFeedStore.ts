@@ -10,7 +10,7 @@ interface FeedState {
 
     fetchProfileBatch: (type?: string) => Promise<void>;
     swipeLike: (id: string) => Promise<{ isMatch: boolean; matchId?: string, isExisting?: boolean }>;
-    swipePass: (id: string) => void;
+    swipePass: (id: string) => Promise<void>;
     getCurrentProfile: () => FeedProfile | null;
     getRemaningProfiles: () => number;
     reset: () => void;
@@ -28,6 +28,7 @@ export const convertPBFeedRecordToFeedProfile = (record: PBFeedRecord): FeedProf
         ownerId: record.ownerId,
         species: record.species,
         breed: record.breed,
+        isShelterPet: record.isShelterPet,
         age: record.age,
         bio: record.bio,
         distance: record.distance,
@@ -131,9 +132,7 @@ export const useFeedStore = create<FeedState>(
                        console.log('usefeedstore, remaining < PREFETCH_THRESHOLD error, the feed is empty: ', error);   
                     }
                 }
-                
-                console.log('match result issss ', response.isMatch);
-                
+                                
                 return {
                     isMatch: response.isMatch,
                     matchId: response.matchId,

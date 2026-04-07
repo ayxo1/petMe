@@ -42,7 +42,7 @@ console.log(profile);
                 styleProps='mt-48 justify-center items-center max-w-96'
                 tint={false}
             >
-                <View className="gap-4 bg-secondary/60 px-3 py-4 rounded-2xl border border-lighterSecondary">
+                <View className="gap-4 bg-secondary/80 px-3 py-4 rounded-2xl border border-lighterSecondary">
                     <Text className="text-authPrimary font-bold">adoption status:
                         <Text className={`font-light ${profile.adoptionStatus === 'available' ? 'text-green-400' : 'text-primary'}`}> {profile.adoptionStatus === 'available' ? 'looking for a home' : profile.adoptionStatus}</Text>
                     </Text>
@@ -62,9 +62,9 @@ console.log(profile);
             className="flex-1 relative bg-primary"
         >
             <View>
-                {profile.type && profile.type === 'seeker' && (
-                    <Text className="absolute text-center text-primary text-xl z-50 top-16 right-8 bg-secondary/40 px-3 py-2 rounded-3xl border border-lighterSecondary/80">
-                        seeker
+                {profile.type && (profile.type === 'seeker' || profile.isShelterPet) && (
+                    <Text className="absolute shadow text-center text-primary text-xl z-50 top-16 right-8 bg-secondary/80 px-3 py-2 rounded-3xl transform rotate-12">
+                        {profile.type === 'seeker' ? 'seeker' : 'shelter'}
                     </Text>
                 )}
             </View>
@@ -119,12 +119,12 @@ console.log(profile);
                 onPress={() => toggleAdoptionModal(!adoptionModal)}
             >
                 <Text
-                    className='font-light text-l text-center text-white bg-authPrimary/60 px-3 py-1 rounded-xl border border-blue-100/20'
+                    className='font-light text-l text-center text-white bg-authPrimary/80 px-3 py-1 rounded-xl border border-blue-100/20'
                 >
                     {adoptionModal ? 'close' : 'looking for a new home'}
                 </Text>
                 <View 
-                    className='bg-authPrimary/60 px-2 py-1 rounded-full border border-blue-100/20'
+                    className='bg-authPrimary/80 px-2 py-1 rounded-full border border-blue-100/20'
                 >
                     <Text className="font-extralight text-l text-center text-white">ⓘ</Text>
                 </View>

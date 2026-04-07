@@ -75,6 +75,7 @@ export interface PBFeedRecord {
   created: string;
   updated: string;
 
+  isShelterPet: boolean;
   species?: string;
   breed?: string;
   isAvailableForAdoption: boolean;

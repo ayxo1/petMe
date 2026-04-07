@@ -47,7 +47,7 @@ const MatchScreen = ({modalOpen, matchScreenProps} : MatchScreenPageProps) => {
                 </View>
             </View>
     </View>
-  )
-}
+  );
+};
 
 export default MatchScreen;

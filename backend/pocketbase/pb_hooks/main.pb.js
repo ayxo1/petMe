@@ -109,7 +109,11 @@ routerAdd("GET", "/api/feed", (c) => {
             created,
             (SELECT username FROM users WHERE id = pets.owner) as ownerName,
             (SELECT images FROM users WHERE id = pets.owner) as ownerImage,
-            (SELECT coordinates FROM users WHERE id = pets.owner) as ownerCoordinates
+            (SELECT coordinates FROM users WHERE id = pets.owner) as ownerCoordinates,
+            (CASE 
+                WHEN (SELECT accountType FROM users WHERE id = pets.owner) = 'shelter' THEN 1 
+                ELSE 0 
+            END) as isShelterPet
         FROM pets
         WHERE owner != {:userId} 
             ${rescueFilter}
@@ -139,7 +143,8 @@ routerAdd("GET", "/api/feed", (c) => {
             created,
             username as ownerName,
             images as ownerImage,
-            coordinates as ownerCoordinates
+            coordinates as ownerCoordinates,
+            0 as isShelterPet
             
             FROM users
             WHERE id != {:userId}
@@ -175,6 +180,7 @@ routerAdd("GET", "/api/feed", (c) => {
         'ownerId': '',
         'ownerCoordinates': '',
         'age': 0,
+        'isShelterPet': 0,
         'created': ''
     }));
 
