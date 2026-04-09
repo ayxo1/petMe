@@ -43,11 +43,12 @@ export default function Index() {
   } = useFeedStore();
   
   const [isPreloading, setIsPreloading] = useState(true);
+  const [isFailedFetch, setIsFailedFetch] = useState(false);
 
-  const [currentShelterProfile, setCurrentShelterProfile] = useState<ShelterProfile | undefined>()
+  const [currentShelterProfile, setCurrentShelterProfile] = useState<ShelterProfile | undefined>();
   const [isModal, setIsModal] = useState(false);
   const [isShelterModal, setIsShelterModal] = useState(false);
-  const [shelterModalProps, setShelterModalProps] = useState<{ swipedProfileId: string; petName: string; shelterName: string; shelterId: string; }>()
+  const [shelterModalProps, setShelterModalProps] = useState<{ swipedProfileId: string; petName: string; shelterName: string; shelterId: string; }>();
   const [matchScreenProps, setMatchScreenProps] = useState<{ matchId: string; isExisting: boolean, username: string; image: string; }>();
 
   const VISIBLE_STACK_SIZE = 4;
@@ -55,29 +56,32 @@ export default function Index() {
   const remaining = getRemaningProfiles();
   const visibleCards = feed.slice(currentIndex, currentIndex + VISIBLE_STACK_SIZE);
 
-  useEffect(() => {
-    const initialize = async () => {
-      try {
-        if (feed.length === 0) {
-          await fetchProfileBatch();
-        };
-        
-        const freshFeed = useFeedStore.getState().feed;
-        const firstBatch = freshFeed.slice(0, VISIBLE_STACK_SIZE);
-        const imageUris = firstBatch.flatMap((petProfile) => petProfile.images || []).filter(Boolean);
-
-        await Promise.all([
-          imagePreloader(imageUris),
-          assetPreloader([images.profileCardBorder])
-        ]);
-
-        setIsPreloading(false);
-      } catch (error) {
-        console.error('initialization error ', error);
-        setIsPreloading(false);
+  const initialize = async () => {
+    console.log('init log');
+    try {
+      setIsFailedFetch(false);
+      if (feed.length === 0) {
+        await fetchProfileBatch();
       };
-    };
+      
+      const freshFeed = useFeedStore.getState().feed;
+      const firstBatch = freshFeed.slice(0, VISIBLE_STACK_SIZE);
+      const imageUris = firstBatch.flatMap((petProfile) => petProfile.images || []).filter(Boolean);
 
+      await Promise.all([
+        imagePreloader(imageUris),
+        assetPreloader([images.profileCardBorder])
+      ]);
+
+      setIsPreloading(false);
+    } catch (error) {
+      console.error('initialization error ', error);
+      setIsPreloading(false);
+      setIsFailedFetch(true);
+    };
+  };
+
+  useEffect(() => {
     initialize();
   }, []);
 
@@ -158,6 +162,15 @@ return (
         )}
       </Modal>
 
+      {isFailedFetch ? (
+        <TouchableOpacity 
+          className="absolute-center z-50"
+          onPress={initialize}
+        >
+          <Text className="text-xl text-gray-600">Error loading profiles, <Text className="font-bold color-blue-600">retry</Text></Text>
+        </TouchableOpacity>
+      ) : null}
+
       {isShelterModal && (
         <Modal
           isOpen={isShelterModal}
@@ -235,7 +248,7 @@ return (
           <ActivityIndicator size="large" color="#3b3a38" />
           <Text className="text-gray-600 mt-4 text-lg">Loading profiles...</Text>
         </SafeAreaView>
-      ) : (!currentProfile || remaining === 0) ? (
+      ) : ((!currentProfile || remaining === 0) && !isFailedFetch) ? (
         <SafeAreaView className="flex-1 items-center justify-center">
           <Text className="text-2xl font-bold text-gray-600">
             No more profiles! 🐾

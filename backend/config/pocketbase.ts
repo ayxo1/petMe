@@ -34,19 +34,19 @@ if (__DEV__) {
   };
 };
   
-  pb.afterSend = function (response, data) {
-    if (response.status === 401 || response.status === 403) {
-      const { useAuthStore } = require('@/stores/authStore');
-      if (useAuthStore.getState().isAuthenticated) {
-        useAuthStore.setState({ sessionExpired: true });
-        useAuthStore.getState().signOut();
-      }
+pb.afterSend = function (response, data) {
+  if (response.status === 401 || response.status === 403) {
+    const { useAuthStore } = require('@/stores/authStore');
+    if (useAuthStore.getState().isAuthenticated) {
+      useAuthStore.setState({ sessionExpired: true });
+      useAuthStore.getState().signOut();
     }
-    if (__DEV__) {
-      console.log('pb response:', JSON.stringify(data, null, 2), JSON.stringify(response, null, 2));
-    }
-    return data;
-  };
+  }
+  if (__DEV__) {
+    console.log('pb response:', JSON.stringify(data, null, 2), JSON.stringify(response, null, 2));
+  }
+  return data;
+};
 
 //
 

@@ -62,11 +62,11 @@ console.log(profile);
             className="flex-1 relative bg-primary"
         >
             <View>
-                {profile.type && (profile.type === 'seeker' || profile.isShelterPet) && (
+                {profile.type && (profile.type === 'seeker' || profile.isShelterPet) ? (
                     <Text className="absolute shadow text-center text-primary text-xl z-50 top-16 right-8 bg-secondary/80 px-3 py-2 rounded-3xl transform rotate-12">
                         {profile.type === 'seeker' ? 'seeker' : 'shelter'}
                     </Text>
-                )}
+                ) : null}
             </View>
 
             <Pressable

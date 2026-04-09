@@ -523,8 +523,13 @@ routerAdd("POST", "/api/custom/resend-pin", (c) => {
 routerAdd("GET", "/api/rescue-feed", (c) => {
 
     const user = c.auth;
+    
     let userCoords = null;
     const userPreferences = JSON.parse(user.get('preferences'));
+    const speciesFilter = userPreferences.preferredSpecies.length > 0
+        ? `AND species IN (${userPreferences.preferredSpecies.map(species => `'${species}'`).join(',')})`
+        : '';
+        
     try {
         const currentUser = new DynamicModel({ coordinates: '' });
         $app.db().newQuery(
@@ -590,6 +595,7 @@ routerAdd("GET", "/api/rescue-feed", (c) => {
             (SELECT coordinates FROM users WHERE id = pets.owner) as ownerCoordinates
         FROM pets
         WHERE owner != {:userId}
+            ${speciesFilter}
             AND isAvailableForAdoption = true
             AND (SELECT accountType FROM users WHERE id = pets.owner) NOT LIKE '%shelter%'
             AND id NOT IN (SELECT targetPet FROM swipes WHERE user = {:userId} AND swipeType = 'pet')
