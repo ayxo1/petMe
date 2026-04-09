@@ -325,7 +325,7 @@ useEffect(() => {
                 <TouchableOpacity
                   onPress={() => setIsPetlistVisible(!isPetlistVisible)}
                 >
-                  <Text className={`text-primary border border-lighterSecondary p-1 rounded-xl ${isPetlistVisible && 'bg-lighterSecondary text-secondary'}`}>{isPetlistVisible ? 'hide pets' : 'see pets'}</Text>
+                  <Text className={`text-primary border border-lighterSecondary p-1 rounded-xl ${isPetlistVisible && 'bg-primary text-secondary'}`}>{isPetlistVisible ? 'hide pets' : 'see pets'}</Text>
                 </TouchableOpacity>
               )}
             </View>

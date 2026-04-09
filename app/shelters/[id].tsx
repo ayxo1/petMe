@@ -3,7 +3,7 @@ import Modal from '@/components/Modal';
 import ProfileInterface from '@/components/ProfileInterface';
 import { icons, images } from '@/constants';
 import Colors from '@/constants/Colors';
-import { convertPBUserToUser } from '@/stores/authStore';
+import { convertPBUserToUser, useAuthStore } from '@/stores/authStore';
 import { convertPBPetToPetProfile } from '@/stores/petStore';
 import { User } from '@/types/auth';
 import { PBPet, PBUser } from '@/types/pbTypes';
@@ -32,6 +32,7 @@ const BackIcon = () => {
 };
  
 const ShelterPage = () => {
+  const user = useAuthStore(state => state.user);
   const params = useLocalSearchParams();
   const { id, image, name, description, address, owner } = params;
 
@@ -138,16 +139,18 @@ const ShelterPage = () => {
               contentFit='cover'
               style={{ width: '100%', height: '100%', borderRadius: 16 }}
             />
-            <TouchableOpacity 
-              className='absolute self-center left-40 border border-green-700 rounded-2xl'
-              onPress={connectShelter}
-            >
-              <Text className='p-2 text-green-700'>message</Text>
-            </TouchableOpacity>
+            {owner !== user?.id ? (
+              <TouchableOpacity 
+                className='absolute self-center left-40 border border-green-700 rounded-2xl'
+                onPress={connectShelter}
+              >
+                <Text className='p-2 text-green-700'>message</Text>
+              </TouchableOpacity>
+            ) : null}
           </View>
 
 
-          <Text className='text-secondary font-bold text-center mb-2'>{name}</Text>
+          <Text className='text-secondary font-bold text-center mb-2'>{name} {owner === user?.id ? '(your shelter)' : null}</Text>
 
           <View className='items-start gap-4'>
             <Text className='text-secondary font-bold'>

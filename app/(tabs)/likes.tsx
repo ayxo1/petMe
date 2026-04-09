@@ -4,6 +4,7 @@ import BottomSheet from '@/components/BottomSheet';
 import Modal from '@/components/Modal';
 import ProfileCard from '@/components/ProfileCard';
 import ProfileInterface from '@/components/ProfileInterface';
+import { images } from '@/constants';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
 import { convertPBPetToPetProfile } from '@/stores/petStore';
@@ -23,6 +24,21 @@ const ITEM_WIDTH = (width / 2) - 24;
 const Likes = () => {
 
   const user = useAuthStore(state => state.user);
+  if (user?.accountType === 'shelter') return (
+    <View className="flex-1">
+      <SafeAreaView className="flex-1 items-center justify-center p-6 gap-4">
+          <Text className="text-2xl font-bold text-gray-600 text-center p-2">
+            since users can just contact shelters directly and can't swipe on their pets, here's a picture of mr big
+          </Text>
+          <Image 
+            className="size-1/2"
+            source={images.mrBigLike}
+            resizeMode="cover"
+          />
+      </SafeAreaView>
+    </View>
+  );
+
   const { fetchIncomingLikesProfiles, incomingLikes, removeLike } = useLikesStore();
   const { reset, fetchProfileBatch } = useFeedStore();
   const [selectedPets, setSelectedPets] = useState<PetProfile[]>();
