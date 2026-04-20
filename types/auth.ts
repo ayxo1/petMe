@@ -58,6 +58,7 @@ export type RegistrationState = 'not_started' | 'signed_up' | 'verified' | 'prof
 
 export interface AuthState {
   isAuthenticated: boolean;
+  isOAuth: boolean;
   user: User | null;
   isLoading: boolean;
   isHydrated: boolean;
@@ -66,6 +67,12 @@ export interface AuthState {
 
   init: () => Promise<void>;
   hydrateUser: () => Promise<void>;
+  signInWithOAuth: (
+    provider: string, 
+    code: string, 
+    codeVerifier: string, 
+    redirectUrl: string
+  ) => Promise<void>;
   signIn: (userData: SignInFormData) => Promise<void>;
   signUp: (userData: SignUpFormData) => Promise<void>;
   signOut: () => Promise<void>;

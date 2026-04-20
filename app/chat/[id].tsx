@@ -32,7 +32,7 @@ const renderLoading = () => {
 const renderInputToolbar = (props: InputToolbarProps<IMessage>) => (
   <InputToolbar {...props} 
   containerStyle={{
-    backgroundColor: 'fffff',
+    backgroundColor: Colors.primary,
     paddingHorizontal: 10,
     borderRadius: 20,
     borderTopColor: Colors.secondary,

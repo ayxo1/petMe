@@ -12,6 +12,7 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Your location will help connect you with nearby pets and pet owners.",
+        "NSMotionUsageDescription": "Used to create a tilt effect on profile cards.",
         "ITSAppUsesNonExemptEncryption": false,
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": true
@@ -26,6 +27,7 @@
       },
       "edgeToEdgeEnabled": true,
       "permissions": [
+        "android.permission.RECORD_AUDIO",
         "android.permission.RECORD_AUDIO"
       ]
     },
@@ -36,6 +38,7 @@
     },
     "plugins": [
       "expo-router",
+      "expo-apple-authentication",
       [
         "expo-splash-screen",
         {
@@ -62,6 +65,12 @@
         "projectId": "bd449a89-ce32-4d41-a65e-f0ad8a4230e4"
       }
     },
-    "owner": "ayxo"
+    "owner": "ayxo",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/bd449a89-ce32-4d41-a65e-f0ad8a4230e4"
+    }
   }
 }

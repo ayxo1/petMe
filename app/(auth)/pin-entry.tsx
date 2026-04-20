@@ -26,16 +26,21 @@ const PinEntry = () => {
                     pin: pin
                 }
             });
-            if (user?.regState !== 'completed') await updateProfile({ regState: 'verified' });
-            Alert.alert('success!', 'email is verified!', [
-                {
-                    text: 'ok',
-                    onPress: () => {
-                        hydrateUser();
-                        router.replace('/');
+            if (user?.regState === 'completed') {
+                // await updateProfile({ regState: 'verified' });
+                // return;
+                Alert.alert('success!', 'email is verified!', [
+                    {
+                        text: 'ok',
+                        onPress: () => {
+                            hydrateUser();
+                            router.replace('/');
+                        }
                     }
-                }
-            ]);
+                ]);
+                return;
+            }
+            await updateProfile({ regState: 'verified' });
         } catch (error) {
             console.log('pin-entry error:', error);
             Alert.alert('incorrect or expired code, please try again');

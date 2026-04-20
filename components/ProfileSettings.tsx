@@ -1,4 +1,3 @@
-// import { LogOutButton } from '@/app/(tabs)/profile';
 import { pb } from '@/backend/config/pocketbase';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
@@ -16,6 +15,7 @@ const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => 
     if (!user) return;
     const { fetchProfileBatch, reset } = useFeedStore();
     const updateProfile = useAuthStore(state => state.updateProfile);
+    const isOAuth = useAuthStore(state => state.isOAuth);
     const preferences = user.preferences;
 
     const [distance, setDistatance] = useState(0);
@@ -132,7 +132,7 @@ const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => 
             onPress={() => Keyboard.dismiss()}
         >
             {/* email verification */}
-            {!pb.authStore.record?.verified && (
+            {(!pb.authStore.record?.verified && !isOAuth) ? (
             <View className='bg-primary/90 shadow shadow-secondary/30 rounded-2xl'>
                 <View className='gap-2 p-3 border border-secondary rounded-2xl'>
                     <View className='flex-row items-center justify-between'>
@@ -146,7 +146,7 @@ const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => 
                     </View>
                 </View>
             </View>
-            )}
+            ) : null}
 
             {/* profile feed settings */}
             <View className='bg-primary/90 shadow shadow-secondary/30 rounded-2xl'>
@@ -232,7 +232,7 @@ const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => 
             </View>
 
             {/* email settings */}
-            <View className='bg-primary/90 shadow shadow-secondary/30 rounded-2xl'>
+            {!isOAuth ? <View className='bg-primary/90 shadow shadow-secondary/30 rounded-2xl'>
                 <View className='border p-3 rounded-2xl border-secondary gap-2'>
                     <Text className='font-bold text-secondary mb-2 text-center'>email settings</Text>
                         <View className='items-center'>
@@ -264,10 +264,10 @@ const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => 
                         </TouchableOpacity>
                     </View>
                 </View>
-            </View>
+            </View> : null}
             
             {/* password settings */}
-            <View className='bg-primary/90 shadow shadow-secondary/30 rounded-2xl'>
+            {!isOAuth ? <View className='bg-primary/90 shadow shadow-secondary/30 rounded-2xl'>
                 <View className='gap-2 border p-3 rounded-2xl border-secondary'>
                     <Text className='font-bold text-secondary mb-2 text-center'>change password</Text>
                     {!pb.authStore.record?.verified && (<Text className='font-light text-center text-red-500/80'>*to be able to change your password, please verify your email first</Text>)}
@@ -311,7 +311,7 @@ const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => 
                     </TouchableOpacity>
                     </View>
                 </View>
-            </View>
+            </View> : null}
             
             <View className='flex-1 justify-end mb-20 border-t py-4'>
                 <LogOutButton />

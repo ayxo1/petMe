@@ -8,11 +8,11 @@ import { useAuthStore } from '@/stores/authStore';
 import { SignInFormData } from '@/types/auth';
 import { FormInputData } from '@/types/components';
 import { yupResolver } from '@hookform/resolvers/yup';
+import * as AppleAuthentication from 'expo-apple-authentication';
 import { Link, router } from 'expo-router';
 import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
-import { TextInput } from 'react-native-gesture-handler';
 
 const formInputData: FormInputData[] = [
   {
@@ -31,7 +31,7 @@ const formInputData: FormInputData[] = [
 
 const SignIn = () => {
 
-  const { signIn, isLoading, setRegistrationState } = useAuthStore();
+  const { signIn, signInWithOAuth, isLoading } = useAuthStore();
 
   const [forgotPasswordModal, toggleForgotPasswordModal] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
@@ -62,6 +62,35 @@ const SignIn = () => {
           onPress: () => router.replace('/signup')
         }
       ]);
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    try {
+      const authMethods = await pb.collection('users').listAuthMethods();
+      const appleProvider = authMethods.oauth2.providers.find(provider => provider.name === 'apple');
+      if (!appleProvider) return Alert.alert('apple sign-in is not configured, oops');
+
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL
+        ]
+      });
+
+      if (!credential.authorizationCode) throw new Error('no authorization code');
+
+      await signInWithOAuth(
+        'apple',
+        credential.authorizationCode,
+        appleProvider.codeVerifier,
+        `${pb.baseURL}/api/oauth2-redirect`
+      );
+    } catch (error) {      
+      console.error('signin.tsx, handleAppleSignIn error:', error);
+      if (error instanceof Error && 'code' in error && error.code !== 'ERR_REQUEST_CANCELED') {
+        Alert.alert('sign in error', 'please try again');
+      }
     }
   };
 
@@ -121,18 +150,21 @@ const SignIn = () => {
             />
           </Fragment>
         ))}
-        <ButtonComponent 
-          title='submit'
-          onPress={handleSubmit(submit)}
-          isLoading={isLoading}
-        />
-        {/* <ButtonComponent 
-          title="Clear Cache (Dev Only)"
-          onPress={async () => {
-            await AsyncStorage.clear();
-            Alert.alert('Cache cleared', 'Restart the app');
-          }}
-        /> */}
+        <View className='flex-row justify-center gap-4'>
+          <ButtonComponent 
+            title='submit'
+            onPress={handleSubmit(submit)}
+            isLoading={isLoading}
+            style='py-2.5'
+          />
+          <AppleAuthentication.AppleAuthenticationButton 
+            buttonType={AppleAuthentication.AppleAuthenticationButtonType.SIGN_IN}
+            buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+            onPress={handleAppleSignIn}
+            style={{ width: '10%' }}
+            cornerRadius={12}
+          />
+        </View>
       </View>
       <View>
         <View

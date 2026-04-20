@@ -85,6 +85,36 @@ export const signOut = (): void => {
  * authAPI
  */
 export const authAPI = {
+  signInWithOAuth: async (
+    provider: string, 
+    code: string,
+    codeVerifier: string,
+    redirectUrl: string
+  ) => {
+    const authData = await pb.collection('users').authWithOAuth2Code(
+      provider,
+      code,
+      codeVerifier,
+      redirectUrl
+    );
+
+    if (!authData.record.regState) {
+      await pb.collection('users').update(authData.record.id, {
+        regState: 'verified',
+        preferences: {
+          searchDistance: 50,
+          showRescuePets: true,
+          showShelterPets: false,
+          preferredSpecies: ["dog", "cat", "bird", "rodent", "other"],
+          showSeekers: true
+        }
+      });
+      authData.record = await pb.collection('users').getOne(authData.record.id);
+    }
+
+    return authData;
+  },
+  
   signUp: async ({ email, password, passwordConfirm, preferences }: SignUpFormData): Promise<PBUser> => {
     const user = await pb.collection('users').create({
       email,

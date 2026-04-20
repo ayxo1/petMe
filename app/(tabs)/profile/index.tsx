@@ -212,12 +212,31 @@ const Profile = () => {
               >
                 {/* <PetSetup /> */}
                 {pets && (
-                  <View className='bg-primary gap-1'>
+                  <View className='bg-primary gap-1 flex-row justify-center'>
+
                     <FlatList
                       data={pets}
                       horizontal
                       contentContainerStyle={{ gap: 10, padding: 10 }}
                       keyExtractor={(item) => item.id}
+                      ListHeaderComponent={() => (
+                        <TouchableOpacity
+                          style={{ 
+                            width: 112,
+                            height: 112,
+                            borderRadius: 20,
+                            borderWidth: 1,
+                            padding: 10,
+                            marginLeft: 10
+                          }}
+                          onPress={async () => {
+                            await cleanUpBeforeNavigation(('/(auth)/pet-setup'))
+                          }}
+                          disabled={pets.length > 3 && user.accountType === 'owner'}
+                        >
+                          <Text className='text-center text-l text-secondary'>{(pets.length > 3 && user.accountType === 'owner') ? 'maximum 3 pets per owner' : '+ a new pet'}</Text>
+                        </TouchableOpacity>
+                      )}
                       renderItem={({ item }) => (
                           <View>
                             <TouchableOpacity
@@ -241,21 +260,6 @@ const Profile = () => {
                           </View>
                       )}
                     />
-                    <TouchableOpacity
-                      style={{ 
-                        width: 112,
-                        height: 112,
-                        borderRadius: 20,
-                        borderWidth: 1,
-                        padding: 10,
-                        marginLeft: 10
-                      }}
-                      onPress={async () => {
-                        await cleanUpBeforeNavigation(('/(auth)/pet-setup'))
-                      }}
-                    >
-                      <Text className='text-center text-l text-secondary'>+ a new pet</Text>
-                    </TouchableOpacity>
                   </View>
                 )}
               </View>

@@ -26,12 +26,13 @@ const Index = () => {
       
       const getMatchRowsData = async () => {
         const matchData = await swipesAPI.getUserMatches(userId);
-
+        
         const rows = matchData.map((match) => {
           const isUser1Me = match.user1 === userId;
           const matchedUser: PBUser = isUser1Me ? match.expand?.user2 : match.expand?.user1;
-  
+          
           const targetPet: PBPet = isUser1Me ? match.expand?.pet2 : match.expand?.pet1;
+          console.log(match.expand?.user1.username);
           const displayPetName: string = targetPet?.name || '';
 
           return {

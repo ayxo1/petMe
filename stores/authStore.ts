@@ -1,4 +1,4 @@
-import { authAPI, pb, signOut as pbSignOut } from '@/backend/config/pocketbase';
+import { authAPI, isAuthenticated, pb, signOut as pbSignOut } from '@/backend/config/pocketbase';
 import { PBUser } from '@/types/pbTypes';
 import { stringImageToPbUrl } from '@/utils/imageUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -40,6 +40,7 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       // Init state
       isAuthenticated: false,
+      isOAuth: false,
       user: null,
       isLoading: false,
       isHydrated: false,
@@ -63,14 +64,39 @@ export const useAuthStore = create<AuthState>()(
 
             const convertedUser = convertPBUserToUser(freshUserData);
 
+            const externalAuths = await pb.collection('_externalAuths').getFullList({
+              filter: `recordRef = "${currentId}"`
+            });
+            const isOAuth = externalAuths.length > 0;
+
             set({
               user: convertedUser,
               registrationState: convertedUser.regState,
-              isHydrated: true
+              isHydrated: true,
+              isOAuth
             });
         } catch (error) {
             console.log(error, 'user hydration error');
             throw error;
+        }
+      },
+
+      signInWithOAuth: async (provider: string, code: string, codeVerifier: string, redirectUrl: string) => {
+        try {
+          set({ isLoading: true});
+          const authData = await authAPI.signInWithOAuth(provider, code, codeVerifier, redirectUrl);
+          const user = convertPBUserToUser(authData.record as PBUser);
+
+          set({
+            isAuthenticated: true,
+            user,
+            registrationState: user.regState,
+            isLoading: false
+          });
+        } catch (error) {
+          set({ isLoading: false });
+          console.error('authStore, signInWithOAuth error:', error);
+          throw error;
         }
       },
 
