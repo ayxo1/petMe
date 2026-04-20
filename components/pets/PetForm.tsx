@@ -1,20 +1,23 @@
+import { petsAPI } from "@/backend/config/pocketbase";
 import { petFormSchema } from "@/constants/schemas/petSchemas";
 import { FormInputData } from "@/types/components";
-import { PetFormData, PetSpecies } from "@/types/pets";
+import { PetFormData, PetProfile, PetSpecies } from "@/types/pets";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
-import { Fragment } from "react";
+import { router } from "expo-router";
+import { Fragment, useState } from "react";
 import { useForm } from "react-hook-form";
-import { FlatList, Switch, Text, TouchableOpacity, View } from "react-native";
+import { Alert, FlatList, Switch, Text, TouchableOpacity, View } from "react-native";
 import AvatarComponent from "../AvatarComponent";
 import ButtonComponent from "../ButtonComponent";
 import InputController from "../controllers/InputController";
+import Modal from "../Modal";
 
 // if adoptionStatus is switched back to Off - remove adoption form data
 
 interface PetFormProps {
-    initialData?: Partial<PetFormData>;
+    initialData?: Partial<PetProfile>;
     onSubmit: (data: PetFormData) => Promise<void>;
     submitButtonText?: string; 
 };
@@ -39,6 +42,8 @@ export const speciesOptions: {
 ];
 
 const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormProps) => {
+
+    const [isDeleteModal, toggleIsDeleteModal] = useState(false);
 
     const {
         control,
@@ -106,10 +111,50 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
             shouldValidate: true
         });
     };
-console.log(errors);
 
     return (
         <View className="flex-1 px-5 gap-3">
+
+            {(isDeleteModal && initialData) ? (
+                <Modal
+                    isOpen={isDeleteModal}
+                    toggleModal={toggleIsDeleteModal}
+                    styleProps='w-3/4 h-1/6 bg-primary'
+                >
+                    <View className="">
+                        <Text className="text-secondary p-6 text-center">
+                            are you sure you want to delete <Text className="font-bold">{initialData?.name}'s</Text> profile?
+                        </Text>
+                        <View className="flex-row gap-2 justify-center mt-4">
+                            <ButtonComponent 
+                                style="bg-red-600"
+                                title="delete"
+                                onPress={async () => {
+                                    try {
+                                        await petsAPI.deletePet(initialData.id || '');
+                                        Alert.alert('success!',
+                                            `${initialData.name}'s profile is deleted`,
+                                            [
+                                                {
+                                                    text: 'ok', onPress: () => {router.replace('/(tabs)/profile')}
+                                                }
+                                            ]
+                                        );
+                                    } catch (error) {
+                                        Alert.alert('error', 'an error occurred, please try again')
+                                    }
+                                }}
+                            />
+                            <ButtonComponent 
+                                style=""
+                                title="cancel"
+                                onPress={() => toggleIsDeleteModal(false)}
+                            />
+                        </View>
+                    </View>
+                </Modal>
+            ) : null}
+
             <View className="mt-2 flex-row gap-2 items-center justify-center">
                 {petImages && petImages.map(image =>                
                     (
@@ -267,12 +312,20 @@ console.log(errors);
                 </View>
             )}
 
-            
-            <ButtonComponent 
-                title={isSubmitting ? 'saving...' : submitButtonText}
-                onPress={handleSubmit(onSubmit)}
-                style="mt-2"
-            />
+            <View className="gap-2 flex-row justify-center mt-4">
+                <ButtonComponent 
+                    title={isSubmitting ? 'saving...' : submitButtonText}
+                    onPress={handleSubmit(onSubmit)}
+                    style="mt-2"
+                />
+                {initialData ? (
+                    <ButtonComponent 
+                        title="delete"
+                        onPress={() => {toggleIsDeleteModal(!isDeleteModal)}}
+                        style="mt-2 bg-red-600"
+                    />
+                ) : null}
+            </View>
             </View>
         </View>
     );
