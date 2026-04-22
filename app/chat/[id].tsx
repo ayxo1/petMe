@@ -1,4 +1,4 @@
-import { messagesAPI, petsAPI } from '@/backend/config/pocketbase';
+import { messagesAPI, pb, petsAPI } from '@/backend/config/pocketbase';
 import AvatarComponent from '@/components/AvatarComponent';
 import ButtonComponent from '@/components/ButtonComponent';
 import Modal from '@/components/Modal';
@@ -172,6 +172,14 @@ const ChatPage = () => {
           ? {...msg, pending: false, sent: true}
           : msg
         ));
+
+        pb.send('/api/send-notification', {
+          method: 'POST',
+          body: {
+            matchId,
+            messageText: messages[0].text
+          }
+        }).catch(() => {});
         
       } catch (error) {
         setMessages(prev => prev.map(msg => msg._id === newMessage._id

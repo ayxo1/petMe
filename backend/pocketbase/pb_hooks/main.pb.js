@@ -1,10 +1,64 @@
 /// <reference path="../pb_data/types.d.ts" />
 
+// function sendPushNotification (pushToken, title, body, data) {
+//     if (!pushToken) return;
+
+//     const response = $http.send({
+//         url: 'https://exp.host/--/api/v2/push/send',
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json'},
+//         body: JSON.stringify({
+//             to: pushToken,
+//             title,
+//             body,
+//             sound: 'default',
+//             data: data || {}
+//         })
+//     });
+// };
+
 onRecordViewRequest((e) => {
     if (e.record.id !== e.requestInfo?.auth?.id) {
         e.record.set('coordinates', null);
     }
 }, 'users, superusers');
+
+// onRecordAfterCreateSuccess((e) => {
+//     const message = e.record;
+//     const senderId = message.get('sender');
+//     const matchId = message.get('match');
+    
+//     $app.runInRoutine(() => {
+//         try {
+//             const match = $app.findRecordById('matches', matchId);
+//             const recipientId = match.get('user1') === senderId
+//                 ? match.get('user2')
+//                 : match.get('user1');
+    
+//             const recipient = $app.findRecordById('users', recipientId);
+//             const sender = $app.findRecordById('users', senderId);
+//             const pushToken = recipient.get('pushToken');
+    
+//             console.log('PUSH DEBUG:', pushToken, sender.get('username'), message.get('content'));
+//             $http.send({
+//             url: 'https://exp.host/--/api/v2/push/send',
+//             method: 'POST',
+//             headers: { 'Content-Type': 'application/json'},
+//             body: JSON.stringify({
+//                     to: pushToken,
+//                     title: sender.get('username'),
+//                     body: message.get('content'),
+//                     sound: 'default',
+//                     data: { matchId, type: 'message' } || {}
+//                 })
+//             });
+            
+//         } catch (error) {
+//             console.log('push notification onRecordAfterCreateSuccess error:', error);
+//         }
+//     });
+
+// }, 'messages');
 
 onRecordAfterCreateSuccess((e) => {
     const pin = Math.floor(1000 + Math.random() * 9000).toString();
@@ -686,5 +740,55 @@ routerAdd("POST", "/api/shelter-connect", (c) => {
     $app.save(match);
 
     return c.json(200, { matchId: match.id, isExisting: false });
+    
+}, $apis.requireAuth('users'));
+
+routerAdd("POST", "/api/send-notification", (c) => {
+    const user = c.auth;
+    const data = new DynamicModel({ matchId: '', messageText: '' });
+    c.bindBody(data);
+
+    const { matchId, messageText } = data;
+
+    if (!matchId || !messageText) {
+        return c.json(400, { error: 'matchId and messageText are required'});
+    }
+
+    try {
+        const match = $app.findRecordById('matches', matchId);
+
+        if (match.get('user1') !== user.id && match.get('user2') !== user.id) {
+            return c.json(403, { error: 'unauthorized'});
+        }
+
+        const recipientId = match.get('user1') === user.id
+            ? match.get('user2')
+            : match.get('user1');
+
+        const recepient = $app.findRecordById('users', recipientId);
+        const pushToken = recepient.get('pushToken');
+
+        if (!pushToken) {
+            return c.json(200, { sent: false, reason: 'no push token' });
+        }
+
+        $http.send({
+            url: 'https://exp.host/--/api/v2/push/send',
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                to: pushToken,
+                title: user.get('username'),
+                body: messageText,
+                sound: 'default',
+                data: { matchId, type: 'message' }
+            })
+        });
+
+        return c.json(200, { sent: true });
+    } catch (error) {
+        console.log('send notification error:', error);
+        return c.json(500, { error: 'failed to send notification'});
+    }
     
 }, $apis.requireAuth('users'));

@@ -67,6 +67,7 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
         // await pb.collection('messages').unsubscribe('*');
 
         const unsub = await pb.collection('messages').subscribe('*', e => {
+            console.log('REALTIME EVENT:', e.action, e.record.sender, 'userId:', userId);
             if (e.action === 'create' && e.record.sender !== userId) {
                 set({ hasUnreadMessages: true });
             }

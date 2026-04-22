@@ -1,3 +1,4 @@
+import { pb } from '@/backend/config/pocketbase';
 import { icons } from '@/constants';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
@@ -39,6 +40,13 @@ const TabsLayout = () => {
           unsubscribeLikes = await subscribeToLikesCount(user.id);
           await checkUnreadStatus(user.id);
           unsubscribeChatMessages = await subscribeToMessages(user.id);
+          
+          // pb.collection('messages').subscribe('*', (e) => {
+          //   console.log('RAW REALTIME TEST:', e.action);
+          // }).then(() => console.log('subscription established'))
+          //   .catch((err) => console.log('subscription FAILED:', err));
+
+          console.log('EventSource type:', typeof global.EventSource);
         }
       } catch (error) {
         console.log('error setting up subscriptions:', error);

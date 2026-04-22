@@ -3,6 +3,7 @@ import Colors from "@/constants/Colors";
 import { useAuthStore } from "@/stores/authStore";
 import { usePetStore } from "@/stores/petStore";
 import { useShelterStore } from "@/stores/shelterStore";
+import { registerForPushNotifications } from "@/utils/notifications";
 import { getRegistrationStateRoute } from "@/utils/routingHelper";
 import { router, Stack } from "expo-router";
 import { useEffect } from "react";
@@ -40,6 +41,7 @@ export default function RootLayout() {
       if (freshUser && freshUser.regState === 'completed') {
         hydratePets(freshUser.id);
         if (freshUser?.accountType === 'shelter') hydrateShelter(freshUser.id);
+        registerForPushNotifications(freshUser.id);
       }
     };
     startUp();
