@@ -12,7 +12,7 @@ import { useChatStore } from '@/stores/useChatStore';
 import { User } from '@/types/auth';
 import { PBMessage } from '@/types/pbTypes';
 import { PetProfile } from '@/types/pets';
-import { router, Stack, useLocalSearchParams } from "expo-router";
+import { router, Stack, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Image, Platform, Text, TouchableOpacity, View } from 'react-native';
 import { Bubble, BubbleProps, GiftedChat, IMessage, InputToolbar, InputToolbarProps } from 'react-native-gifted-chat';
@@ -118,7 +118,7 @@ const ChatPage = () => {
   const keyboardTopToolbarHeight = Platform.select({ ios: 44, default: 0 });
   const keyboardVerticalOffset = insets.bottom + tabbarHeight + keyboardTopToolbarHeight;
 
-  const { checkUnreadStatus } = useChatStore();
+  const { checkUnreadStatus, checkUnreadChatRooms } = useChatStore();
 
   const unmatch = async () => {
     try {
@@ -270,28 +270,36 @@ const ChatPage = () => {
     }
   }, [matchId]);
 
-useEffect(() => {
-  const fetchMatchWithPets = async () => {
-    try {
-      const PBuser = await messagesAPI.getUser(otherUserId);
-      const convertedUser = convertPBUserToUser(PBuser);
-      setMatchData(convertedUser);
+  useEffect(() => {
+    const fetchMatchWithPets = async () => {
+      try {
+        const PBuser = await messagesAPI.getUser(otherUserId);
+        const convertedUser = convertPBUserToUser(PBuser);
+        setMatchData(convertedUser);
 
-      if (otherUserType === 'owner') {
-        try { 
-          const PBmatchPets = await petsAPI.getUserPets(otherUserId);
-          const convertedPets = PBmatchPets.map(convertPBPetToPetProfile);
-          setMatchPetsList(convertedPets);
-        } catch (error) {
-          console.log('fetchMatchWithPets, PBmatchPets error, [id].tsx: ', error);
+        if (otherUserType === 'owner') {
+          try { 
+            const PBmatchPets = await petsAPI.getUserPets(otherUserId);
+            const convertedPets = PBmatchPets.map(convertPBPetToPetProfile);
+            setMatchPetsList(convertedPets);
+          } catch (error) {
+            console.log('fetchMatchWithPets, PBmatchPets error, [id].tsx: ', error);
+          }
         }
+      } catch (error) {
+        console.log('fetchMatchWithPets error, [id].tsx: ', error);
       }
-    } catch (error) {
-      console.log('fetchMatchWithPets error, [id].tsx: ', error);
-    }
-  };
-  fetchMatchWithPets();
-}, []);
+    };
+    fetchMatchWithPets();
+
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      useChatStore.getState().setActiveChatRoomId(matchId);
+        return () => useChatStore.getState().setActiveChatRoomId(null);
+    }, [matchId])
+  );
 
   return (
     <View className={`flex-1 mb-6`}>

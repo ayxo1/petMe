@@ -1,4 +1,3 @@
-import { pb } from '@/backend/config/pocketbase';
 import { icons } from '@/constants';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
@@ -6,7 +5,8 @@ import { usePetStore } from '@/stores/petStore';
 import { useChatStore } from '@/stores/useChatStore';
 import { useLikesStore } from '@/stores/useLikesStore';
 import { TabBarIconProps } from '@/types/components';
-import { Redirect, Tabs } from 'expo-router';
+import * as Notifications from 'expo-notifications';
+import { Redirect, router, Tabs } from 'expo-router';
 import { useEffect } from 'react';
 import { Image, Text, View } from 'react-native';
 
@@ -30,6 +30,8 @@ const TabsLayout = () => {
 
   const isNewOwner = registrationState === 'completed' && pets.length === 0 && user?.accountType === 'owner';
 
+  const lastNotificationResponse = Notifications.useLastNotificationResponse();
+
   useEffect(() => {
     let unsubscribeLikes: () => void;
     let unsubscribeChatMessages: () => void;
@@ -40,13 +42,6 @@ const TabsLayout = () => {
           unsubscribeLikes = await subscribeToLikesCount(user.id);
           await checkUnreadStatus(user.id);
           unsubscribeChatMessages = await subscribeToMessages(user.id);
-          
-          // pb.collection('messages').subscribe('*', (e) => {
-          //   console.log('RAW REALTIME TEST:', e.action);
-          // }).then(() => console.log('subscription established'))
-          //   .catch((err) => console.log('subscription FAILED:', err));
-
-          console.log('EventSource type:', typeof global.EventSource);
         }
       } catch (error) {
         console.log('error setting up subscriptions:', error);
@@ -60,6 +55,19 @@ const TabsLayout = () => {
       if (unsubscribeChatMessages) unsubscribeChatMessages();
     };
   }, [isAuthenticated, user?.id, user?.regState]);
+
+  useEffect(() => {
+    if (
+      lastNotificationResponse &&
+      lastNotificationResponse.actionIdentifier === Notifications.DEFAULT_ACTION_IDENTIFIER
+    ) {
+      const data = lastNotificationResponse.notification.request.content.data;
+
+      if (data.type === 'message' && data.matchId) {
+        router.push('/(tabs)/connect');
+      }
+    }
+  }, [lastNotificationResponse]);
 
   if (!user) return;
 

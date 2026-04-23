@@ -1,14 +1,21 @@
 import { pb } from '@/backend/config/pocketbase';
+import { useChatStore } from '@/stores/useChatStore';
 import * as Notifications from 'expo-notifications';
-import { Platform } from 'react-native';
 
 Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-        shouldShowBanner: true,
-        shouldShowList: true,
-        shouldSetBadge: true,
-        shouldPlaySound: true
-    }),
+    handleNotification: async (notification) => {
+        const notificationMatchId = notification.request.content.data?.matchId;
+        const currentActiveChat = useChatStore.getState().activeChatRoomId;
+
+        const isLookingAtChat = currentActiveChat === notificationMatchId;
+
+        return {
+            shouldShowBanner: !isLookingAtChat,
+            shouldShowList: !isLookingAtChat,
+            shouldSetBadge: true,
+            shouldPlaySound: !isLookingAtChat
+        }
+    },
 });
 
 export const registerForPushNotifications = async (userId: string): Promise<string | null> => {

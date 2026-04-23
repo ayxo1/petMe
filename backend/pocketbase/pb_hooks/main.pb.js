@@ -745,6 +745,7 @@ routerAdd("POST", "/api/shelter-connect", (c) => {
 
 routerAdd("POST", "/api/send-notification", (c) => {
     const user = c.auth;
+    // const user = { id: 'xeto8xmou43qccp' }
     const data = new DynamicModel({ matchId: '', messageText: '' });
     c.bindBody(data);
 
@@ -772,6 +773,18 @@ routerAdd("POST", "/api/send-notification", (c) => {
             return c.json(200, { sent: false, reason: 'no push token' });
         }
 
+        const unreadCount = new DynamicModel({ count: 0 });
+        $app.db().newQuery(`
+            SELECT COUNT(*) as count FROM messages
+            WHERE sender != {:recipientId}
+            AND readAt = ''
+            AND match IN (
+                SELECT id FROM matches
+                WHERE (user1 = {:recipientId} OR user2 = {:recipientId})
+                AND status = 'active'
+            )
+        `).bind({ recipientId}).one(unreadCount);
+
         $http.send({
             url: 'https://exp.host/--/api/v2/push/send',
             method: 'POST',
@@ -779,8 +792,10 @@ routerAdd("POST", "/api/send-notification", (c) => {
             body: JSON.stringify({
                 to: pushToken,
                 title: user.get('username'),
+                // title: 'testuser2',
                 body: messageText,
                 sound: 'default',
+                badge: unreadCount.count + 1,
                 data: { matchId, type: 'message' }
             })
         });

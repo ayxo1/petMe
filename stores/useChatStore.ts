@@ -1,15 +1,17 @@
 import { pb } from "@/backend/config/pocketbase";
+import * as Notifications from 'expo-notifications';
 import { create } from "zustand";
-
 
 interface ChatStoreState {
     hasUnreadMessages: boolean;
     unreadChatRooms: string[];
+    activeChatRoomId: string | null;
     unsubscribeChat?: () => Promise<void>;
 
     checkUnreadStatus: (userId: string) => Promise<void>;
     checkUnreadChatRooms: (userId: string) => Promise<void>;
     subscribeToMessages: (userId: string) => Promise<() => void>;
+    setActiveChatRoomId: (id: string | null) => void;
     reset: () => Promise<void>;
 }
 
@@ -17,6 +19,7 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
     hasUnreadMessages: false,
     unreadChatRooms: [],
     unsubscribeChat: undefined,
+    activeChatRoomId: null,
 
     checkUnreadStatus: async (userId: string) => {
         if(!pb.authStore.isValid) return;
@@ -54,6 +57,7 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
                 set({
                     unreadChatRooms: [...unreadChatRoomIds]
                 });
+                await Notifications.setBadgeCountAsync(useChatStore.getState().unreadChatRooms.length);
             }
         } catch (error) {
             console.log('useChatStore, checkUnreadChatRooms error:', error);
@@ -64,17 +68,24 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
         if(!pb.authStore.isValid) return async () => {};
 
         if (get().unsubscribeChat) get().unsubscribeChat?.();
-        // await pb.collection('messages').unsubscribe('*');
 
-        const unsub = await pb.collection('messages').subscribe('*', e => {
-            console.log('REALTIME EVENT:', e.action, e.record.sender, 'userId:', userId);
+        const unsub = await pb.collection('messages').subscribe('*', async (e) => {
             if (e.action === 'create' && e.record.sender !== userId) {
                 set({ hasUnreadMessages: true });
+
+                const current = await Notifications.getBadgeCountAsync();
+                await Notifications.setBadgeCountAsync(current + 1);
             }
         });
 
         set({ unsubscribeChat: unsub });
         return unsub;
+    },
+
+    setActiveChatRoomId: (id: string | null) => {
+        set({
+            activeChatRoomId: id
+        });
     },
 
     reset: async () => {
