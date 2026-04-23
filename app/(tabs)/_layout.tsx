@@ -26,7 +26,7 @@ const TabsLayout = () => {
   const { user, isAuthenticated, registrationState } = useAuthStore();
   const { pets } = usePetStore();
   const { subscribeToLikesCount, unreadCount, fetchIncomingLikesProfiles } = useLikesStore();
-  const { checkUnreadStatus, subscribeToMessages, hasUnreadMessages } = useChatStore();
+  const { checkUnreadStatus, subscribeToMessages, hasUnreadMessages, unreadChatRooms } = useChatStore();
 
   const isNewOwner = registrationState === 'completed' && pets.length === 0 && user?.accountType === 'owner';
 
@@ -63,7 +63,7 @@ const TabsLayout = () => {
     ) {
       const data = lastNotificationResponse.notification.request.content.data;
 
-      if (data.type === 'message' && data.matchId) {
+      if ((data.type === 'message' || data.type === 'match') && data.matchId) {
         router.push('/(tabs)/connect');
       }
     }

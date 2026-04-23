@@ -13,7 +13,6 @@ const Index = () => {
   
   const user = useAuthStore(state => state.user);
   const userId = user?.id || '';
-
   const checkUnreadChatRooms = useChatStore(state => state.checkUnreadChatRooms);
   
   const [matchRows, setMatchRows] = useState<MatchRowData[]>();

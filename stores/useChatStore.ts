@@ -57,8 +57,8 @@ export const useChatStore = create<ChatStoreState>((set, get) => ({
                 set({
                     unreadChatRooms: [...unreadChatRoomIds]
                 });
-                await Notifications.setBadgeCountAsync(useChatStore.getState().unreadChatRooms.length);
             }
+            await Notifications.setBadgeCountAsync(useChatStore.getState().unreadChatRooms.length);
         } catch (error) {
             console.log('useChatStore, checkUnreadChatRooms error:', error);
         }
