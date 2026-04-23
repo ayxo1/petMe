@@ -94,6 +94,14 @@ const Rescue = () => {
         }
       );
       if (isMatch.isMatch && isMatch.matchId) {
+        pb.send('/api/send-notification', {
+          method: 'POST',
+          body: {
+            matchId: isMatch.matchId,
+            type: 'match'
+          }
+        }).catch(() => {});
+
         setmatchScreenProps({
           matchId: isMatch.matchId,
           isExisting: isMatch.isExisting || false,
@@ -102,6 +110,7 @@ const Rescue = () => {
             ? `${pb.baseURL}/api/files/users/${currentProfile.ownerId}/${currentProfile.ownerImage}`
             : currentProfile.images[0],
         });
+
         setIsModal(true);
         setRescueProfiles([]);
         setCurrentIndex(0);

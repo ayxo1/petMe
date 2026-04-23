@@ -58,6 +58,13 @@ const ShelterPage = () => {
           otherUserType: 'shelter'
         }
       });
+      pb.send('/api/send-notification', {
+        method: 'POST',
+        body: {
+          matchId: result.matchId,
+          type: 'shelter'
+        }
+      }).catch(() => {});
     } catch (error) {
       console.log('connectShelter error, shelters/[id].tsx: ', error);
       Alert.alert('an error occurred whilte trying to message, please try again');

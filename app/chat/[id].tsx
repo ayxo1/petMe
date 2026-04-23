@@ -177,7 +177,8 @@ const ChatPage = () => {
           method: 'POST',
           body: {
             matchId,
-            messageText: messages[0].text
+            messageText: messages[0].text,
+            type: 'message'
           }
         }).catch(() => {});
         

@@ -131,6 +131,14 @@ export default function Index() {
     const isMatch = (await swipeLike(currentProfile.id));
     
     if(isMatch.isMatch && isMatch.matchId) {
+      pb.send('/api/send-notification', {
+        method: 'POST',
+        body: {
+          matchId: isMatch.matchId,
+          type: 'match'
+        }
+      }).catch(() => {});
+
       setMatchScreenProps({
         matchId: isMatch.matchId,
         isExisting: isMatch.isExisting || false,
@@ -139,6 +147,7 @@ export default function Index() {
           ? `${pb.baseURL}/api/files/users/${currentProfile.ownerId}/${currentProfile.ownerImage}`
           : currentProfile.images[0],
       });
+      
       setIsModal(true);
       reset();
       await fetchProfileBatch();

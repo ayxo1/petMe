@@ -746,13 +746,13 @@ routerAdd("POST", "/api/shelter-connect", (c) => {
 routerAdd("POST", "/api/send-notification", (c) => {
     const user = c.auth;
     // const user = { id: 'xeto8xmou43qccp' }
-    const data = new DynamicModel({ matchId: '', messageText: '' });
+    const data = new DynamicModel({ matchId: '', messageText: '', type: '' });
     c.bindBody(data);
 
-    const { matchId, messageText } = data;
+    const { matchId, messageText, type } = data;
 
-    if (!matchId || !messageText) {
-        return c.json(400, { error: 'matchId and messageText are required'});
+    if (!matchId) {
+        return c.json(400, { error: 'matchId is required'});
     }
 
     try {
@@ -791,12 +791,12 @@ routerAdd("POST", "/api/send-notification", (c) => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 to: pushToken,
-                title: user.get('username'),
+                title: type === 'message' ? user.get('username') : 'pet-a-pet',
                 // title: 'testuser2',
-                body: messageText,
+                body: type === 'message' ? messageText : 'a new match!',
                 sound: 'default',
                 badge: unreadCount.count + 1,
-                data: { matchId, type: 'message' }
+                data: { matchId, type }
             })
         });
 
