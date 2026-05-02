@@ -74,13 +74,13 @@ const Profile = () => {
         options={{
           headerRight: () => (
             <View className='flex-row items-center'>            
-              <TouchableOpacity className='flex-row mb-2 items-center mt-2 gap-2'
+              <TouchableOpacity className='flex-row mb-2 items-center mt-2'
                 onPress={() => toggleSettingsModal(!settingsModal)}
               >
                 <Text className='font-extralight text-white'>settings</Text>
                 <Image 
-                  source={icons.settings}
-                  className='size-11'
+                  source={icons.settingsIcon}
+                  className='size-14'
                   resizeMode='contain'
                 />
               </TouchableOpacity>

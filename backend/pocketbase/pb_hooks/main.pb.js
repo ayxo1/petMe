@@ -783,7 +783,7 @@ routerAdd("POST", "/api/send-notification", (c) => {
                 WHERE (user1 = {:recipientId} OR user2 = {:recipientId})
                 AND status = 'active'
             )
-        `).bind({ recipientId}).one(unreadCount);
+        `).bind({ recipientId }).one(unreadCount);
 
         $http.send({
             url: 'https://exp.host/--/api/v2/push/send',

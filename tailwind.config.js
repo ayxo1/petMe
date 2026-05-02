@@ -9,7 +9,10 @@ module.exports = {
         secondary: '#8283b3',
         authPrimary: '#f5c68d',
         lighterSecondary: '#cacbe6',
-      }
+      },
+      // fontFamily: {
+      //   sans: ['ReemKufi-Bold']
+      // }
     },
   },
   plugins: [],

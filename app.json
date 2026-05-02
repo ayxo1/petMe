@@ -13,10 +13,7 @@
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Your location will help connect you with nearby pets and pet owners.",
         "NSMotionUsageDescription": "Used to create a tilt effect on profile cards.",
-        "ITSAppUsesNonExemptEncryption": false,
-        "NSAppTransportSecurity": {
-          "NSAllowsArbitraryLoads": true
-        }
+        "ITSAppUsesNonExemptEncryption": false
       },
       "bundleIdentifier": "com.ayxo.petMe"
     },
@@ -27,7 +24,6 @@
       },
       "edgeToEdgeEnabled": true,
       "permissions": [
-        "android.permission.RECORD_AUDIO",
         "android.permission.RECORD_AUDIO"
       ]
     },
@@ -58,10 +54,18 @@
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app accesses your photos to let you share them with your friends."
+          "photosPermission": "The app accesses your photos to let you setup a profile for you and your pets."
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "@/assets/DMSerifDisplay-Regular.ttf"
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

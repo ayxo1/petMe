@@ -1,4 +1,4 @@
-import { images } from "@/constants";
+import { icons, images } from "@/constants";
 import type { ProfileCardProps } from "@/types/components";
 import { useEffect } from "react";
 import { Dimensions, Image, Text, View } from "react-native";
@@ -193,8 +193,8 @@ const ProfileCard = ({ profile, indexes, onSwipeLeft, onSwipeRight, isPaw = fals
             likeOverlayStyle,
             {
               position: 'absolute',
-              top: '10%',
-              right: '5%',
+              top: '20%',
+              left: '20%',
               zIndex: 10,
             },
           ]}
@@ -202,8 +202,8 @@ const ProfileCard = ({ profile, indexes, onSwipeLeft, onSwipeRight, isPaw = fals
         >
           <View className="transform -rotate-12">
             <Image 
-              source={images.mrBigLike}
-              className='size-40'
+              source={icons.likesIcon}
+              className='size-24'
               resizeMode='cover'
             />
             {/* <Text className="text-red-400 text-3xl transform rotate-12">{': )'}</Text> */}
@@ -215,8 +215,8 @@ const ProfileCard = ({ profile, indexes, onSwipeLeft, onSwipeRight, isPaw = fals
             dislikeOverlayStyle,
             {
               position: 'absolute',
-              top: '10%',
-              left: '5%',
+              top: '20%',
+              right: '20%',
               zIndex: 10,
             },
           ]}
@@ -224,8 +224,8 @@ const ProfileCard = ({ profile, indexes, onSwipeLeft, onSwipeRight, isPaw = fals
         >
           <View className="transform rotate-12">
             <Image 
-              source={images.mrBigDislike}
-              className='size-40'
+              source={icons.passIcon}
+              className='size-24'
               resizeMode='cover'
             />
             {/* <Text className="text-red-400 text-3xl transform -rotate-12">{')`:'}</Text> */}

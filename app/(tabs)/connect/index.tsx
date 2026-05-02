@@ -1,4 +1,4 @@
-import { shelterAPI, swipesAPI } from '@/backend/config/pocketbase';
+import { swipesAPI } from '@/backend/config/pocketbase';
 import ChatRow from '@/components/ChatRow';
 import { useAuthStore } from '@/stores/authStore';
 import { useChatStore } from '@/stores/useChatStore';

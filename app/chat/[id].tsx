@@ -85,7 +85,7 @@ const renderBubble = (props: BubbleProps<IMessage>) => {
         backgroundColor: Colors.authPrimary
       },
       right: {
-        backgroundColor: Colors.secondary
+        backgroundColor: Colors.lighterSecondary
       },
     }}
   />

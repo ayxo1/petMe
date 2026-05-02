@@ -14,9 +14,9 @@ const TabBarIcon = ({focused, icon, red = false}: TabBarIconProps) => (
   <View className='mb-2'>
     <Image 
       source={icon}
-      className='size-9'
+      className={`${ icon !== icons.search ? 'size-9' : 'size-14'}`}
       resizeMode='contain'
-      tintColor={focused ? (red ? 'red' : Colors.secondary) : '#000000'}
+      tintColor={focused ? (red ? '#f53361' : Colors.secondary) : Colors.tabIcons}
     />
   </View>
 );
@@ -85,7 +85,7 @@ const TabsLayout = () => {
           position: 'absolute',
           paddingBottom: 10,
         },
-        tabBarInactiveTintColor: '#000000',
+        tabBarInactiveTintColor: Colors.tabIcons,
         tabBarActiveTintColor: Colors.secondary,
       }}
     >
@@ -119,13 +119,13 @@ const TabsLayout = () => {
           tabBarIcon: ({focused}) => (
             <>
             {unreadCount > 0 && (
-              <View className='absolute bottom-6 left-7 z-10 bg-red-500/90 px-2 rounded-full'>
-                <Text className='text-white text-xs'>{unreadCount}</Text>
+              <View className='absolute bottom-6 left-7 z-10 bg-red-500/80 px-1.5 rounded-full'>
+                <Text className='text-white text-s'>{unreadCount}</Text>
               </View>
             )}
             <TabBarIcon
               focused={focused}
-              icon={icons.pawLike}
+              icon={icons.likesIcon}
               red
             />
             </>
@@ -162,7 +162,7 @@ const TabsLayout = () => {
             )}
             <TabBarIcon 
               focused={focused}
-              icon={icons.catPass}
+              icon={icons.connectIcon}
             />
             </>
           ),
@@ -177,7 +177,7 @@ const TabsLayout = () => {
           tabBarIcon: ({focused}) => (
             <TabBarIcon 
               focused={focused}
-              icon={icons.shelter}
+              icon={icons.rescueIcon}
             />
           ),
         }}

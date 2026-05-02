@@ -5,13 +5,19 @@ import { usePetStore } from "@/stores/petStore";
 import { useShelterStore } from "@/stores/shelterStore";
 import { registerForPushNotifications } from "@/utils/notifications";
 import { getRegistrationStateRoute } from "@/utils/routingHelper";
+import { useFonts } from "expo-font";
 import { router, Stack } from "expo-router";
 import { useEffect } from "react";
-import { Alert } from "react-native";
+import { ActivityIndicator, Alert, Text } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaView } from "react-native-safe-area-context";
 import './globals.css';
 
 export default function RootLayout() {
+
+  // const [fontsLoaded] = useFonts({
+  //   'ReemKufi-Bold': require('@/assets/fonts/ReemKufi-Bold.ttf')
+  // });
 
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const registrationState = useAuthStore(state => state.registrationState);
@@ -76,6 +82,12 @@ export default function RootLayout() {
       <Stack
         screenOptions={{ headerShown: false, contentStyle: {backgroundColor: Colors.primary}}}
       />
+      {/* {!fontsLoaded ? (
+        <SafeAreaView className="flex-1 flex-row gap-2 items-center justify-center absolute top-48 left-0 right-0">
+          <ActivityIndicator size="small" className='color-gray-600/60' />
+          <Text className="text-2xl text-gray-600/60 text-center max-w-96">loading</Text>
+        </SafeAreaView>
+      ) : null} */}
     </GestureHandlerRootView>
   );
 };
