@@ -42,3 +42,7 @@ export const registerForPushNotifications = async (userId: string): Promise<stri
 
     return token;
 };
+
+export const disablePushNotifications = async (userId: string): Promise<void> => {
+    await pb.collection('users').update(userId, { pushToken: '' });
+};

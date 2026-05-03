@@ -2,10 +2,12 @@ import { pb } from '@/backend/config/pocketbase';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
 import { useFeedStore } from '@/stores/useFeedStore';
+import { disablePushNotifications, registerForPushNotifications } from '@/utils/notifications';
 import Slider from '@react-native-community/slider';
+import * as Notifications from 'expo-notifications';
 import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Keyboard, Pressable, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Keyboard, Linking, Pressable, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import { speciesOptions } from './pets/PetForm';
 
@@ -40,6 +42,8 @@ const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => 
 
     const [emailForm, setEmailForm] = useState({ newEmail: '', isLoading: false });
     const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', isLoading: false });
+
+    const [notificationsAllowed, setNotificationsAllowed] = useState(false);
 
     const onEmailChange = async () => {
         if (emailForm.newEmail && emailForm.newEmail !== user.email) {
@@ -84,6 +88,39 @@ const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => 
         } else if (passwordForm.newPassword === passwordForm.currentPassword) Alert.alert('error', 'the password you are trying to set is identical to the one you entered as the current password');
     };
 
+    const checkPushNotificationsStatus = async () => {
+        const { status } = await Notifications.getPermissionsAsync();
+        if (status !== 'granted') {
+            setNotificationsAllowed(false);
+            return;
+        }
+
+        const userPushToken = await pb.collection('users').getOne(user.id, { fields: 'pushToken' });
+        setNotificationsAllowed(!!userPushToken);
+    };
+
+    const handlePushNotificationSwitch = async (enabled: boolean) => {
+        if (enabled) {
+            const { status } = await Notifications.getPermissionsAsync();
+            if (status !== 'granted') {
+                Alert.alert(
+                    'notifications disabled',
+                    'enable notifications in your device settings and try again', 
+                    [
+                        { text: 'cancel' },
+                        { text: 'open settings', onPress: () => Linking.openSettings()}
+                    ]
+                );
+                return;
+            }
+            await registerForPushNotifications(user.id);
+            setNotificationsAllowed(true);
+        } else {
+            await disablePushNotifications(user.id);
+            setNotificationsAllowed(false);
+        }
+    };
+
     useEffect(() => {
         setDistatance(preferences.searchDistance);
         setShowRescuePets(preferences.showRescuePets);
@@ -115,10 +152,15 @@ const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => 
                     console.log('profileSettings, saveChanges error:', error);
                 }
             }
-        }
+        };
+
         return () => { 
             saveChanges();
         };
+    }, []);
+
+    useEffect(() => {
+        checkPushNotificationsStatus();
     }, []);
 
   return (
@@ -265,6 +307,23 @@ const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => 
                     </View>
                 </View>
             </View> : null}
+
+            {/* notifications settings */}
+            <View className='bg-primary/90 shadow shadow-secondary/30 rounded-2xl'>
+                <View className='border p-3 rounded-2xl border-secondary gap-2'>
+                    <Text className='font-bold text-secondary mb-2 text-center'>notifications settings</Text>
+
+                    <View className='p-2 flex-row justify-between items-center'>
+                        <Text className='font-light text-secondary'>Enable notifications:</Text>
+                        <Switch
+                            value={notificationsAllowed}
+                            onValueChange={(val) => handlePushNotificationSwitch(val)}
+                            trackColor={{ true: Colors.secondary, false: Colors.lighterSecondary}}
+                            ios_backgroundColor={Colors.lighterSecondary}
+                        />
+                    </View>
+                </View>
+            </View>
             
             {/* password settings */}
             {!isOAuth ? <View className='bg-primary/90 shadow shadow-secondary/30 rounded-2xl'>

@@ -1,6 +1,8 @@
-{
+const IS_DEV = process.env.APP_VARIANT === 'development';
+
+module.exports = {
   "expo": {
-    "name": "pet-a-pet",
+    "name": IS_DEV ? "pet-a-pet (Dev)" : 'pet-a-pet',
     "slug": "petMe",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,7 +17,7 @@
         "NSMotionUsageDescription": "Used to create a tilt effect on profile cards.",
         "ITSAppUsesNonExemptEncryption": false
       },
-      "bundleIdentifier": "com.ayxo.petMe"
+      "bundleIdentifier": IS_DEV ? "com.ayxo.petMe.dev" : "com.ayxo.petMe"
     },
     "android": {
       "adaptiveIcon": {
@@ -61,9 +63,7 @@
       [
         "expo-font",
         {
-          "fonts": [
-            "@/assets/DMSerifDisplay-Regular.ttf"
-          ]
+          "fonts": []
         }
       ]
     ],

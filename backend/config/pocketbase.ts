@@ -9,11 +9,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import PocketBase, { AsyncAuthStore } from 'pocketbase';
 import { IMessage } from 'react-native-gifted-chat';
 
-const PB_URL = __DEV__ 
-    ? (process.env.EXPO_PUBLIC_POCKETBASE_HOST?.startsWith('http')
-        ? process.env.EXPO_PUBLIC_POCKETBASE_HOST 
-        : `http://${process.env.EXPO_PUBLIC_POCKETBASE_HOST}:8090`)
-    : ''
+// const PB_URL = __DEV__ 
+//     ? (process.env.EXPO_PUBLIC_POCKETBASE_HOST?.startsWith('http')
+//         ? process.env.EXPO_PUBLIC_POCKETBASE_HOST 
+//         : `http://${process.env.EXPO_PUBLIC_POCKETBASE_HOST}:8090`)
+//     : ''
+
+const PB_URL = process.env.EXPO_PUBLIC_POCKETBASE_HOST?.startsWith('http')
+  ? process.env.EXPO_PUBLIC_POCKETBASE_HOST 
+  : `http://${process.env.EXPO_PUBLIC_POCKETBASE_HOST}:8090`;
 
 const store = new AsyncAuthStore({
   save: async (serialized) => AsyncStorage.setItem('pb_auth', serialized),
