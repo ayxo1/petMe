@@ -1,5 +1,6 @@
 import backIcon from '@/assets/icons/backIcon.png';
 import copyIcon from '@/assets/icons/copyIcon.png';
+import eventsIcon from '@/assets/icons/eventsIcon.png';
 import googleMap from '@/assets/icons/googleMap.png';
 import map from '@/assets/icons/map.png';
 import passIcon from '@/assets/icons/passIcon.png';
@@ -54,5 +55,6 @@ export const icons = {
     connectIcon,
     rescueIcon,
     passIcon,
-    settingsIcon
+    settingsIcon,
+    eventsIcon
 };

@@ -148,6 +148,20 @@ const TabsLayout = () => {
         }}
       />
       <Tabs.Screen
+        name='events'
+        options={{
+          sceneStyle: {
+            backgroundColor: Colors.primary
+          },
+          tabBarIcon: ({focused}) => (
+            <TabBarIcon 
+              focused={focused}
+              icon={icons.eventsIcon}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name='connect'
         options={{
           sceneStyle: {

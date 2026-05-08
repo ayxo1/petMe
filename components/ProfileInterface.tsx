@@ -28,7 +28,6 @@ const ProfileInterface = ({ profile }: { profile: Partial<FeedProfile> }) => {
   const [adoptionModal, toggleAdoptionModal] = useState(false);
 
   const profileCover: ImageSourcePropType = { uri: profile.images ? profile.images[currentImageIdx] : ''}
-console.log(profile);
 
   return (
     <View

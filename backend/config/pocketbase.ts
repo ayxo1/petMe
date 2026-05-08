@@ -27,7 +27,7 @@ const store = new AsyncAuthStore({
 
 export const pb = new PocketBase(PB_URL, store);
 
-const getFileName = (uri: string) => uri.split('/').pop() || `photo${Math.random()}.jpg`;
+export const getFileName = (uri: string) => uri.split('/').pop() || `photo${Math.random()}.jpg`;
 
 // logger
 if (__DEV__) {

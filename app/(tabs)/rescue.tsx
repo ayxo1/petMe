@@ -6,7 +6,6 @@ import { ShelterProfile } from '@/types/auth';
 import { PBShelterProfile } from '@/types/pbTypes';
 import * as Clipboard from 'expo-clipboard';
 import { Image } from 'expo-image';
-import * as Linking from 'expo-linking';
 import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Image as RNImage, Text, TouchableOpacity, View } from 'react-native';
@@ -67,6 +66,7 @@ const Rescue = () => {
 
         <FlatList 
           data={shelterList}
+          keyExtractor={(item) => item.id}
           renderItem={({ item, index }) => (
             <TouchableOpacity
               className={`min-w-full max-w-full p-2 ${index === 0 && 'mt-2'}`}

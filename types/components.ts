@@ -1,3 +1,4 @@
+import { RecordModel } from "pocketbase";
 import { Control, FieldErrors, FieldValues } from "react-hook-form";
 import { ImageSourcePropType } from "react-native";
 import { FeedProfile } from "./feed";
@@ -10,19 +11,6 @@ export interface TabBarIconProps {
 }
 
 export interface ProfileCardProps {
-  // profileImages: string[];
-  // profileName: string;
-  // profileDescription: string;
-  // profileType?: string;
-  // distance?: string;
-  // isAvailableForAdoption?: boolean;
-  // adoptionInfo: {
-  //   adoptionStatus?: 'available' | 'pending' | 'adopted';
-  //   adoptionDetails?: {
-  //     requirements?: string;
-  //     reason?: string;
-  //   };
-  // }
   profile: Partial<FeedProfile>
 }
 
@@ -65,4 +53,17 @@ export interface MatchRowData {
   shelterName?: string;
   lastMessage?: string;
   lastMessageTime?: string;
+}
+
+export interface EventPage extends RecordModel {
+    id: string;
+    organizerId: string;
+    organizerName: string;
+    eventName: string;
+    date: string;
+    synopse: string;
+    description: string;
+    address: string;
+    image?: string;
+    // createdAt: string;
 }

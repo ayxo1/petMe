@@ -36,6 +36,7 @@ module.exports = {
     },
     "plugins": [
       "expo-router",
+      "expo-localization",
       "expo-apple-authentication",
       [
         "expo-notifications",

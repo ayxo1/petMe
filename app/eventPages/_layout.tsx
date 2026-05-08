@@ -1,7 +1,7 @@
 import Colors from "@/constants/Colors";
 import { Stack } from "expo-router";
 
-const ShelterLayout = () => {
+const EventsLayout = () => {
      
     return (
         <Stack
@@ -23,4 +23,4 @@ const ShelterLayout = () => {
     )
 };
 
-export default ShelterLayout;
+export default EventsLayout;
