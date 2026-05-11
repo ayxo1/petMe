@@ -12,14 +12,15 @@ const InputComponent = ({
     labelStyling = '',
     multiline = false,
     spellCheck = false,
-    textContentType = undefined
+    textContentType = undefined,
+    generalStyle = 'w-full'
 }: InputComponentProps) => {
 
     const [isFocused, setIsFocused] = useState(false);
 
   return (
     <View
-        className='w-full items-start'
+        className={`${generalStyle} items-start`}
     >
       <Text className={`label ${labelStyling}`}>
         {label}

@@ -14,7 +14,7 @@ const TabBarIcon = ({focused, icon, red = false}: TabBarIconProps) => (
   <View className='mb-2'>
     <Image 
       source={icon}
-      className={`${ icon !== icons.search ? 'size-9' : 'size-14'}`}
+      className={`${ icon !== icons.exploreNew ? 'size-9' : 'size-14'}`}
       resizeMode='contain'
       tintColor={focused ? (red ? '#f53361' : Colors.secondary) : Colors.tabIcons}
     />
@@ -64,7 +64,7 @@ const TabsLayout = () => {
       const data = lastNotificationResponse.notification.request.content.data;
 
       if ((data.type === 'message' || data.type === 'match') && data.matchId) {
-        router.push('/(tabs)/connect');
+        router.replace('/(tabs)/connect');
       }
     }
   }, [lastNotificationResponse]);
@@ -142,7 +142,7 @@ const TabsLayout = () => {
           tabBarIcon: ({focused}) => (
             <TabBarIcon 
               focused={focused}
-              icon={icons.search}
+              icon={icons.exploreNew}
             />
           ),
         }}

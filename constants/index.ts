@@ -1,6 +1,7 @@
 import backIcon from '@/assets/icons/backIcon.png';
 import copyIcon from '@/assets/icons/copyIcon.png';
 import eventsIcon from '@/assets/icons/eventsIcon.png';
+import exploreNew from '@/assets/icons/exploreNew.png';
 import googleMap from '@/assets/icons/googleMap.png';
 import map from '@/assets/icons/map.png';
 import passIcon from '@/assets/icons/passIcon.png';
@@ -20,7 +21,7 @@ import dogLike from '../assets/icons/dogLike.png';
 import likesIcon from '../assets/icons/likesIcon.png';
 import pawLike from '../assets/icons/paw-print.png';
 import rescueIcon from '../assets/icons/rescueIcon.png';
-import appIcon from '../assets/images/icon.png';
+import appIcon from '../assets/images/icon.jpg';
 import mrBigDislike from '../assets/images/mrBigDislike.png';
 import mrBigLike from '../assets/images/mrBigLike.png';
 import orangePaw from '../assets/images/paw.png';
@@ -56,5 +57,6 @@ export const icons = {
     rescueIcon,
     passIcon,
     settingsIcon,
-    eventsIcon
+    eventsIcon,
+    exploreNew
 };

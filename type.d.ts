@@ -13,6 +13,7 @@ interface InputComponentProps {
   multiline?: boolean;
   spellCheck?: boolean
   textContentType?: 'oneTimeCode' | 'password' | undefined;
+  generalStyle?: string;
 }
 
 export interface FormInputControllerProps extends InputComponentProps {

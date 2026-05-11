@@ -1,9 +1,13 @@
+import { pb } from '@/backend/config/pocketbase';
+import CommentSection from '@/components/CommentSection';
 import { icons, images } from '@/constants';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
+import { Comment, PBEventPage } from '@/types/components';
+import * as Clipboard from 'expo-clipboard';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Image as RNImage, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -23,13 +27,38 @@ const BackIcon = () => {
     </View>
   );
 };
- 
+
+
 const EventPage = () => {
   const user = useAuthStore(state => state.user);
-  const params = useLocalSearchParams();
-  const { id, organizerId, eventName, organizerName, image, synopse, description, address, date } = params;
+  const params = useLocalSearchParams<PBEventPage>();
+  const { id, organizerId, eventName, organizerName, image, description, address, date } = params;
+  
+  const [isLoadingComments, setIsLoadingComments] = useState(false);
+  const [comments, setComments] = useState<Comment[] | null | undefined>();
 
-  const [comments, setComments] = useState<string[] | null>();
+  const [isCopied, setIsCopied] = useState<{ status: boolean }>({ status: false });
+  const copyTimeoutRef = useRef<number | null>(null);
+
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      setIsLoadingComments(true);
+      try {
+        const PBComments: Comment[] = await pb.collection('comments').getFullList({
+          filter: `eventId = "${id}"`,
+          sort: '-created'
+        });
+        setComments(PBComments);
+      } catch (error) {
+        console.log('eventPages/[id].tsx fetchComments error:', error);
+        
+      } finally {
+        setIsLoadingComments(false);
+      }
+    };
+    fetchComments();
+  }, []);
 
   return (
     <SafeAreaView
@@ -38,28 +67,19 @@ const EventPage = () => {
     >
       <BackIcon />
 
-      {/* {isLoading && (
-        <ActivityIndicator 
-          className='absolute-center'
-        />
-      )} */}
-
-      <ScrollView
-        contentContainerStyle={
-          { alignItems: 'center' }
-        }
-      >
+      <View>
 
         <View 
-          className='bg-primary shadow shadow-secondary/10 rounded-2xl p-4 m-6 w-96 gap-2 items-center'
+          className='min-w-full bg-primary shadow shadow-secondary/10 rounded-2xl p-2 mt-4 mb-2 gap-2 items-center'
         >
-          <View className='size-36 items-center justify-center'>
+          <View className='size-28 items-center justify-center'>
             <Image
-              source={image ? image : images.mrBigBlurhash}
+              source={image}
               contentFit='cover'
-              style={{ width: '100%', height: '100%', borderRadius: 16 }}
+              style={{ width: '100%', height: '100%', borderRadius: 10 }}
+              placeholder={images.mrBigBlurhash}
             />
-
+            
             {organizerId !== user?.id ? (
               <TouchableOpacity 
                 className='absolute self-center left-40 border border-green-700 rounded-2xl max-w-24 items-center'
@@ -68,6 +88,12 @@ const EventPage = () => {
                 <Text className='p-2 text-green-700 text-center'>message organizer</Text>
               </TouchableOpacity>
             ) : null}
+
+            <View 
+              className='absolute self-center right-40 rounded-2xl max-w-24 items-center border border-secondary/10'
+            >
+              <Text className='p-2 text-secondary text-center font-bold text-xl'>{date}</Text>
+            </View>
 
             {organizerId === user?.id ? (
               <TouchableOpacity 
@@ -82,37 +108,53 @@ const EventPage = () => {
             ) : null}
 
           </View>
-
-
+            
           <Text className='text-secondary font-bold text-center mb-2'>{eventName} {organizerId === user?.id ? <Text className='text-authPrimary font-normal'>(your event)</Text> : null}</Text>
 
-          <View className='items-start gap-4'>
+          <View className='gap-4 min-w-full'>
             <Text className='text-secondary font-bold'>
               info: <Text className='font-light text-black/80'>{description}</Text>
             </Text>
+            <View>
+              {isCopied.status && (
+                <View className='absolute -top-7 bg-secondary/60 px-2 py-1 rounded-md'>
+                  <Text className='text-primary'>copied</Text>
+                </View>
+              )}
+
+              <TouchableOpacity
+                onPress={async () => {
+                  await Clipboard.setStringAsync(address);
+                  setIsCopied({ status: true });
+                  
+                  if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+
+                  copyTimeoutRef.current = setTimeout(() => {
+                    setIsCopied({ status: false });
+                    copyTimeoutRef.current = null;
+                  }, 2000);
+                }}
+              >
+                <Text className='text-secondary font-bold'>address:
+                  <Text className='font-light text-black/80'> {address}</Text>
+                </Text>
+              </TouchableOpacity>
+            </View>
             <Text className='text-secondary font-bold'>
-              address: <Text className='font-light text-black/80'>{address}</Text>
+              held by: <Text className='font-light text-black/80'>{organizerName}</Text>
             </Text>
           </View>
         </View>
 
-        <Text className='text-secondary font-bold border border-secondary rounded-2xl py-1 px-2'>add a comment (+)</Text>
-
-        <View className='bg-primary shadow shadow-secondary/10 rounded-2xl p-4 m-6 w-96 gap-2'>
-            <View className='items-center'>
-              {!comments ? <Text className='font-light text-gray-500'>be first to add a comment!</Text> : null}
-            </View>
-            <View className='items-start my-2 border border-lighterSecondary p-2 rounded-2xl gap-1'>
-              <View className='flex-row max-w-60'>
-                <Text className='label'>someone</Text>
-                <Text>a comment</Text>
-              </View>
-              <TouchableOpacity>
-                <Text className='font-light text-gray-500'>reply</Text>
-              </TouchableOpacity>
-            </View>
+        <View className=''>
+          <CommentSection 
+            comments={comments}
+            setComments={setComments}
+            isLoadingComments={isLoadingComments}
+            eventId={id}
+          />
         </View>
-      </ScrollView>
+      </View>
         
     </SafeAreaView>
   );

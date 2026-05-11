@@ -1,32 +1,18 @@
 import { pb } from '@/backend/config/pocketbase';
 import { icons, images } from '@/constants';
 import Colors from '@/constants/Colors';
-import { EventPage } from '@/types/components';
+import { PBEventPage } from '@/types/components';
 import dayjs from 'dayjs';
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import * as Clipboard from 'expo-clipboard';
 import { Image } from 'expo-image';
-import { getCalendars, getLocales, useLocales } from 'expo-localization';
+import { getCalendars } from 'expo-localization';
 import { router, useFocusEffect } from 'expo-router';
 import { ClientResponseError } from 'pocketbase';
 import React, { useCallback, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Image as RNImage, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-const dummyEventList = [
-  {
-    id: '1',
-    organizerId: '1',
-    organizerName: 'mr small',
-    eventName: 'very big event',
-    date: '02-03-2050',
-    synopse: 'just come',
-    description: 'biggest event oat',
-    address: 'green pastures',
-    image: images.mrBigLike,
-  }
-];
 
 const Events = () => {
   
@@ -39,7 +25,7 @@ const Events = () => {
   const [isCopied, setIsCopied] = useState<{ status: boolean; id: string }>({ status: false, id: '' });
   const copyTimeoutRef = useRef<number | null>(null);
 
-  const [eventList, setEventList] = useState<EventPage[]>([]);
+  const [eventList, setEventList] = useState<PBEventPage[]>([]);
   const [fetchError, setFetchError] = useState<ClientResponseError | null>();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -50,7 +36,7 @@ const Events = () => {
         try {
           setFetchError(null);
           
-          const result: EventPage[] = await pb.collection('events').getFullList({
+          const result: PBEventPage[] = await pb.collection('events').getFullList({
             sort: '-created'
           });
   
@@ -119,14 +105,24 @@ const Events = () => {
           renderItem={({ item, index }) => {
             const tz = userTimezone ?? 'UTC';
             const convertedDate = uses24hourClock
-              ? dayjs.tz(item.date, tz).format('MMM DD HH:mm')
-              : dayjs.tz(item.date, tz).format('MMM DD hh:mm A');
+              ? dayjs(item.date).format('MMM DD HH:mm')
+              : dayjs(item.date).format('MMM DD hh:mm A');
 
             return <TouchableOpacity
               className={`min-w-full max-w-full p-2 ${index === 0 && 'mt-2'}`}
               onPress={() => router.push({
                 pathname: '/eventPages/[id]',
-                params: { ...item }
+                params: { 
+                  id: item.id,
+                  eventName: item.eventName,
+                  organizerId: item.organizerId,
+                  organizerName: item.organizerName,
+                  description: item.description,
+                  synopse: item.synopse,
+                  address: item.address,
+                  image: item.image,
+                  date: convertedDate
+                }
               })}
             >
               <View

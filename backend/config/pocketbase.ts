@@ -178,12 +178,12 @@ export const authAPI = {
  */
 export const petsAPI = {
   getUserPets: async (userId: string): Promise<PBPet[]> => {
-    const records = await pb.collection('pets').getFullList({
+    const records: PBPet[] = await pb.collection('pets').getFullList({
       filter: `owner = "${userId}"`,
       sort: '-created'
     });
 
-    return records as PBPet[];
+    return records;
   },
 
   createPet: async (data: Partial<PBPet>): Promise<PBPet> => {
@@ -204,8 +204,8 @@ export const petsAPI = {
       })
     ));
 
-    const pet = await pb.collection('pets').create(formData);
-    return pet as PBPet;
+    const pet: PBPet = await pb.collection('pets').create(formData);
+    return pet;
   },
 
   updatePet: async (petId: string, data: Partial<PBPet>): Promise<PBPet> => {
@@ -233,9 +233,9 @@ export const petsAPI = {
       });
     }
     
-    const updated = await pb.collection('pets').update(petId, formData);
+    const updated: PBPet = await pb.collection('pets').update(petId, formData);
 
-    return updated as PBPet;
+    return updated;
   },
 
   deletePet: async (petId: string): Promise<void> => {
@@ -527,9 +527,9 @@ export const shelterAPI = {
       }
     }
     
-    const updated = await pb.collection('shelters').update(shelterId, formData);
+    const updated: PBShelterProfile = await pb.collection('shelters').update(shelterId, formData);
 
-    return updated as PBShelterProfile;
+    return updated;
   },
 
 };

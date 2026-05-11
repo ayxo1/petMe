@@ -25,6 +25,7 @@ export interface InputComponentProps {
   multiline?: boolean;
   spellCheck?: boolean;
   textContentType?: 'oneTimeCode' | 'password' | undefined;
+  generalStyle?: string;
 }
 
 export interface FormInputControllerProps<
@@ -55,7 +56,7 @@ export interface MatchRowData {
   lastMessageTime?: string;
 }
 
-export interface EventPage extends RecordModel {
+export interface PBEventPage extends RecordModel {
     id: string;
     organizerId: string;
     organizerName: string;
@@ -66,4 +67,14 @@ export interface EventPage extends RecordModel {
     address: string;
     image?: string;
     // createdAt: string;
+}
+
+export interface Comment extends RecordModel {
+  id: string;
+  eventId: string;
+  authorId: string;
+  authorName: string;
+  text: string;
+  parentId: string;
+  created: string;
 }

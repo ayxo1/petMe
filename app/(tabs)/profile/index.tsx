@@ -63,7 +63,7 @@ const Profile = () => {
     
     if (params) {
       router.push({ pathname: path, params });
-    } else router.replace(path);
+    } else router.push(path);
   }
   
   if (!user) return;

@@ -1,17 +1,19 @@
 import { pb } from "@/backend/config/pocketbase";
 import { eventFormSchema } from "@/constants/schemas/eventPageSchema";
 import { useAuthStore } from "@/stores/authStore";
-import { EventPage, FormInputData } from "@/types/components";
+import { FormInputData, PBEventPage } from "@/types/components";
 import { getFileName } from "@/utils/imageUtils";
 import { yupResolver } from "@hookform/resolvers/yup";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import dayjs from 'dayjs';
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from "expo-router";
 import { Fragment, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Alert, FlatList, Switch, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 import AvatarComponent from "./AvatarComponent";
 import ButtonComponent from "./ButtonComponent";
 import InputController from "./controllers/InputController";
@@ -19,7 +21,7 @@ import Modal from "./Modal";
 
 
 interface EventFormProps {
-    initialData?: EventPage;
+    initialData?: PBEventPage;
     // onSubmit: (data: Partial<EventPage>) => Promise<void>;
     submitButtonText?: string; 
 };
@@ -35,6 +37,9 @@ const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) =>
 
     const user = useAuthStore(state => state.user);
     if (!user) return;
+
+    dayjs.extend(timezone);
+    dayjs.extend(utc);
 
     const [isDeleteModal, toggleIsDeleteModal] = useState(false);
     const [date, setDate] = useState<Date>(initialData?.date ? new Date(initialData.date) : new Date());
@@ -82,19 +87,7 @@ const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) =>
         });
     };
 
-    const onSubmit = async (data: Partial<EventPage>) => {
-
-        // const eventObject = {
-        //     ...data,
-        //     organizerId: user.id,
-        //     organizerName: user.username,
-        //     date: data.date ? new Date(data.date).toISOString().replace('T', ' ') : '',
-        //     image: data.image ? {
-        //         uri: data.image,
-        //         name: getFileName(data.image),
-        //         type: 'image/jpeg'
-        //     } : ''
-        // }
+    const onSubmit = async (data: Partial<PBEventPage>) => {
 
         const eventObject = new FormData();
         Object.keys(data).forEach(key => {
@@ -136,7 +129,7 @@ const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) =>
                                 eventName: result.eventName,
                                 description: result.description,
                                 address: result.address,
-                                date: result.date,
+                                date: dayjs(result.date).format('MMM DD HH:mm'),
                                 image: result.image ? `${pb.baseURL}/api/files/events/${result.id}/${result.image}` : '',
                             }
                         })
@@ -153,7 +146,7 @@ const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) =>
         try {
             eventObject.append('organizerId', user.id);
             eventObject.append('organizerName', user.username);
-            const result: EventPage = await pb.collection('events').create(eventObject);
+            const result: PBEventPage = await pb.collection('events').create(eventObject);
             Alert.alert('success!', 'your event is successfully added', [
                 {
                     text: 'ok',
@@ -166,7 +159,7 @@ const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) =>
                             eventName: result.eventName,
                             description: result.description,
                             address: result.address,
-                            date: result.date,
+                            date: dayjs(result.date).format('MMM DD HH:mm'),
                             image: result.image ? `${pb.baseURL}/api/files/events/${result.id}/${result.image}` : '',
                         }
                     })

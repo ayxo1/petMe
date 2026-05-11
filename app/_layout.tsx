@@ -8,9 +8,8 @@ import { getRegistrationStateRoute } from "@/utils/routingHelper";
 import { useFonts } from "expo-font";
 import { router, Stack } from "expo-router";
 import { useEffect } from "react";
-import { ActivityIndicator, Alert, Text } from "react-native";
+import { Alert } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaView } from "react-native-safe-area-context";
 import './globals.css';
 
 export default function RootLayout() {
