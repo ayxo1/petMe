@@ -120,7 +120,7 @@ const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) =>
                 Alert.alert('success!', 'your event is successfully updated', [
                     {
                         text: 'ok',
-                        onPress: () => router.replace({
+                        onPress: () => router.dismissTo({
                             pathname: '/eventPages/[id]',
                             params: {
                                 id: result.id,

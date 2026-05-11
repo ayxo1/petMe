@@ -8,7 +8,7 @@ import * as Clipboard from 'expo-clipboard';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { Image as RNImage, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Image as RNImage, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const BackIcon = () => {
@@ -39,6 +39,30 @@ const EventPage = () => {
 
   const [isCopied, setIsCopied] = useState<{ status: boolean }>({ status: false });
   const copyTimeoutRef = useRef<number | null>(null);
+
+  const connectOrganizer = async () => {
+    try {
+      const result = await pb.send<{ matchId: string; isExisting: boolean }>('/api/profile-connect', {
+        method: 'POST',
+        body: { profileOwnerId: organizerId }
+      });
+
+      router.push({
+        pathname: '/chat/[id]',
+        params: { 
+          id: result.matchId,
+          otherUserName: organizerName,
+          otherUserImage: image,
+          otherUserId: organizerId,
+          otherUserType: 'seeker'
+        }
+      });
+
+    } catch (error) {
+      console.log('connectOrganizer error, eventPages/[id].tsx: ', error);
+      Alert.alert('an error occurred whilte trying to message, please try again');
+    }
+  };
 
 
   useEffect(() => {
@@ -83,7 +107,7 @@ const EventPage = () => {
             {organizerId !== user?.id ? (
               <TouchableOpacity 
                 className='absolute self-center left-40 border border-green-700 rounded-2xl max-w-24 items-center'
-                // onPress={connectShelter}
+                onPress={connectOrganizer}
               >
                 <Text className='p-2 text-green-700 text-center'>message organizer</Text>
               </TouchableOpacity>

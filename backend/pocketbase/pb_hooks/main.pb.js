@@ -711,21 +711,21 @@ routerAdd("GET", "/api/rescue-feed", (c) => {
 
 }, $apis.requireAuth('users'));
 
-routerAdd("POST", "/api/shelter-connect", (c) => {
+routerAdd("POST", "/api/profile-connect", (c) => {
 
     const user = c.auth;
-    const data = new DynamicModel({ shelterOwnerId: '' });
+    const data = new DynamicModel({ profileOwnerId: '' });
     c.bindBody(data);
 
-    if (user.id === data.shelterOwnerId) {
+    if (user.id === data.profileOwnerId) {
         return c.json(400, { error: 'trying to message your own shelter' });
     }
 
     try {
         const existing = $app.findFirstRecordByFilter(
             'matches',
-            `(user1 = {:userId} && user2 = {:ownerId} || user1 = {:ownerId} && user2 = {:userId})`,
-            { userId: user.id, ownerId: data.shelterOwnerId }
+            `(user1 = {:userId} && user2 = {:ownerId} || user1 = {:ownerId} && user2 = {:userId}) && status!='unmatched`,
+            { userId: user.id, ownerId: data.profileOwnerId }
         );
         return c.json(200, { matchId: existing.id, isExisting: true });
     } catch (error) {
@@ -735,7 +735,7 @@ routerAdd("POST", "/api/shelter-connect", (c) => {
     const matchesCollection = $app.findCollectionByNameOrId('matches');
     const match = new Record(matchesCollection);
     match.set('user1', user.id);
-    match.set('user2', data.shelterOwnerId);
+    match.set('user2', data.profileOwnerId);
     match.set('status', 'active');
     $app.save(match);
 

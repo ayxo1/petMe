@@ -44,9 +44,9 @@ const ShelterPage = () => {
 
   const connectShelter = async () => {
     try {
-      const result = await pb.send<{ matchId: string; isExisting: boolean }>('/api/shelter-connect', {
+      const result = await pb.send<{ matchId: string; isExisting: boolean }>('/api/profile-connect', {
         method: 'POST',
-        body: { shelterOwnerId: owner }
+        body: { profileOwnerId: owner }
       });
       router.push({
         pathname: '/chat/[id]',

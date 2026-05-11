@@ -64,7 +64,7 @@ const TabsLayout = () => {
       const data = lastNotificationResponse.notification.request.content.data;
 
       if ((data.type === 'message' || data.type === 'match') && data.matchId) {
-        router.replace('/(tabs)/connect');
+        router.navigate('/(tabs)/connect');
       }
     }
   }, [lastNotificationResponse]);
