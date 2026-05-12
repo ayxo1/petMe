@@ -273,7 +273,7 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
                         name="adoptionRequirements"
                         label='requirements'
                         placeholder="e.g., special food, etc."
-                        spellCheck={true}
+                        spellCheck
                     />
                     <InputController 
                         control={control}
@@ -281,7 +281,7 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
                         name="adoptionReason"
                         label='reason'
                         placeholder="e.g., found a stray"
-                        spellCheck={true}
+                        spellCheck
                     />
                     <View className="mb-4 flex-col items-center">
                         <Text className="label">adoption status*</Text>

@@ -92,18 +92,20 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
 
       <TouchableOpacity 
         className="mb-3 mt-1 items-center"
-        onPress={() => setIsAddingComment(!isAddingComment)}
+        onPress={() => {
+          setIsAddingComment(!isAddingComment);
+          setReplyingTo(null);
+        }}
       >
         <Text className='text-secondary py-1 px-2'>add a comment (+)</Text>
       </TouchableOpacity>
 
-      
       {isLoadingComments
         ? 
         <ActivityIndicator 
           className='absolute-center top-12'
         />
-        : <View className='bg-lighterSecondary/10 shadow shadow-secondary/10 rounded-2xl p-4 min-w-full border border-secondary/10 max-h-[81%]'>
+        : <View className='bg-lighterSecondary/15 shadow shadow-secondary/10 rounded-2xl p-4 min-w-full max-h-[81%]'>
           {
             <View>
 
@@ -114,7 +116,7 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
                 >
                   <Text className="font-light text-red-500">✖</Text>
                 </TouchableOpacity>
-                <View className="flex-row items-end w-[89%]">
+                <View className="flex-row items-end w-[89%] py-1">
                   <InputComponent
                     placeholder='add a comment'
                     value={commentText}
@@ -144,7 +146,7 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
               {((comments && comments?.length > 0) 
                 ? 
                 <FlatList
-                  automaticallyAdjustKeyboardInsets={true}
+                  automaticallyAdjustKeyboardInsets
                   keyboardShouldPersistTaps='handled'
                   data={topLevelComments}
                   keyExtractor={(item) => item.id}
@@ -167,7 +169,10 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
                               <View className="flex-row gap-3">
                                 <TouchableOpacity 
                                   className="ml-1"
-                                  onPress={() => setReplyingTo(item.id)}
+                                  onPress={() => {
+                                    setReplyingTo(item.id);
+                                    setIsAddingComment(false);
+                                  }}
                                 >
                                   <Text className="text-gray-500 font-light">reply</Text>
                                 </TouchableOpacity>
