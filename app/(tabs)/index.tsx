@@ -57,7 +57,6 @@ export default function Index() {
   const visibleCards = feed.slice(currentIndex, currentIndex + VISIBLE_STACK_SIZE);
 
   const initialize = async () => {
-    console.log('init log');
     try {
       setIsFailedFetch(false);
       if (feed.length === 0) {

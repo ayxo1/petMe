@@ -6,8 +6,8 @@ import { ShelterProfile } from '@/types/auth';
 import { PBShelterProfile } from '@/types/pbTypes';
 import * as Clipboard from 'expo-clipboard';
 import { Image } from 'expo-image';
-import { router } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import { router, useFocusEffect } from 'expo-router';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Image as RNImage, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -18,23 +18,25 @@ const Rescue = () => {
   const [shelterList, setShelterList] = useState<ShelterProfile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchShelterProfiles = async () => {
-      try {
-        setIsLoading(true);
-        const pbShelters: PBShelterProfile[] = await pb.collection('shelters').getFullList({
-          sort: '-created'
-        });
-        const convertedShelters = pbShelters.map(convertPBShelterToShelterProfile)
-        setShelterList(convertedShelters);
-      } catch (error) {
-        console.log('fetchShelterProfiles error, rescue.tsx: ', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchShelterProfiles();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchShelterProfiles = async () => {
+        try {
+          setIsLoading(true);
+          const pbShelters: PBShelterProfile[] = await pb.collection('shelters').getFullList({
+            sort: '-created'
+          });
+          const convertedShelters = pbShelters.map(convertPBShelterToShelterProfile)
+          setShelterList(convertedShelters);
+        } catch (error) {
+          console.log('fetchShelterProfiles error, rescue.tsx: ', error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchShelterProfiles();
+    }, [])
+  );
 
   return (
     <SafeAreaView
