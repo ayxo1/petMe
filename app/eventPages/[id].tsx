@@ -3,7 +3,7 @@ import CommentSection from '@/components/CommentSection';
 import { icons, images } from '@/constants';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
-import { Comment, EventPageParams, PBEventPage } from '@/types/components';
+import { Comment, EventPageParams } from '@/types/components';
 import * as Clipboard from 'expo-clipboard';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';

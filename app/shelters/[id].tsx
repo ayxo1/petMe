@@ -5,14 +5,16 @@ import { icons, images } from '@/constants';
 import Colors from '@/constants/Colors';
 import { convertPBUserToUser, useAuthStore } from '@/stores/authStore';
 import { convertPBPetToPetProfile } from '@/stores/petStore';
-import { User } from '@/types/auth';
+import { ShelterProfile, User } from '@/types/auth';
 import { PBPet, PBUser } from '@/types/pbTypes';
 import { PetProfile } from '@/types/pets';
+import * as Clipboard from 'expo-clipboard';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Image as RNImage, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 const BackIcon = () => {
   return (
@@ -41,6 +43,9 @@ const ShelterPage = () => {
   const [selectedPetProfile, setSelectedPetProfile] = useState<PetProfile | null>();
   const [isLoading, setIsLoading] = useState(false);
   const [isProfileShown, toggleIsProfileShown] = useState(false);
+
+  const [isCopied, setIsCopied] = useState<{ status: boolean }>({ status: false });
+  const copyTimeoutRef = useRef<number | null>(null);
 
   const connectShelter = async () => {
     try {
@@ -163,9 +168,35 @@ const ShelterPage = () => {
             <Text className='text-secondary font-bold'>
                 info: <Text className='font-light text-black/80'>{description}</Text>
             </Text>
-            <Text className='text-secondary font-bold'>
+            {/* <Text className='text-secondary font-bold'>
               address: <Text className='font-light text-black/80'>{address}</Text>
-            </Text>
+            </Text> */}
+            <View>
+              {isCopied.status && (
+                <View className='absolute -top-7 bg-secondary/60 px-2 py-1 rounded-md'>
+                  <Text className='text-primary'>copied</Text>
+                </View>
+              )}
+              <TouchableOpacity
+                onPress={async () => {
+                  if (typeof address === 'string') {
+                    await Clipboard.setStringAsync(address);
+                  }
+                  setIsCopied({ status: true });
+                  
+                  if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+
+                  copyTimeoutRef.current = setTimeout(() => {
+                    setIsCopied({ status: false });
+                    copyTimeoutRef.current = null;
+                  }, 2000);
+                }}
+              >
+                <Text className='text-secondary font-bold'>address:
+                  <Text className='font-light text-black/80'> {address}</Text>
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 

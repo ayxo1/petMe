@@ -90,56 +90,55 @@ const Rescue = () => {
                   />
                 </View>
 
-                <View className='gap-2 w-44 p-1'>
+                <View className='gap-2 w-2/3 p-1'>
                   <Text className='text-secondary font-bold'>{item.name}</Text>
                   <Text className='font-light'>{item.description}</Text>
-                </View>
 
-                <View className='items-center gap-3 max-w-24 p-1'>
-                  {isCopied.status && isCopied.id === item.id && (
-                    <View className='absolute -left-10 -top-5 bg-secondary/60 px-2 py-1 rounded-md'>
-                      <Text className='text-primary'>copied</Text>
-                    </View>
-                  )}
-                  <TouchableOpacity
-                    onPress={async () => {
-                      await Clipboard.setStringAsync(item.address);
-                      setIsCopied({ status: true, id: item.id });
-                      
-                      if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+                  <View className='gap-3'>
+                    {isCopied.status && isCopied.id === item.id && (
+                      <View className='absolute -left-10 -top-5 bg-secondary/60 px-2 py-1 rounded-md'>
+                        <Text className='text-primary'>copied</Text>
+                      </View>
+                    )}
+                    <TouchableOpacity
+                      onPress={async () => {
+                        await Clipboard.setStringAsync(item.address);
+                        setIsCopied({ status: true, id: item.id });
+                        
+                        if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
 
-                      copyTimeoutRef.current = setTimeout(() => {
-                        setIsCopied({ status: false, id: '' });
-                        copyTimeoutRef.current = null;
-                      }, 2000);
-                    }}
-                  >
-                    <RNImage
-                      source={icons.copyIcon}
-                      className='size-4 absolute -left-5 -top-1'
-                      resizeMode='contain'
-                      tintColor={Colors.secondary}
-                    />
-                    <Text className='absolute-center-y -left-6'>📍</Text>
-                    <Text 
-                      className='font-light text-secondary text-start' 
-                      lineBreakMode='tail' 
-                      numberOfLines={4} 
-                      >
-                      {item.address}
-                    </Text>
-                  </TouchableOpacity>
-                  {/* <TouchableOpacity 
-                    className='items-center gap-1'
-                    onPress={() => Linking.openURL('https://maps.app.goo.gl/UH3u1v1PUHS3wCs4A')}
-                  >
-                    <RNImage 
-                      source={icons.googleMap}
-                      className='size-9'
-                      resizeMode='contain'
-                    />
-                    <Text className='font-light text-secondary text-center'>open map</Text>
-                  </TouchableOpacity> */}
+                        copyTimeoutRef.current = setTimeout(() => {
+                          setIsCopied({ status: false, id: '' });
+                          copyTimeoutRef.current = null;
+                        }, 2000);
+                      }}
+                    >
+                      <RNImage
+                        source={icons.copyIcon}
+                        className='size-4 absolute -left-3 -top-1'
+                        resizeMode='contain'
+                        tintColor={Colors.secondary}
+                      />
+                      <Text 
+                        className='font-light' 
+                        lineBreakMode='tail' 
+                        numberOfLines={4} 
+                        >📍{item.address}
+                      </Text>
+                    </TouchableOpacity>
+                    {/* <TouchableOpacity 
+                      className='items-center gap-1'
+                      onPress={() => Linking.openURL('https://maps.app.goo.gl/UH3u1v1PUHS3wCs4A')}
+                    >
+                      <RNImage 
+                        source={icons.googleMap}
+                        className='size-9'
+                        resizeMode='contain'
+                      />
+                      <Text className='font-light text-secondary text-center'>open map</Text>
+                    </TouchableOpacity> */}
+                  </View>
+
                 </View>
 
               </View>
