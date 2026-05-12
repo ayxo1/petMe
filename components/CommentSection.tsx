@@ -1,17 +1,13 @@
 import { pb } from "@/backend/config/pocketbase";
 import { useAuthStore } from "@/stores/authStore";
 import { Comment } from "@/types/components";
-import { yupResolver } from "@hookform/resolvers/yup";
 import dayjs from 'dayjs';
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { getCalendars } from "expo-localization";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { ActivityIndicator, Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
-import * as yup from 'yup';
 import InputComponent from "./InputComponent";
-import InputController from "./controllers/InputController";
 
 const CommentSection = ({ comments, setComments, isLoadingComments, eventId }: 
   { 
@@ -24,17 +20,6 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
   const user = useAuthStore(state => state.user);
   if (!user) return;
 
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    formState: {
-      errors
-    }
-  } = useForm({
-    resolver: yupResolver(yup.object({commentText: yup.string().required('the comment is empty').max(128, 'maximum 128 characters')}))
-  });  
-
   const userCalendars = getCalendars();
   const userTimezone = userCalendars[0].timeZone;
   const { uses24hourClock } = userCalendars[0];
@@ -43,15 +28,24 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
 
   const [replyingTo, setReplyingTo] = useState<string | null>();
   const [commentText, setCommentText] = useState('');
+  const [errors, setErrors] = useState('');
 
   const [isAddingComment, setIsAddingComment] = useState(false);
 
   const topLevelComments = comments?.filter(c => !c.parentId);
   const getReplies = (commentId: string) => comments?.filter(c => c.parentId === commentId);
 
-  const submitComment = async () => {
+  const submitComment = () => {    
+    if (commentText.length === 0) {
+      setErrors('the comment can\'t be empty');
+      return;
+    } else if (commentText.length > 128) {
+      setErrors('maximum 128 characters');
+      return;
+    }
     if (!commentText.trim()) return;
 
+    setErrors('');
     const newComment: Comment = {
       id: Date.now().toString(),  
       eventId,
@@ -83,6 +77,16 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
     setIsAddingComment(false);
   };
 
+  const deleteComment = async (comment: Comment) => {
+    try {
+      await pb.collection('comments').update(comment.id, {...comment, authorName: 'deleted', text: 'deleted'});
+      setComments(prev => prev?.map(c => c.id === comment.id ? {...c, authorName: 'deleted', text: 'deleted'} : c));
+    } catch (error) {
+      console.log('CommentSection.tsx, deleteComment error:', error);
+      Alert.alert('error', 'an error occurred while deleting the comment');
+    }
+  };
+
   return (
     <View>
 
@@ -103,7 +107,7 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
           {
             <View>
 
-              {isAddingComment && <View className="">
+              {isAddingComment && <View>
                 <TouchableOpacity
                   onPress={() => setIsAddingComment(false)}
                   className="absolute left-2 top-2 rounded-full p-0.5 z-50 bg-red-400/10"
@@ -111,9 +115,7 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
                   <Text className="font-light text-red-500">✖</Text>
                 </TouchableOpacity>
                 <View className="flex-row items-end w-[89%]">
-                  <InputController
-                    control={control}
-                    name="commentText"
+                  <InputComponent
                     placeholder='add a comment'
                     value={commentText}
                     onChangeText={setCommentText}
@@ -122,19 +124,20 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
                     multiline
                   />
                   <TouchableOpacity
-                    onPress={handleSubmit(submitComment)}
+                    onPress={submitComment}
                     className="rounded-2xl bg-lighterSecondary py-1 px-2 mb-2 z-50"
                   >
                     <Text className="font-light">post</Text>
                   </TouchableOpacity>
                 </View>
 
-                <View className='h-5 mt-2'>
-                  {errors.commentText && (
-                      <Text className='text-red-500 text-center'>
-                          {errors.commentText.message}
-                      </Text>
-                  )}
+                <View className='h-5 mt-2 flex-row'>
+                  {(errors && commentText.length === 0) ? (
+                    <Text className='text-red-500 text-center'>
+                      {errors}
+                    </Text>
+                  ) : null}
+                  {commentText.length > 128 ? <Text className='text-red-500 text-center'>{`maximum 128 characters (currently ${commentText.length})`}</Text> : null}
                 </View>
               </View>}
 
@@ -161,12 +164,20 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
                                 <Text className="font-bold text-secondary">{item.authorName} <Text className="font-light text-sm">({convertedDate})</Text></Text>
                                 <Text>{item.text}</Text>
                               </View>
-                              <TouchableOpacity 
-                                className="ml-1"
-                                onPress={() => setReplyingTo(item.id)}
-                              >
-                                <Text className="text-gray-500 font-light">reply</Text>
-                              </TouchableOpacity>
+                              <View className="flex-row gap-3">
+                                <TouchableOpacity 
+                                  className="ml-1"
+                                  onPress={() => setReplyingTo(item.id)}
+                                >
+                                  <Text className="text-gray-500 font-light">reply</Text>
+                                </TouchableOpacity>
+                                {item.authorId === user.id && item.authorName !== 'deleted' && (<TouchableOpacity 
+                                  className="ml-1"
+                                  onPress={() => deleteComment(item)}
+                                >
+                                  <Text className="text-red-400 font-light">delete</Text>
+                                </TouchableOpacity>)}
+                              </View>
                           </View>
 
                           {replies?.map(reply => {
@@ -183,6 +194,12 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
                                 <View className="gap-2 mb-1">
                                   <Text className="font-bold text-secondary">{reply.authorName} <Text className="font-light text-sm">({convertedDate})</Text></Text>
                                   <Text>{reply.text}</Text>
+                                  {item.authorId === user.id && item.authorName !== 'deleted' && (<TouchableOpacity 
+                                    className="ml-1"
+                                    onPress={() => deleteComment(reply)}
+                                  >
+                                    <Text className="text-red-400 font-light">delete</Text>
+                                  </TouchableOpacity>)}
                                 </View>
                               </View>
                             );
@@ -206,6 +223,7 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
                                   label=""
                                   generalStyle="w-[85%]"
                                   spellCheck
+                                  multiline
                                 />
                                 <TouchableOpacity
                                   onPress={submitComment}

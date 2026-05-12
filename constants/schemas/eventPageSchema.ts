@@ -24,6 +24,10 @@ export const eventFormSchema = yup.object({
         .required('address is required')
         .min(1, 'address is 1 character long, please check if everything is correct')
         .max(48, 'max length is 48 characters'),
+    allowMessaging: yup
+        .boolean()
+        .required()
+        .default(true),
     image: yup
         .string()
         .optional(),
