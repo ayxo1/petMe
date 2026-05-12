@@ -1,4 +1,5 @@
 import { pb } from "@/backend/config/pocketbase";
+import Colors from "@/constants/Colors";
 import { eventFormSchema } from "@/constants/schemas/eventPageSchema";
 import { useAuthStore } from "@/stores/authStore";
 import { FormInputData, PBEventPage } from "@/types/components";
@@ -13,7 +14,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { router } from "expo-router";
 import { Fragment, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Alert, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Switch, Text, TouchableOpacity, View } from "react-native";
 import AvatarComponent from "./AvatarComponent";
 import ButtonComponent from "./ButtonComponent";
 import InputController from "./controllers/InputController";
@@ -57,6 +58,7 @@ const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) =>
     });
 
     const eventImage = watch('image');
+    const allowMessaging = watch('allowMessaging');
 
     const pickImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -131,6 +133,7 @@ const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) =>
                                 address: result.address,
                                 date: dayjs(result.date).format('MMM DD HH:mm'),
                                 image: result.image ? `${pb.baseURL}/api/files/events/${result.id}/${result.image}` : '',
+                                allowMessaging: result.allowMessaging ? 1 : 0
                             }
                         })
                     }
@@ -161,6 +164,7 @@ const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) =>
                             address: result.address,
                             date: dayjs(result.date).format('MMM DD HH:mm'),
                             image: result.image ? `${pb.baseURL}/api/files/events/${result.id}/${result.image}` : '',
+                            allowMessaging: result.allowMessaging ? 1 : 0
                         }
                     })
                 }
@@ -255,8 +259,6 @@ const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) =>
                         <Text className="text-primary">{showPicker ? 'save' : 'set'}</Text>
                     </TouchableOpacity>
                 </View>
-
-                {/* <View> */}
                 
                 {errors.date ? (
                     <View className='h-5'>
@@ -265,8 +267,6 @@ const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) =>
                         </Text>
                     </View>
                 ) : null}
-
-                 {/* </View> */}
 
                 {showPicker && <View className="p-2 gap-2">
                     <View className="w-full flex-row gap-3 items-center bg-secondary/75 shadow shadow-secondary/40 rounded-2xl p-2 max-w-full">
@@ -302,6 +302,16 @@ const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) =>
                     )}
                 </View>
 
+            </View>
+
+            <View className="flex-row w-60">
+                <Text className="label">allow direct messaging you</Text>
+                <Switch
+                    value={allowMessaging}
+                    onValueChange={(val) => setValue('allowMessaging', val)}
+                    trackColor={{ true: Colors.secondary, false: Colors.lighterSecondary}}
+                    ios_backgroundColor={Colors.lighterSecondary}
+                />
             </View>
 
             {/* form */}

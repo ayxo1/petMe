@@ -1,18 +1,16 @@
 import { pb } from '@/backend/config/pocketbase';
 import EventForm from '@/components/EventForm';
-import { useAuthStore } from '@/stores/authStore';
-import { EventPage } from '@/types/components';
-import { PetFormData } from '@/types/pets';
-import { router, useLocalSearchParams } from 'expo-router';
+import { PBEventPage } from '@/types/components';
+import { useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, ScrollView, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const EventSetup = () => {
 
   const { id, initialData } = useLocalSearchParams<{ id: string, initialData: '0' | '1' }>();
   const isEditing = initialData === '1';
-  const [eventToEdit, setEventToEdit] = useState<EventPage>();
+  const [eventToEdit, setEventToEdit] = useState<PBEventPage>();
   const [isLoading, setIsLoading] = useState(false);
   //   const petToEdit = pets.find(pet => pet.id === id);
   //   const isEditing = !!petToEdit;
@@ -22,7 +20,7 @@ const EventSetup = () => {
         if (id && isEditing) {
             setIsLoading(true);
             try {
-                const result: EventPage = await pb.collection('events').getOne(id);
+                const result: PBEventPage = await pb.collection('events').getOne(id);
                 const convertedEvent = {
                     ...result,
                     image: result.image ? `${pb.baseURL}/api/files/events/${result.id}/${result.image}` : ''

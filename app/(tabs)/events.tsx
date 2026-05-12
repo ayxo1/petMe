@@ -43,7 +43,7 @@ const Events = () => {
           const convertedEventList = result.map((event) => (
             {
               ...event,
-              image: event.image ? `${pb.baseURL}/api/files/events/${event.id}/${event.image}` : ''
+              image: event.image ? `${pb.baseURL}/api/files/events/${event.id}/${event.image}` : '',
             } 
           ));
   
@@ -103,7 +103,7 @@ const Events = () => {
           className='h-[75%]'
           keyExtractor={(item) => item.id}
           renderItem={({ item, index }) => {
-            const tz = userTimezone ?? 'UTC';
+            // const tz = userTimezone ?? 'UTC';
             const convertedDate = uses24hourClock
               ? dayjs(item.date).format('MMM DD HH:mm')
               : dayjs(item.date).format('MMM DD hh:mm A');
@@ -121,7 +121,8 @@ const Events = () => {
                   synopse: item.synopse,
                   address: item.address,
                   image: item.image,
-                  date: convertedDate
+                  date: convertedDate,
+                  allowMessaging: item.allowMessaging ? 1 : 0
                 }
               })}
             >

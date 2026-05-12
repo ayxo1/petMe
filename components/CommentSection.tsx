@@ -103,7 +103,7 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
         <ActivityIndicator 
           className='absolute-center top-12'
         />
-        : <View className='bg-primary shadow shadow-secondary/10 rounded-2xl p-4 min-w-full border border-secondary/10 max-h-[81%]'>
+        : <View className='bg-lighterSecondary/10 shadow shadow-secondary/10 rounded-2xl p-4 min-w-full border border-secondary/10 max-h-[81%]'>
           {
             <View>
 
@@ -151,10 +151,10 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
                   renderItem={({ item }) => {
                     const replies = getReplies(item.id);            
                     
-                    const tz = userTimezone ?? 'UTC';            
+                    // const tz = userTimezone ?? 'UTC';        
                     const convertedDate = uses24hourClock
                       ? dayjs(item.created).format('MM-DD HH:mm')
-                      : dayjs.tz(item.created).format('MM-DD hh:mm A');
+                      : dayjs(item.created).format('MM-DD hh:mm A');
                       
                     return (
                       <View className="mb-2">
@@ -183,7 +183,7 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
                           {replies?.map(reply => {
                             const convertedDate = uses24hourClock
                               ? dayjs(reply.created).format('MM-DD HH:mm')
-                              : dayjs.tz(reply.created).format('MM-DD hh:mm A');
+                              : dayjs(reply.created).format('MM-DD hh:mm A');
 
                             return (
                               <View
@@ -194,7 +194,7 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
                                 <View className="gap-2 mb-1">
                                   <Text className="font-bold text-secondary">{reply.authorName} <Text className="font-light text-sm">({convertedDate})</Text></Text>
                                   <Text>{reply.text}</Text>
-                                  {item.authorId === user.id && item.authorName !== 'deleted' && (<TouchableOpacity 
+                                  {reply.authorId === user.id && reply.authorName !== 'deleted' && (<TouchableOpacity 
                                     className="ml-1"
                                     onPress={() => deleteComment(reply)}
                                   >

@@ -3,7 +3,7 @@ import CommentSection from '@/components/CommentSection';
 import { icons, images } from '@/constants';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
-import { Comment, PBEventPage } from '@/types/components';
+import { Comment, EventPageParams, PBEventPage } from '@/types/components';
 import * as Clipboard from 'expo-clipboard';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -31,8 +31,9 @@ const BackIcon = () => {
 
 const EventPage = () => {
   const user = useAuthStore(state => state.user);
-  const params = useLocalSearchParams<PBEventPage>();
+  const params = useLocalSearchParams<EventPageParams>();
   const { id, organizerId, eventName, organizerName, image, description, address, date } = params;
+  const allowMessaging = params.allowMessaging === '1';
   
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [comments, setComments] = useState<Comment[] | null | undefined>();
@@ -60,7 +61,7 @@ const EventPage = () => {
 
     } catch (error) {
       console.log('connectOrganizer error, eventPages/[id].tsx: ', error);
-      Alert.alert('an error occurred whilte trying to message, please try again');
+      Alert.alert('an error occurred while trying to message, please try again');
     }
   };
 
@@ -104,7 +105,7 @@ const EventPage = () => {
               placeholder={images.mrBigBlurhash}
             />
             
-            {organizerId !== user?.id ? (
+            {(organizerId !== user?.id && allowMessaging) ? (
               <TouchableOpacity 
                 className='absolute self-center left-40 border border-green-700 rounded-2xl max-w-24 items-center'
                 onPress={connectOrganizer}

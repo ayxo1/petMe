@@ -66,6 +66,7 @@ export interface PBEventPage extends RecordModel {
     description: string;
     address: string;
     image?: string;
+    allowMessaging: boolean;
     // createdAt: string;
 }
 
@@ -77,4 +78,8 @@ export interface Comment extends RecordModel {
   text: string;
   parentId: string;
   created: string;
+}
+
+export type EventPageParams = {
+  [K in keyof PBEventPage]: string;
 }

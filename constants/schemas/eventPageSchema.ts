@@ -8,7 +8,10 @@ export const eventFormSchema = yup.object({
         .max(24, 'event name is too long, maximum 24 characters'),
     date: yup
         .string()
-        .required('an event can\'t be in the past :p'),
+        .required('event date is required')
+        .test('is-future', "an event can't be in the past",
+            (value) => !value || new Date(value) > new Date()
+        ),
     synopse: yup
         .string()
         .required('synopse is required')
