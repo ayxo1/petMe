@@ -206,7 +206,7 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
                                 <View className="gap-2 mb-1">
                                   <Text className="font-bold text-secondary">{reply.authorName} {reply.authorId === user.id && <Text className="text-authPrimary">(you)</Text>}<Text className="font-light text-sm">({convertedDate})</Text></Text>
                                   <Text>{reply.text}</Text>
-                                  {reply.authorId === user.id && reply.authorName !== 'deleted' && (<TouchableOpacity 
+                                  {reply.authorId === user.id && reply.authorName !== 'deleted' && (<TouchableOpacity
                                     className="ml-1"
                                     onPress={() => deleteComment(reply)}
                                   >

@@ -4,7 +4,7 @@ module.exports = {
   "expo": {
     "name": IS_DEV ? "pet-a-pet (Dev)" : 'pet-a-pet',
     "slug": "petMe",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.jpg",
     "scheme": "petme",
