@@ -5,8 +5,9 @@ import dayjs from 'dayjs';
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { getCalendars } from "expo-localization";
-import { useState } from "react";
-import { ActivityIndicator, Alert, FlatList, Text, TouchableOpacity, View } from "react-native";
+import { useRef, useState } from "react";
+import { ActivityIndicator, Alert, FlatList, Platform, Text, TouchableOpacity, View } from "react-native";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import InputComponent from "./InputComponent";
 
 const CommentSection = ({ comments, setComments, isLoadingComments, eventId }: 
@@ -88,7 +89,11 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
   };
 
   return (
-    <View>
+    <KeyboardAvoidingView
+      className="items-center"
+      behavior='position'
+      keyboardVerticalOffset={-21}
+    >
 
       <TouchableOpacity 
         className="mb-3 mt-1 items-center"
@@ -105,11 +110,12 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
         <ActivityIndicator 
           className='absolute-center top-12'
         />
-        : <View className='bg-lighterSecondary/15 shadow shadow-secondary/10 rounded-2xl p-4 min-w-full max-h-[81%]'>
+        : <View className='bg-lighterSecondary/15 shadow shadow-secondary/10 rounded-2xl p-4 min-w-full max-h-[93%]'>
           {
             <View>
 
-              {isAddingComment && <View>
+              {isAddingComment && 
+              <View>
                 <TouchableOpacity
                   onPress={() => setIsAddingComment(false)}
                   className="absolute left-2 top-2 rounded-full p-0.5 z-50 bg-red-400/10"
@@ -124,6 +130,7 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
                     label=""
                     spellCheck
                     multiline
+                    autoFocus
                   />
                   <TouchableOpacity
                     onPress={submitComment}
@@ -163,7 +170,7 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
                         <View className="border-b border-b-secondary/15">
                           <View className="max-w-full mb-2">
                               <View className="gap-2 mb-1">
-                                <Text className="font-bold text-secondary">{item.authorName} <Text className="font-light text-sm">({convertedDate})</Text></Text>
+                                <Text className="font-bold text-secondary">{item.authorName} {item.authorId === user.id && <Text className="text-authPrimary">(you)</Text>}<Text className="font-light text-sm">({convertedDate})</Text></Text>
                                 <Text>{item.text}</Text>
                               </View>
                               <View className="flex-row gap-3">
@@ -197,7 +204,7 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
                               >
                                 {/* <Text className="absolute -left-4 -top-2">|</Text> */}
                                 <View className="gap-2 mb-1">
-                                  <Text className="font-bold text-secondary">{reply.authorName} <Text className="font-light text-sm">({convertedDate})</Text></Text>
+                                  <Text className="font-bold text-secondary">{reply.authorName} {reply.authorId === user.id && <Text className="text-authPrimary">(you)</Text>}<Text className="font-light text-sm">({convertedDate})</Text></Text>
                                   <Text>{reply.text}</Text>
                                   {reply.authorId === user.id && reply.authorName !== 'deleted' && (<TouchableOpacity 
                                     className="ml-1"
@@ -213,7 +220,7 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
 
                         <View>
                           {replyingTo && item.id === replyingTo && (
-                            <View className="max-w-full">
+                            <View>
                               <TouchableOpacity
                                 onPress={() => setReplyingTo(null)}
                                 className="absolute left-2 top-2 rounded-full p-0.5 z-50 bg-red-400/10"
@@ -229,6 +236,7 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
                                   generalStyle="w-[85%]"
                                   spellCheck
                                   multiline
+                                  autoFocus
                                 />
                                 <TouchableOpacity
                                   onPress={submitComment}
@@ -255,7 +263,7 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
         }
 
 
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 

@@ -13,7 +13,9 @@ const InputComponent = ({
     multiline = false,
     spellCheck = false,
     textContentType = undefined,
-    generalStyle = 'w-full'
+    generalStyle = 'w-full',
+    ref,
+    autoFocus = false
 }: InputComponentProps) => {
 
     const [isFocused, setIsFocused] = useState(false);
@@ -42,6 +44,8 @@ const InputComponent = ({
         className={`input ${isFocused ? 'border-amber-700' : 'border-lighterSecondary'}`}
         spellCheck={spellCheck}
         textContentType={textContentType}
+        ref={ref}
+        autoFocus={autoFocus}
       />
     </View>
   )

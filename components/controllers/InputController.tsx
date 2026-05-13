@@ -18,7 +18,8 @@ const InputController = (
     multiline = false,
     spellCheck = false,
     textContentType = undefined,
-    generalStyle
+    generalStyle,
+    autoFocus = false
   }: FormInputControllerProps) => {
 
   return (
@@ -40,6 +41,7 @@ const InputController = (
               spellCheck={spellCheck}
               textContentType={textContentType}
               generalStyle={generalStyle}
+              autoFocus={autoFocus}
               // onBlur={onBlur}
             />
           )

@@ -1,6 +1,6 @@
 import { RecordModel } from "pocketbase";
 import { Control, FieldErrors, FieldValues } from "react-hook-form";
-import { ImageSourcePropType } from "react-native";
+import { ImageSourcePropType, TextInput } from "react-native";
 import { FeedProfile } from "./feed";
 import { PBUser } from "./pbTypes";
 
@@ -26,6 +26,8 @@ export interface InputComponentProps {
   spellCheck?: boolean;
   textContentType?: 'oneTimeCode' | 'password' | undefined;
   generalStyle?: string;
+  ref?: React.RefObject<TextInput | null>;
+  autoFocus?: boolean;
 }
 
 export interface FormInputControllerProps<

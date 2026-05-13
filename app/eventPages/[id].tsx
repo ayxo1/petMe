@@ -9,6 +9,7 @@ import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Image as RNImage, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const BackIcon = () => {
@@ -171,14 +172,14 @@ const EventPage = () => {
           </View>
         </View>
 
-        <View className=''>
-          <CommentSection 
+        <KeyboardProvider>
+          <CommentSection
             comments={comments}
             setComments={setComments}
             isLoadingComments={isLoadingComments}
             eventId={id}
           />
-        </View>
+        </KeyboardProvider>
       </View>
         
     </SafeAreaView>

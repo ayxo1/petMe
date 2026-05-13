@@ -14,6 +14,7 @@ interface InputComponentProps {
   spellCheck?: boolean
   textContentType?: 'oneTimeCode' | 'password' | undefined;
   generalStyle?: string;
+  autoFocus?: boolean;
 }
 
 export interface FormInputControllerProps extends InputComponentProps {
