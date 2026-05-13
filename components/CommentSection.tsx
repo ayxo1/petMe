@@ -92,7 +92,7 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
     <KeyboardAvoidingView
       className="items-center"
       behavior='position'
-      keyboardVerticalOffset={-21}
+      keyboardVerticalOffset={-24}
     >
 
       <TouchableOpacity 
@@ -102,7 +102,7 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
           setReplyingTo(null);
         }}
       >
-        <Text className='text-secondary py-1 px-2'>add a comment (+)</Text>
+        <Text className='text-secondary py-1 px-2 border rounded-2xl border-secondary'>add a comment (+)</Text>
       </TouchableOpacity>
 
       {isLoadingComments

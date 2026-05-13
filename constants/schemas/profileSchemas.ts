@@ -47,3 +47,13 @@ export const reportProfile = yup.object({
     .oneOf(['inappropriate', 'fake', 'spam', 'harassment', 'other'])
     .required()
 });
+
+export const supportForm = yup.object({
+  description: yup
+    .string()
+    .required(),
+  reason: yup
+    .string()
+    .oneOf(['suggestion', 'tech issue', 'report a violation', 'other'])
+    .required()
+});

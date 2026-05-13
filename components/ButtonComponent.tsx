@@ -5,7 +5,7 @@ const ButtonComponent = ({
   onPress,
   title = 'i am clickable',
   style,
-  textStyle,
+  textStyle = 'text-white',
   leftIcon,
   isLoading = false,
   disabled = false
@@ -30,7 +30,7 @@ const ButtonComponent = ({
             />
           ) : (
             <Text
-              className={`text-white text-base ${textStyle}`}
+              className={`text-base ${textStyle}`}
             >{title}</Text>
           )}
         </View>

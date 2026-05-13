@@ -9,7 +9,6 @@ module.exports = {
     "icon": "./assets/images/icon.jpg",
     "scheme": "petme",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
@@ -69,7 +68,8 @@ module.exports = {
       ]
     ],
     "experiments": {
-      "typedRoutes": true
+      "typedRoutes": true,
+      "reactCompiler": true
     },
     "extra": {
       "router": {},

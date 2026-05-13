@@ -9,7 +9,10 @@ import { router } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Keyboard, Linking, Pressable, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
+import ButtonComponent from './ButtonComponent';
+import Modal from './Modal';
 import { speciesOptions } from './pets/PetForm';
+import SupportForm from './SupportForm';
 
 const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => void, LogOutButton: () => React.JSX.Element, modalOpen: boolean; }) => {
     
@@ -44,6 +47,8 @@ const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => 
     const [passwordForm, setPasswordForm] = useState({ currentPassword: '', newPassword: '', isLoading: false });
 
     const [notificationsAllowed, setNotificationsAllowed] = useState(false);
+
+    const [isSupportModal, setIsSupportModal] = useState(false);
 
     const onEmailChange = async () => {
         if (emailForm.newEmail && emailForm.newEmail !== user.email) {
@@ -170,6 +175,21 @@ const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => 
         automaticallyAdjustKeyboardInsets={true}
         keyboardShouldPersistTaps='handled'
     >
+
+        {isSupportModal && (
+            <Modal 
+                isOpen={isSupportModal}
+                toggleModal={setIsSupportModal}
+            >
+                <View>
+                    <SupportForm 
+                        userId={user.id}
+                        toggleModal={setIsSupportModal}
+                    />
+                </View>
+            </Modal>
+        )}
+
         <Pressable className='flex-1 w-96 gap-4'
             onPress={() => Keyboard.dismiss()}
         >
@@ -371,6 +391,15 @@ const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => 
                     </View>
                 </View>
             </View> : null}
+
+            <View>
+                <ButtonComponent 
+                    title='contact support'
+                    style='bg-lighterSecondary shadow shadow-secondary/30'
+                    textStyle='text-secondary'
+                    onPress={() => setIsSupportModal(true)}
+                />
+            </View>
             
             <View className='flex-1 justify-end mb-20 border-t py-4'>
                 <LogOutButton />
