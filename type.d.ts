@@ -15,6 +15,7 @@ interface InputComponentProps {
   textContentType?: 'oneTimeCode' | 'password' | undefined;
   generalStyle?: string;
   autoFocus?: boolean;
+  inputAccessoryViewID?: string;
 }
 
 export interface FormInputControllerProps extends InputComponentProps {

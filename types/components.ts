@@ -28,6 +28,7 @@ export interface InputComponentProps {
   generalStyle?: string;
   ref?: React.RefObject<TextInput | null>;
   autoFocus?: boolean;
+  inputAccessoryViewID?: string;
 }
 
 export interface FormInputControllerProps<

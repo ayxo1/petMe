@@ -1,9 +1,11 @@
-import { reportsAPI } from '@/backend/config/pocketbase';
+import { pb } from '@/backend/config/pocketbase';
+import Colors from '@/constants/Colors';
 import { supportForm } from '@/constants/schemas/profileSchemas';
+import { useAuthStore } from '@/stores/authStore';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, KeyboardAvoidingView, Text, View } from 'react-native';
+import { Alert, Button, InputAccessoryView, KeyboardAvoidingView, Text, View } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import ButtonComponent from './ButtonComponent';
 import InputController from './controllers/InputController';
@@ -15,6 +17,7 @@ interface SupportFormProps {
 
 const SupportForm = ({ userId, toggleModal }: SupportFormProps) => {
 
+    const user = useAuthStore(state => state.user);
     const [open, setOpen] = useState(false);
     const [inquiryReason, setInquiryReason] = useState(null);
     const [selectedInquiryReason, setSelectedInquiryReason] = useState([
@@ -23,6 +26,7 @@ const SupportForm = ({ userId, toggleModal }: SupportFormProps) => {
         {label: 'report a violation', value: 'report a violation'},
         {label: 'other', value: 'other'},
     ]);
+    const inputAccessoryViewID = 'uniqueID';
 
     const {
         control,
@@ -34,41 +38,45 @@ const SupportForm = ({ userId, toggleModal }: SupportFormProps) => {
     } = useForm({
         resolver: yupResolver(supportForm),
         defaultValues: {
-            reason: undefined
+            inquiryReason: undefined
         }
     });
 
-    const submit = async ({description} : {description: string}) => {
+    const submit = async ({description, inquiryReason } : { description: string; inquiryReason: string; }) => {
         if(!inquiryReason) return;
         try {
-            // await reportsAPI.createReport(userId, reportedProfileId, reportReason, description);
-            Alert.alert('report submitted', 'thanks for the info!');
+            if (user) {                
+                await pb.collection('support').create({
+                    submitter: userId,
+                    description,
+                    inquiryReason
+                });
+            }
+            pb.send("/api/send-mail", {
+                method: "POST",
+                body: {
+                    inquiryReason,
+                    description
+                }
+            });
+            Alert.alert('support inquiry submitted', 'thanks for the info!');
             toggleModal(false);
         } catch (error) {
-            console.log('report sumbit error:', error);
+            console.log('SupportForm.tsx support sumbit error:', error);
         }
     };
 
   return (
-    <KeyboardAvoidingView className='w-[90%]'>
+    <KeyboardAvoidingView
+        className='max-w-[90%]'
+    >
         <View>
-            <Text className="text-center mb-10 text-xl text-secondary mt-10">contact support</Text>
+            <Text className="text-center mb-5 text-xl text-secondary mt-10">contact support</Text>
         </View>
-        <View>
-            <InputController
-                multiline={true}
-                control={control}
-                name='description'
-                label='description'
-                errors={errors}
-                placeholder="please describe what your inquiry"
-                labelStyling={'text-black'}
-                spellCheck={true}
-            />
-        </View>
+        
         <View>
             <View>
-                <Text className='label text-black my-4 text-start'>select the reason</Text>
+                <Text className='label my-4 text-secondary'>select the reason</Text>
             </View>
             <View className='justify-center'>
                 <DropDownPicker
@@ -80,29 +88,55 @@ const SupportForm = ({ userId, toggleModal }: SupportFormProps) => {
                     setItems={setSelectedInquiryReason}
                     multiple={false}
                     mode="BADGE"
-                    onChangeValue={val => {setValue('reason', val as 'suggestion')}}
-                    style={errors.reason ? { borderColor: 'red', backgroundColor: '#ffffff99' } : {backgroundColor: '#ffffff99'}}
+                    onChangeValue={val => {setValue('inquiryReason', val as 'suggestion')}}
+                    style={errors.inquiryReason ? { borderColor: 'red', backgroundColor: '#ffffff99' } : {backgroundColor: Colors.lighterSecondary}}
                     placeholder='select the reason'
                 />
                 <View className='h-5'>
-                    {errors.reason && (
+                    {errors.inquiryReason && (
                         <Text className='text-red-500 text-center'>
-                            {errors.reason.message}
+                            {errors.inquiryReason.message}
                         </Text>
                     )}
                 </View>
             </View>
-            <View className='p-5'>
-                <ButtonComponent
+        </View>
+
+        <View>
+            <InputController
+                multiline
+                control={control}
+                name='description'
+                label='description'
+                errors={errors}
+                placeholder="please describe what your inquiry"
+                labelStyling={'text-secondary'}
+                spellCheck
+                inputAccessoryViewID={inputAccessoryViewID}
+            />
+        </View>
+                    
+        <InputAccessoryView 
+            nativeID={inputAccessoryViewID}
+        >
+            <View className='mb-5 items-end mr-11'>
+                <Button
+                    color={Colors.secondary}
                     title='submit'
-                    onPress={handleSubmit(submit)}
-                    style='bg-lighterSecondary'
-                    textStyle='text-secondary'
                 />
             </View>
+        </InputAccessoryView>
+
+        <View className='p-6'>
+            <ButtonComponent
+                title='submit'
+                onPress={handleSubmit(submit)}
+                style='bg-lighterSecondary'
+                textStyle='text-secondary'
+            />
         </View>
     </KeyboardAvoidingView>
-  )
-}
+  );
+};
 
 export default SupportForm;

@@ -52,7 +52,7 @@ export const supportForm = yup.object({
   description: yup
     .string()
     .required(),
-  reason: yup
+  inquiryReason: yup
     .string()
     .oneOf(['suggestion', 'tech issue', 'report a violation', 'other'])
     .required()

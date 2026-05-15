@@ -59,14 +59,14 @@ const ReportForm = ({ userId, reportedProfileName, reportedProfileId, toggleModa
         </View>
         <View>
             <InputController
-                multiline={true}
+                multiline
                 control={control}
                 name='description'
                 label='description'
                 errors={errors}
                 placeholder="please describe what you noticed"
                 labelStyling={'text-black'}
-                spellCheck={true}
+                spellCheck
             />
         </View>
         <View>

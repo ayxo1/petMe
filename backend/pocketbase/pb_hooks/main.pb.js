@@ -1,64 +1,10 @@
 /// <reference path="../pb_data/types.d.ts" />
 
-// function sendPushNotification (pushToken, title, body, data) {
-//     if (!pushToken) return;
-
-//     const response = $http.send({
-//         url: 'https://exp.host/--/api/v2/push/send',
-//         method: 'POST',
-//         headers: { 'Content-Type': 'application/json'},
-//         body: JSON.stringify({
-//             to: pushToken,
-//             title,
-//             body,
-//             sound: 'default',
-//             data: data || {}
-//         })
-//     });
-// };
-
 onRecordViewRequest((e) => {
     if (e.record.id !== e.requestInfo?.auth?.id) {
         e.record.set('coordinates', null);
     }
 }, 'users, superusers');
-
-// onRecordAfterCreateSuccess((e) => {
-//     const message = e.record;
-//     const senderId = message.get('sender');
-//     const matchId = message.get('match');
-    
-//     $app.runInRoutine(() => {
-//         try {
-//             const match = $app.findRecordById('matches', matchId);
-//             const recipientId = match.get('user1') === senderId
-//                 ? match.get('user2')
-//                 : match.get('user1');
-    
-//             const recipient = $app.findRecordById('users', recipientId);
-//             const sender = $app.findRecordById('users', senderId);
-//             const pushToken = recipient.get('pushToken');
-    
-//             console.log('PUSH DEBUG:', pushToken, sender.get('username'), message.get('content'));
-//             $http.send({
-//             url: 'https://exp.host/--/api/v2/push/send',
-//             method: 'POST',
-//             headers: { 'Content-Type': 'application/json'},
-//             body: JSON.stringify({
-//                     to: pushToken,
-//                     title: sender.get('username'),
-//                     body: message.get('content'),
-//                     sound: 'default',
-//                     data: { matchId, type: 'message' } || {}
-//                 })
-//             });
-            
-//         } catch (error) {
-//             console.log('push notification onRecordAfterCreateSuccess error:', error);
-//         }
-//     });
-
-// }, 'messages');
 
 onRecordAfterCreateSuccess((e) => {
     const pin = Math.floor(1000 + Math.random() * 9000).toString();
@@ -807,3 +753,36 @@ routerAdd("POST", "/api/send-notification", (c) => {
     }
     
 }, $apis.requireAuth('users'));
+
+routerAdd("POST", "/api/send-mail", (c) => {
+    const user = c.auth;
+    const data = new DynamicModel({ inquiryReason: '', description: '' });
+    c.bindBody(data);
+
+    try {
+        if (!data.inquiryReason || !data.description) return c.json(200, { error: 'invalid data' });
+        const mailClient = $app.newMailClient();
+        const message = new MailerMessage({
+            from: { address: 'petapetsupport@gmail.com', name: 'pet-a-pet app'},
+            to: [{ address: 'petapetsupport@gmail.com' }],
+            subject: `${data.inquiryReason}`,
+            html: `userId - <strong>${user.id}</strong>
+            <br>
+            <p>${data.description}</p>`
+        });
+    
+        mailClient.send(message);
+
+        if (!user) {
+            const supportCollection = $app.findCollectionByNameOrId('support');
+            const supportInquiry = new Record(supportCollection);
+            match.set('reason', data.inquiryReason);
+            match.set('description', data.description);
+            $app.save(supportInquiry);
+        }
+        return c.json(200, { success: true });
+    } catch (error) {
+        console.log('/api/send-mail error', error);
+        return c.json(400, { success: false });
+    }
+});

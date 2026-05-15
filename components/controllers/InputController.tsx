@@ -19,7 +19,8 @@ const InputController = (
     spellCheck = false,
     textContentType = undefined,
     generalStyle,
-    autoFocus = false
+    autoFocus = false,
+    inputAccessoryViewID
   }: FormInputControllerProps) => {
 
   return (
@@ -43,6 +44,7 @@ const InputController = (
               generalStyle={generalStyle}
               autoFocus={autoFocus}
               // onBlur={onBlur}
+              inputAccessoryViewID={inputAccessoryViewID}
             />
           )
         }}

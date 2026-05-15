@@ -1,6 +1,6 @@
 import { InputComponentProps } from '@/types/components';
 import { useState } from 'react';
-import { Text, TextInput, View } from 'react-native';
+import { Button, InputAccessoryView, Text, TextInput, View } from 'react-native';
 
 const InputComponent = ({
     placeholder = 'enter text here',
@@ -15,7 +15,8 @@ const InputComponent = ({
     textContentType = undefined,
     generalStyle = 'w-full',
     ref,
-    autoFocus = false
+    autoFocus = false,
+    inputAccessoryViewID
 }: InputComponentProps) => {
 
     const [isFocused, setIsFocused] = useState(false);
@@ -46,7 +47,13 @@ const InputComponent = ({
         textContentType={textContentType}
         ref={ref}
         autoFocus={autoFocus}
+        inputAccessoryViewID={inputAccessoryViewID}
       />
+      {/* {inputAccessoryViewID ? 
+        <InputAccessoryView nativeID={inputAccessoryViewID}>
+            <Button onPress={() => console.log('yes')} title="Clear text" />
+        </InputAccessoryView>
+      : null} */}
     </View>
   )
 }

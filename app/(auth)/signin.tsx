@@ -3,6 +3,7 @@ import ButtonComponent from '@/components/ButtonComponent';
 import InputController from '@/components/controllers/InputController';
 import InputComponent from '@/components/InputComponent';
 import Modal from '@/components/Modal';
+import SupportForm from '@/components/SupportForm';
 import { authSignInSchema } from '@/constants/schemas/authSchemas';
 import { useAuthStore } from '@/stores/authStore';
 import { SignInFormData } from '@/types/auth';
@@ -33,6 +34,7 @@ const SignIn = () => {
 
   const { signIn, signInWithOAuth, isLoading } = useAuthStore();
 
+  const [isSupportModal, setIsSupportModal] = useState(false);
   const [forgotPasswordModal, toggleForgotPasswordModal] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
 
@@ -99,6 +101,20 @@ const SignIn = () => {
       <View
         className='gap-3 rounded-lg p-5'
       >
+
+        {isSupportModal && (
+          <Modal 
+            isOpen={isSupportModal}
+            toggleModal={setIsSupportModal}
+          >
+            <View>
+              <SupportForm
+                userId={'not-logged-in'}
+                toggleModal={setIsSupportModal}
+              />
+            </View>
+          </Modal>
+        )}
         
         {forgotPasswordModal && (
           <Modal
@@ -181,7 +197,7 @@ const SignIn = () => {
           </Link>
         </View>
         <View
-          className='flex items-center border-secondary p-2'
+          className='flex items-center border-secondary p-2 gap-6'
         >
           <TouchableOpacity 
             className='text-secondary text-l'
@@ -189,6 +205,15 @@ const SignIn = () => {
           >
             <Text className='text-xl text-secondary'>forgot password</Text>
           </TouchableOpacity>
+
+          <View>
+            <ButtonComponent 
+              title='contact support'
+              style='bg-lighterSecondary'
+              textStyle='text-secondary'
+              onPress={() => setIsSupportModal(true)}
+            />
+          </View>
         </View>
       </View>
     </Fragment>
