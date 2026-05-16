@@ -3,7 +3,7 @@ import { reportProfile } from '@/constants/schemas/profileSchemas';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, KeyboardAvoidingView, Text, View } from 'react-native';
+import { Alert, InputAccessoryView, Keyboard, KeyboardAvoidingView, Text, TouchableOpacity, View } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import ButtonComponent from './ButtonComponent';
 import InputController from './controllers/InputController';
@@ -52,6 +52,8 @@ const ReportForm = ({ userId, reportedProfileName, reportedProfileId, toggleModa
         }
     };
 
+    const inputAccessoryViewID = 'reportFormDescription';
+
   return (
     <KeyboardAvoidingView className='w-96'>
         <View>
@@ -67,8 +69,25 @@ const ReportForm = ({ userId, reportedProfileName, reportedProfileId, toggleModa
                 placeholder="please describe what you noticed"
                 labelStyling={'text-black'}
                 spellCheck
+                inputAccessoryViewID={inputAccessoryViewID}
             />
         </View>
+
+        <InputAccessoryView 
+            nativeID={inputAccessoryViewID}
+        >
+            <View 
+                className='bg-white/80'
+            >
+                <TouchableOpacity 
+                    className='p-1.5 items-end justify-center'
+                    onPress={() => Keyboard.dismiss()}
+                >
+                    <Text className='mr-12 text-lg text-secondary font-semibold'>done</Text>
+                </TouchableOpacity>
+            </View>
+        </InputAccessoryView>
+
         <View>
             <View>
                 <Text className='label text-black my-4 text-start'>select the reason</Text>

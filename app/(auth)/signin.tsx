@@ -106,6 +106,7 @@ const SignIn = () => {
           <Modal 
             isOpen={isSupportModal}
             toggleModal={setIsSupportModal}
+            withInput={false}
           >
             <View>
               <SupportForm

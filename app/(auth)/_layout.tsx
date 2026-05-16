@@ -6,10 +6,17 @@ import React from 'react';
 import { Dimensions, Image, ScrollView, TouchableOpacity, View } from 'react-native';
 
 const AuthLayout = () => {
+  const registrationState = useAuthStore(state => state.registrationState);
+
   const pathName = usePathname();
   const isFullScreen = pathName.includes('pet-setup') || pathName.includes('profile-setup') || pathName.includes('shelter-setup');
-  const registrationState = useAuthStore(state => state.registrationState);
   const showBackButton: boolean = registrationState === 'completed' && pathName.includes('pet-setup') || (registrationState === 'completed' && pathName.includes('profile-setup'));
+  const needsKeyboardAdjust = 
+    pathName.includes('pet-setup') || 
+    pathName.includes('pin-entry') || 
+    pathName.includes('profile-setup') || 
+    pathName.includes('shelter-setup') ||
+    pathName.includes('signup');
 
   return (
     <View 
@@ -32,7 +39,7 @@ const AuthLayout = () => {
       <ScrollView
         keyboardShouldPersistTaps='handled'
         contentContainerStyle={{ flexGrow: 1 }}
-        automaticallyAdjustKeyboardInsets={true}
+        automaticallyAdjustKeyboardInsets={needsKeyboardAdjust}
       >
         <View
           style={{

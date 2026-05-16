@@ -9,7 +9,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "lint": "expo lint",
-    "backend": "node scripts/backendStart.mjs"
+    "backend": "node scripts/backendStart.mjs",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@expo/metro-runtime": "~55.0.11",
@@ -80,6 +81,7 @@
     "cross-env": "^10.1.0",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~55.0.0",
+    "patch-package": "^8.0.1",
     "readline-sync": "^1.4.10",
     "typescript": "~5.9.2"
   },
