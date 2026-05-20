@@ -11,6 +11,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
+import { ClientResponseError } from 'pocketbase';
 import { Fragment, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
@@ -62,8 +63,10 @@ const ProfileSetup = () => {
     try {
       setIsLoadingLocation(true);
 
-      const coordinates = await getCurrentLocation();
-      const locationData = await getCityFromCoordinates(coordinates);
+      // const coordinates = await getCurrentLocation();
+      // const locationData = await getCityFromCoordinates(coordinates);
+
+      // dalat coords:
       // const coordinates = {
       //   lat: 11.962197389522155,
       //   lng: 108.44319558498574
@@ -72,6 +75,16 @@ const ProfileSetup = () => {
       //   lat: 11.962197389522155,
       //   lng: 108.44319558498574
       // });
+
+      // msc coords:
+      const coordinates = {
+        lat: 55.7558,
+        lng: 37.6173
+      };
+      const locationData = await getCityFromCoordinates({
+        lat: 55.7558,
+        lng: 37.6173
+      });
 
       if (coordinates && locationData) {
         setValue('location', { city: locationData.city, coordinates }, {
@@ -154,7 +167,7 @@ const ProfileSetup = () => {
         Alert.alert(
           'success!',
           'your profile is updated',
-          [{text: 'ok', onPress: () => router.replace('/profile')}]
+          [{text: 'ok', onPress: () => router.back()}]
         );
         return;
         // if user missclicked the profile type during the signup stage and went back to seeker
@@ -184,7 +197,9 @@ const ProfileSetup = () => {
 
     } catch (error) {
       console.log(error, 'profile setup error');
-      Alert.alert('error', `failed to ${isEditing ? 'update' : 'create'} profile, please try again`);
+      if (error instanceof ClientResponseError && error.response.data.images.code.includes('file_size_limit')) {
+        Alert.alert('error', `the maximum allowed size per image is 8mb`);
+      } else Alert.alert('error', `failed to ${isEditing ? 'update' : 'create'} profile, please try again`);
       return;
     };
   };

@@ -2,6 +2,7 @@ import { authAPI, isAuthenticated, pb, signOut as pbSignOut } from '@/backend/co
 import { PBUser } from '@/types/pbTypes';
 import { stringImageToPbUrl } from '@/utils/imageUtils';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ClientResponseError } from 'pocketbase';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { AuthState, RegistrationState, SignInFormData, SignUpFormData, User } from '../types/auth';

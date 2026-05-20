@@ -100,7 +100,7 @@ const Events = () => {
         ? 
         <FlatList
           data={eventList}
-          className='h-[75%]'
+          className='h-[72%]'
           keyExtractor={(item) => item.id}
           renderItem={({ item, index }) => {
             // const tz = userTimezone ?? 'UTC';

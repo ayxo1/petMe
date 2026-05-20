@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/authStore';
 import { usePetStore } from '@/stores/petStore';
 import { PetFormData } from '@/types/pets';
 import { router, useLocalSearchParams } from 'expo-router';
+import { ClientResponseError } from 'pocketbase';
 import React from 'react';
 import { Alert, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -26,14 +27,16 @@ const PetSetup = () => {
           'success!',
           `${data.name} is successfully updated!`,
           [
-            {text: 'done', onPress: () => router.replace('/(tabs)/profile')}
+            {text: 'done', onPress: () => router.back()}
           ]
         );
         return;
       } catch (error) {
         console.log('updatePet pet-setup error:', error);
-        Alert.alert('error', 'failed to update the pet, try again');
-        throw error;
+        if (error instanceof ClientResponseError && error.response.data.images.code.includes('file_size_limit')) {
+          Alert.alert('error', `the maximum allowed size per image is 8mb`);
+        } else Alert.alert('error', 'failed to update the pet, try again');
+        return;
       }
     } else {
       try {
@@ -43,13 +46,15 @@ const PetSetup = () => {
           'success!',
           `${data.name} is successfully added!`,
           [
-            {text: 'add another', onPress: () => router.replace('/(tabs)/profile')},
+            {text: 'add another', onPress: () => {registrationState === 'completed' ? router.push('/(tabs)/profile') : router.push('/(tabs)/profile')}},
             {text: 'done', onPress: () => router.replace('/')}
           ]
         );
       } catch (error) {
-        Alert.alert('error', 'failed to add the pet, try again');
-        console.log(error, 'error adding the pet');
+        console.log(error, 'error adding the pet');        
+        if (error instanceof ClientResponseError && error.response.data.images.code.includes('file_size_limit')) {
+          Alert.alert('error', `the maximum allowed size per image is 8mb`);
+        } else Alert.alert('error', 'failed to add the pet, try again');
         throw error;
       }
     }
