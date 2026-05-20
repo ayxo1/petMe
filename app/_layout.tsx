@@ -6,17 +6,21 @@ import { useShelterStore } from "@/stores/shelterStore";
 import { registerForPushNotifications } from "@/utils/notifications";
 import { getRegistrationStateRoute } from "@/utils/routingHelper";
 import { useFonts } from "expo-font";
-import { router, Stack } from "expo-router";
-import { useEffect } from "react";
-import { Alert } from "react-native";
+import { router, SplashScreen, Stack } from "expo-router";
+import LottieView from "lottie-react-native";
+import { useEffect, useState } from "react";
+import { Alert, View } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import './globals.css';
+
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
 
   // const [fontsLoaded] = useFonts({
   //   'ReemKufi-Bold': require('@/assets/fonts/ReemKufi-Bold.ttf')
   // });
+  const [animationFinished, setAnimationFinished] = useState(false);
 
   const isAuthenticated = useAuthStore(state => state.isAuthenticated);
   const registrationState = useAuthStore(state => state.registrationState);
@@ -29,20 +33,27 @@ export default function RootLayout() {
 
   useEffect(() => {
     const startUp = async () => {
+      await SplashScreen.hideAsync();
+
       await init();
+
       if (!pb.authStore.isValid) return;
+
       try {
         await pb.collection('users').authRefresh();
       } catch (error) {
         console.log('auth refresh failed:', error);
         return;
       }
+
       try {
         await hydrateUser();
       } catch (error) {
         console.log('root layout, hydrateUser error:', error);
       }
+
       const freshUser = useAuthStore.getState().user;
+
       if (freshUser && freshUser.regState === 'completed') {
         hydratePets(freshUser.id);
         if (freshUser?.accountType === 'shelter') hydrateShelter(freshUser.id);
@@ -76,11 +87,36 @@ export default function RootLayout() {
     useAuthStore.setState({ sessionExpired: false });
   }, [sessionExpired]);
 
+  useEffect(() => {
+    const timeout = setTimeout(() => setAnimationFinished(true), 3000);
+    return () => clearTimeout(timeout);
+  }, []);
+
   return (
     <GestureHandlerRootView>
       <Stack
         screenOptions={{ headerShown: false, contentStyle: {backgroundColor: Colors.primary}}}
       />
+      {!animationFinished ? (
+        <View
+          style={{
+            position: 'absolute',
+            top: 0, left: 0, right: 0, bottom: 0,
+            backgroundColor: '#fdf0dc',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 999
+          }}
+        >
+          <LottieView
+            source={require('@/assets/animations/splashScreenAnim.json')}
+            autoPlay
+            // loop={true}
+            style={{ width: '50%', height: '50%' }}
+            onAnimationFinish={() => setAnimationFinished(true)}
+          />
+        </View>
+      ) : null}
       {/* {!fontsLoaded ? (
         <SafeAreaView className="flex-1 flex-row gap-2 items-center justify-center absolute top-48 left-0 right-0">
           <ActivityIndicator size="small" className='color-gray-600/60' />

@@ -41,17 +41,17 @@ const ProfileInterface = ({ profile }: { profile: Partial<FeedProfile> }) => {
                 styleProps='mt-48 justify-center items-center max-w-96'
                 tint={false}
             >
-                <View className="gap-4 bg-secondary/80 px-3 py-4 rounded-2xl border border-lighterSecondary">
-                    <Text className="text-authPrimary font-bold">adoption status:
-                        <Text className={`font-light ${profile.adoptionStatus === 'available' ? 'text-green-400' : 'text-primary'}`}> {profile.adoptionStatus === 'available' ? 'looking for a home' : profile.adoptionStatus}</Text>
+                <View className="gap-4 bg-primary/90 px-3 py-4 rounded-2xl border border-lighterSecondary">
+                    <Text className="text-secondary font-bold">adoption status:
+                        <Text className={`font-light ${profile.adoptionStatus === 'available' ? 'text-green-600' : 'text-secondary'}`}> {profile.adoptionStatus === 'available' ? 'looking for a home' : profile.adoptionStatus}</Text>
                     </Text>
                     {profile.adoptionDetails?.reason && 
-                    <Text className="text-authPrimary font-bold">reason:
-                        <Text className="font-light text-primary"> {profile.adoptionDetails.reason}</Text>
+                    <Text className="text-secondary font-bold">reason:
+                        <Text className="font-light text-secondary"> {profile.adoptionDetails.reason}</Text>
                     </Text>}
                     {profile.adoptionDetails?.requirements && 
-                    <Text className="text-authPrimary font-bold">requirements:
-                        <Text className="font-light text-primary"> {profile.adoptionDetails.requirements}</Text>
+                    <Text className="text-secondary font-bold">requirements:
+                        <Text className="font-light text-secondary"> {profile.adoptionDetails.requirements}</Text>
                     </Text>}
                 </View>
             </Modal>
@@ -105,7 +105,6 @@ const ProfileInterface = ({ profile }: { profile: Partial<FeedProfile> }) => {
             <Image
                 source={images.profileCardBorder}
                 className="size-full"
-                // resizeMode="stretch"
                 contentFit="fill"
                 style={{ width: '100%', height: '100%' }}
                 cachePolicy='memory-disk'

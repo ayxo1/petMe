@@ -4,7 +4,7 @@ module.exports = {
   "expo": {
     "name": IS_DEV ? "pet-a-pet (Dev)" : 'pet-a-pet',
     "slug": "petMe",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.jpg",
     "scheme": "petme",
@@ -38,6 +38,11 @@ module.exports = {
       "expo-localization",
       "expo-apple-authentication",
       [
+        "expo-custom-assets", {
+          "assetsPaths": ["./assets/animations/"]
+        }
+      ],
+      [
         "expo-notifications",
         {
           "icon": "./assets/images/icon.jpg",
@@ -50,7 +55,7 @@ module.exports = {
           "image": "./assets/images/icon.jpg",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#fdf0dc"
         }
       ],
       [

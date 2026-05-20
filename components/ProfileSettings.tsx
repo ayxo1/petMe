@@ -180,6 +180,7 @@ const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => 
             <Modal 
                 isOpen={isSupportModal}
                 toggleModal={setIsSupportModal}
+                styleProps='bg-white/90'
             >
                 <View>
                     <SupportForm 
@@ -401,7 +402,7 @@ const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => 
                 />
             </View>
             
-            <View className='flex-1 justify-end mb-20 border-t py-4'>
+            <View className='flex-1 justify-end mb-20 border-t border-t-secondary py-4'>
                 <LogOutButton />
             </View>
         </Pressable>

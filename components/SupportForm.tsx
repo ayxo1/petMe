@@ -80,7 +80,7 @@ const SupportForm = ({ userId, toggleModal }: SupportFormProps) => {
                 name='description'
                 label='description'
                 errors={errors}
-                placeholder="please describe what your inquiry"
+                placeholder="please describe your inquiry"
                 labelStyling={'text-secondary'}
                 spellCheck
                 inputAccessoryViewID={inputAccessoryViewID}

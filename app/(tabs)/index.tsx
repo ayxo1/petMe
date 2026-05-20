@@ -160,12 +160,13 @@ return (
       <Modal
         isOpen={isModal}
         toggleModal={setIsModal}
-        styleProps="bg-lighterSecondary/80"
+        styleProps="bg-[#fc033d]/15"
       > 
         {matchScreenProps && (
           <MatchScreen
             modalOpen={setIsModal}
             matchScreenProps={matchScreenProps}
+            // matchScreenProps={{matchId: '123', username: 'test', image: '', isExisting: false}}
           />
         )}
       </Modal>

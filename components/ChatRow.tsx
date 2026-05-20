@@ -1,5 +1,6 @@
 import { pb } from '@/backend/config/pocketbase';
 import Colors from '@/constants/Colors';
+import { useAuthStore } from '@/stores/authStore';
 import { useChatStore } from '@/stores/useChatStore';
 import { MatchRowData } from '@/types/components';
 import { Link } from 'expo-router';
@@ -12,6 +13,8 @@ const ChatRow = ({ matchId, matchedUser, petName, shelterName, lastMessage }: Ma
 
   const unreadChatRooms = useChatStore(state => state.unreadChatRooms);
   const isChatRead = unreadChatRooms.includes(matchId);
+
+  const user = useAuthStore(state => state.user);
     
   return (
     <Link href={{
@@ -31,13 +34,9 @@ const ChatRow = ({ matchId, matchedUser, petName, shelterName, lastMessage }: Ma
             uri={profilePic.uri || ''}
             style={`w-16 h-16 rounded-full ${(isChatRead || !lastMessage) && 'border border-red-500/60'}`}
           />
-          {/* <Image
-            source={profilePic}
-            className={`w-16 h-16 rounded-full ${(isChatRead || !lastMessage) && 'border border-red-500/60'}`}
-          /> */}
           {(isChatRead || !lastMessage) && (
-            <View className='absolute left-14 top-2'>
-              <Text>🔴</Text>
+            <View className='absolute left-14 top-2 bg-red-500/85 px-2 rounded-full h-5'>
+              <Text className='text-s text-red-500/0'>.</Text>
             </View>
           )}
           <View className='flex-1 ml-5'>
@@ -45,13 +44,15 @@ const ChatRow = ({ matchId, matchedUser, petName, shelterName, lastMessage }: Ma
               <Text className='text-xl'>
                 {matchedUser.username}
               </Text>
+              {user?.accountType !== 'shelter' ? 
               <Text className={`text-base ${shelterName ? 'text-authPrimary' : 'text-secondary'}`}>
                 {matchedUser.accountType === 'seeker'
                   ? '(seeker)'
                   : (matchedUser.accountType === 'shelter' 
                     ? `(${shelterName ? `${shelterName} shelter` : 'shelter'})`
-                    : `(${petName}'s owner)`)}
+                    : `(${petName ? `${petName}'s owner` : 'event organizer'})`)}
               </Text>
+              : null}
             </View>
             <Text
               className={`text-base ${(isChatRead || !lastMessage) ? 'text-red-500' : 'text-secondary'}`}

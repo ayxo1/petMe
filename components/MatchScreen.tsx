@@ -1,5 +1,6 @@
 import { Link } from "expo-router";
-import React from 'react';
+import LottieView from "lottie-react-native";
+import React, { useEffect, useRef } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 interface MatchScreenPageProps {
@@ -13,13 +14,29 @@ interface MatchScreenPageProps {
 }
 
 const MatchScreen = ({modalOpen, matchScreenProps} : MatchScreenPageProps) => {
+
+    const animRef = useRef<LottieView>(null);
+
+    useEffect(() => {
+        animRef.current?.play();
+    }, []);
     
   return (
-        <View className="items-center justify-center px-2.5 py-12 border border-authPrimary/30 rounded-3xl">
+        <View className="items-center justify-center px-2.5 py-5 border border-authPrimary/10 rounded-3xl">
             
             <View>
+                <LottieView
+                ref={animRef}
+                source={require('@/assets/animations/matchHeartAnim.json')}
+                style={{width: 100, height: 100}}
+                autoPlay
+                loop
+                />
+            </View>
+
+            <View>
                 <View>
-                    <Text className="text-2xl color-secondary text-center font-bold">{matchScreenProps.isExisting ? `looks like you already matched with ${matchScreenProps.username} over a different pet previously!` : 'it is a match!'}</Text>
+                    <Text className="text-2xl color-primary text-center font-bold">{matchScreenProps.isExisting ? `looks like you already matched with ${matchScreenProps.username} over a different pet previously!` : 'it is a match!'}</Text>
                 </View>
         
                 <View

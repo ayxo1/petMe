@@ -107,6 +107,7 @@ const SignIn = () => {
             isOpen={isSupportModal}
             toggleModal={setIsSupportModal}
             withInput={false}
+            styleProps='bg-white/90'
           >
             <View>
               <SupportForm

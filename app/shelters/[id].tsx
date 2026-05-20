@@ -45,7 +45,7 @@ const ShelterPage = () => {
   const [isProfileShown, toggleIsProfileShown] = useState(false);
 
   const [isCopied, setIsCopied] = useState<{ status: boolean }>({ status: false });
-  const copyTimeoutRef = useRef<number | null>(null);
+  const copyTimeoutRef = useRef<null | ReturnType<typeof setTimeout>>(null);
 
   const connectShelter = async () => {
     try {
@@ -101,6 +101,7 @@ const ShelterPage = () => {
 
     fetchShelterPets();
   }, []);
+console.log(selectedPetProfile);
 
   return (
     <SafeAreaView
@@ -129,7 +130,7 @@ const ShelterPage = () => {
               className='w-full aspect-[0.55]'
             >
               <ProfileInterface
-                profile={{ images: selectedPetProfile.images, name: selectedPetProfile.name, bio: selectedPetProfile.bio }}
+                profile={{ images: selectedPetProfile.images, name: selectedPetProfile.name, bio: selectedPetProfile.bio, adoptionDetails: selectedPetProfile.adoptionDetails, adoptionStatus: selectedPetProfile.adoptionStatus, isAvailableForAdoption: selectedPetProfile.isAvailableForAdoption }}
               />
             </View>
           )}

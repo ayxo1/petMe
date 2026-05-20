@@ -23,7 +23,7 @@ const Events = () => {
   dayjs.extend(utc);
   
   const [isCopied, setIsCopied] = useState<{ status: boolean; id: string }>({ status: false, id: '' });
-  const copyTimeoutRef = useRef<number | null>(null);
+  const copyTimeoutRef = useRef<null | ReturnType<typeof setTimeout>>(null);
 
   const [eventList, setEventList] = useState<PBEventPage[]>([]);
   const [fetchError, setFetchError] = useState<ClientResponseError | null>();

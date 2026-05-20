@@ -28,7 +28,7 @@ const Likes = () => {
     <View className="flex-1">
       <SafeAreaView className="flex-1 items-center justify-center p-6 gap-4">
           <Text className="text-2xl font-bold text-gray-600 text-center p-2">
-            since users can just contact shelters directly and can't swipe on their pets, here's a picture of mr big
+            since users can just contact shelters directly and can't swipe on their pets, here's a picture of mr big (again)
           </Text>
           <Image 
             className="size-1/2"

@@ -8,33 +8,22 @@ import { icons } from '@/constants';
 import { useAuthStore } from '@/stores/authStore';
 import { usePetStore } from '@/stores/petStore';
 import { useChatStore } from '@/stores/useChatStore';
-import { useFeedStore } from '@/stores/useFeedStore';
 import { useLikesStore } from '@/stores/useLikesStore';
 import { PetProfile } from '@/types/pets';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, Stack } from 'expo-router';
-import { useState } from 'react';
+import LottieView from 'lottie-react-native';
+import { useEffect, useRef, useState } from 'react';
 import { FlatList, Image, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 type AuthRoute = '/(auth)/profile-setup' | '/(auth)/pet-setup' | '/(auth)/shelter-setup';
 
 export const LogOutButton = ({ signOut }: { signOut: () => Promise<void> }) => {
-  // const resetFeedStore = useFeedStore(state => state.reset);
-  // const resetLikesStore = useLikesStore(state => state.reset);
-  // const resetPetStore = usePetStore(state => state.reset);
-  // const resetChatStore = useChatStore(state => state.reset);
- 
   return (
     <View>
       <ButtonComponent 
         title='sign out'
         onPress={async () => {
-          // await resetChatStore();
-          // await resetLikesStore();
-          
-          // resetFeedStore();
-          // resetPetStore();
-
           await AsyncStorage.clear();
           await signOut();
         }}
@@ -68,6 +57,11 @@ const Profile = () => {
   
   if (!user) return;
 
+  // const animRef = useRef<LottieView>(null);
+  // useEffect(() => {
+  //   animRef.current?.play();
+  // }, []);
+
   return (
     <>
       <Stack.Screen
@@ -88,6 +82,16 @@ const Profile = () => {
           )
         }}
       />
+
+      {/* <View className='absolute-center'>
+        <LottieView
+          ref={animRef}
+          source={require('@/assets/animations/splashScreenAnim.json')}
+          style={{width: 240, height: 240}}
+          autoPlay
+          loop
+        />
+      </View> */}
 
       {settingsModal &&
         <BottomSheet 

@@ -13,7 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Rescue = () => {
   const [isCopied, setIsCopied] = useState<{ status: boolean; id: string }>({ status: false, id: '' });
-  const copyTimeoutRef = useRef<number | null>(null);
+  const copyTimeoutRef = useRef<null | ReturnType<typeof setTimeout>>(null);
 
   const [shelterList, setShelterList] = useState<ShelterProfile[]>([]);
   const [isLoading, setIsLoading] = useState(false);

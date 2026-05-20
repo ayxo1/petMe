@@ -63,7 +63,7 @@ const TabsLayout = () => {
     ) {
       const data = lastNotificationResponse.notification.request.content.data;
 
-      if ((data.type === 'message' || data.type === 'match') && data.matchId) {
+      if (data && (data.type === 'message' || data.type === 'match') && data.matchId) {
         router.navigate('/(tabs)/connect');
       }
     }
@@ -170,11 +170,11 @@ const TabsLayout = () => {
           tabBarIcon: ({focused}) => (
             <>
             {hasUnreadMessages && (
-              <View className='absolute bottom-5 left-6 z-10 rounded-full'>
-                <Text className=''>🔴</Text>
+              <View className='absolute bottom-7 left-7 z-10 bg-red-500/80 px-0.5 rounded-full h-3.5'>
+                <Text className='text-s text-red-500/0'>2</Text>
               </View>
             )}
-            <TabBarIcon 
+            <TabBarIcon
               focused={focused}
               icon={icons.connectIcon}
             />
