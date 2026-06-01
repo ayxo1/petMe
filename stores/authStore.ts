@@ -68,6 +68,7 @@ export const useAuthStore = create<AuthState>()(
             const externalAuths = await pb.collection('_externalAuths').getFullList({
               filter: `recordRef = "${currentId}"`
             });
+            // const externalAuths = await pb.collection('users').listExternalAuths(currentId);
             const isOAuth = externalAuths.length > 0;
 
             set({

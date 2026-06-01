@@ -117,24 +117,37 @@ console.log(selectedPetProfile);
       )}
 
       {isProfileShown && (
-        <Modal
-          isOpen={isProfileShown}
-          toggleModal={() => {
-            setSelectedPetProfile(null);
-            toggleIsProfileShown(false);
-          }}
-          styleProps='bg-transparent px-6'
-        >
-          {selectedPetProfile && (
-            <View
-              className='w-full aspect-[0.55]'
-            >
-              <ProfileInterface
-                profile={{ images: selectedPetProfile.images, name: selectedPetProfile.name, bio: selectedPetProfile.bio, adoptionDetails: selectedPetProfile.adoptionDetails, adoptionStatus: selectedPetProfile.adoptionStatus, isAvailableForAdoption: selectedPetProfile.isAvailableForAdoption }}
-              />
-            </View>
-          )}
-        </Modal>
+        <>
+          <Modal
+            isOpen={isProfileShown}
+            toggleModal={() => {
+              setSelectedPetProfile(null);
+              toggleIsProfileShown(false);
+            }}
+            styleProps='bg-transparent px-6'
+          >
+            {selectedPetProfile && (
+              <View
+                className='w-full aspect-[0.55]'
+              >
+                <ProfileInterface
+                  profile={{ images: selectedPetProfile.images, name: selectedPetProfile.name, bio: selectedPetProfile.bio, adoptionDetails: selectedPetProfile.adoptionDetails, adoptionStatus: selectedPetProfile.adoptionStatus, isAvailableForAdoption: selectedPetProfile.isAvailableForAdoption }}
+                />
+              </View>
+            )}
+
+          <TouchableOpacity 
+            className='absolute top-11 left-4 z-50 bg-red-500/80 px-2 rounded-xl'
+            onPress={() => {
+              setSelectedPetProfile(null);
+              toggleIsProfileShown(false);
+            }}
+          >
+            <Text className='font-bold text-primary'>x</Text>
+          </TouchableOpacity>
+
+          </Modal>
+        </>
       )}
 
       <ScrollView

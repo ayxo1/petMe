@@ -63,8 +63,8 @@ const ProfileSetup = () => {
     try {
       setIsLoadingLocation(true);
 
-      // const coordinates = await getCurrentLocation();
-      // const locationData = await getCityFromCoordinates(coordinates);
+      const coordinates = await getCurrentLocation();
+      const locationData = await getCityFromCoordinates(coordinates);
 
       // dalat coords:
       // const coordinates = {
@@ -77,14 +77,14 @@ const ProfileSetup = () => {
       // });
 
       // msc coords:
-      const coordinates = {
-        lat: 55.7558,
-        lng: 37.6173
-      };
-      const locationData = await getCityFromCoordinates({
-        lat: 55.7558,
-        lng: 37.6173
-      });
+      // const coordinates = {
+      //   lat: 55.7558,
+      //   lng: 37.6173
+      // };
+      // const locationData = await getCityFromCoordinates({
+      //   lat: 55.7558,
+      //   lng: 37.6173
+      // });
 
       if (coordinates && locationData) {
         setValue('location', { city: locationData.city, coordinates }, {

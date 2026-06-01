@@ -200,6 +200,13 @@ const Likes = () => {
               />
           </View>
         )}
+
+        <TouchableOpacity 
+          className='absolute top-14 left-4 z-50 bg-red-500/80 px-2 rounded-xl'
+          onPress={() => setSelectedProfile(null)}
+        >
+          <Text className='font-bold text-primary'>x</Text>
+        </TouchableOpacity>
       </Modal>
 
       <Modal 
@@ -219,6 +226,16 @@ const Likes = () => {
             />
           </View>
         )}
+
+        <TouchableOpacity 
+          className='absolute top-11 left-4 z-50 bg-red-500/80 px-2 rounded-xl'
+          onPress={() => {
+            setSelectedPetProfile(null);
+            setActivePetListOwnerId(null);
+          }}
+        >
+          <Text className='font-bold text-primary'>x</Text>
+        </TouchableOpacity>
       </Modal>
 
       <View>
