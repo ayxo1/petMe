@@ -24,9 +24,11 @@ export const eventFormSchema = yup.object({
         .max(240, 'max length is 240 characters'),
     address: yup
         .string()
-        .required('address is required')
-        .min(1, 'address is 1 character long, please check if everything is correct')
-        .max(48, 'max length is 48 characters'),
+        .required('please set the address'),
+    coordinates: yup.object({
+        latitude: yup.number().required(),
+        longitude: yup.number().required()
+    }),
     allowMessaging: yup
         .boolean()
         .required()

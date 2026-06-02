@@ -37,6 +37,7 @@ module.exports = {
       "expo-router",
       "expo-localization",
       "expo-apple-authentication",
+      ["react-native-maps"],
       [
         "expo-custom-assets", {
           "assetsPaths": ["./assets/animations/"]

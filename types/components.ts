@@ -68,6 +68,10 @@ export interface PBEventPage extends RecordModel {
     synopse: string;
     description: string;
     address: string;
+    coordinates: {
+      latitude: number;
+      longitude: number;
+    }
     image?: string;
     allowMessaging: boolean;
     // createdAt: string;

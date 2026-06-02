@@ -1,5 +1,6 @@
 import { pb } from '@/backend/config/pocketbase';
 import CommentSection from '@/components/CommentSection';
+import Modal from '@/components/Modal';
 import { icons, images } from '@/constants';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
@@ -10,6 +11,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { Alert, Image as RNImage, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
+import MapView, { Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const BackIcon = () => {
@@ -33,14 +35,18 @@ const BackIcon = () => {
 const EventPage = () => {
   const user = useAuthStore(state => state.user);
   const params = useLocalSearchParams<EventPageParams>();
-  const { id, organizerId, eventName, organizerName, image, description, address, date } = params;
+  const { id, organizerId, eventName, organizerName, image, description, address, date, coordinates } = params;
+
   const allowMessaging = params.allowMessaging === '1';
+  const eventCoords = coordinates ? JSON.parse(coordinates) : null;
   
   const [isLoadingComments, setIsLoadingComments] = useState(false);
   const [comments, setComments] = useState<Comment[] | null | undefined>();
 
   const [isCopied, setIsCopied] = useState<{ status: boolean }>({ status: false });
-  const copyTimeoutRef = useRef<number | null>(null);
+  const copyTimeoutRef = useRef<null | ReturnType<typeof setTimeout>>(null);
+
+  const [isMapOpen, setIsMapOpen] = useState(false);
 
   const connectOrganizer = async () => {
     try {
@@ -93,6 +99,48 @@ const EventPage = () => {
     >
       <BackIcon />
 
+      {isMapOpen && eventCoords ? (
+        <Modal
+          isOpen={isMapOpen}
+          toggleModal={setIsMapOpen}
+          styleProps=''
+        >
+          <View className='w-96 h-[90%] mt-14 border border-primary'>
+
+            <MapView
+              style={{ flex: 1 }}
+              initialRegion={{
+                latitude: eventCoords.latitude,
+                longitude: eventCoords.longitude,
+                latitudeDelta: 0.0922,
+                longitudeDelta: 0.0421,
+              }}
+            >
+            <Marker
+              coordinate={{ 
+                latitude: eventCoords.latitude,
+                longitude: eventCoords.longitude,
+              }}
+            />
+            </MapView>
+
+            <TouchableOpacity
+              onPress={() => setIsMapOpen(false)}
+            >
+              <Text className="absolute-center-x bottom-10 shadow text-primary bg-secondary/70 p-1 rounded-2xl text-l font-bold">close</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="absolute top-2 left-2 z-50"
+              onPress={() => setIsMapOpen(false)}
+            >
+              <Text className="bg-red-500/80 px-2 rounded-sm text-primary font-bold">x</Text>
+            </TouchableOpacity>
+
+          </View>
+        </Modal>
+    ) : null}
+
       <View>
 
         <View 
@@ -138,9 +186,16 @@ const EventPage = () => {
           <Text className='text-secondary font-bold text-center mb-2'>{eventName} {organizerId === user?.id ? <Text className='text-authPrimary font-normal'>(your event)</Text> : null}</Text>
 
           <View className='gap-4 min-w-full'>
+
             <Text className='text-secondary font-bold'>
               info: <Text className='font-light text-black/80'>{description}</Text>
             </Text>
+
+            
+            <Text className='text-secondary font-bold'>
+              held by: <Text className='font-light text-black/80'>{organizerName}</Text>
+            </Text>
+            
             <View>
               {isCopied.status && (
                 <View className='absolute -top-7 bg-secondary/60 px-2 py-1 rounded-md'>
@@ -148,27 +203,34 @@ const EventPage = () => {
                 </View>
               )}
 
-              <TouchableOpacity
-                onPress={async () => {
-                  await Clipboard.setStringAsync(address);
-                  setIsCopied({ status: true });
-                  
-                  if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+              <View className='flex-row w-[75%] gap-2'>
+                <TouchableOpacity
+                  onPress={async () => {
+                    await Clipboard.setStringAsync(address);
+                    setIsCopied({ status: true });
+                    
+                    if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
 
-                  copyTimeoutRef.current = setTimeout(() => {
-                    setIsCopied({ status: false });
-                    copyTimeoutRef.current = null;
-                  }, 2000);
-                }}
-              >
-                <Text className='text-secondary font-bold'>address:
-                  <Text className='font-light text-black/80'> {address}</Text>
-                </Text>
-              </TouchableOpacity>
+                    copyTimeoutRef.current = setTimeout(() => {
+                      setIsCopied({ status: false });
+                      copyTimeoutRef.current = null;
+                    }, 2000);
+                  }}
+                >
+                  <Text className='text-secondary font-bold'>address:
+                    <Text className='font-light text-black/80'> {address}</Text>
+                  </Text>
+                  
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className='bg-secondary p-2 rounded-2xl'
+                  onPress={() => setIsMapOpen(true)}
+                >
+                  <Text className='text-primary font-bold'>open map</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-            <Text className='text-secondary font-bold'>
-              held by: <Text className='font-light text-black/80'>{organizerName}</Text>
-            </Text>
+
           </View>
         </View>
 

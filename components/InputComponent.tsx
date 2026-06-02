@@ -1,6 +1,6 @@
 import { InputComponentProps } from '@/types/components';
 import { useState } from 'react';
-import { Button, InputAccessoryView, Text, TextInput, View } from 'react-native';
+import { Text, TextInput, View } from 'react-native';
 
 const InputComponent = ({
     placeholder = 'enter text here',

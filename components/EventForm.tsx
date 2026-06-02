@@ -4,6 +4,7 @@ import { eventFormSchema } from "@/constants/schemas/eventPageSchema";
 import { useAuthStore } from "@/stores/authStore";
 import { FormInputData, PBEventPage } from "@/types/components";
 import { getFileName } from "@/utils/imageUtils";
+import { getAddressFromCoordinates } from "@/utils/location";
 import { yupResolver } from "@hookform/resolvers/yup";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import dayjs from 'dayjs';
@@ -12,9 +13,10 @@ import utc from "dayjs/plugin/utc";
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { router } from "expo-router";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Alert, Switch, Text, TouchableOpacity, View } from "react-native";
+import MapView, { Marker } from "react-native-maps";
 import AvatarComponent from "./AvatarComponent";
 import ButtonComponent from "./ButtonComponent";
 import InputController from "./controllers/InputController";
@@ -23,15 +25,14 @@ import Modal from "./Modal";
 
 interface EventFormProps {
     initialData?: PBEventPage;
-    // onSubmit: (data: Partial<EventPage>) => Promise<void>;
     submitButtonText?: string; 
 };
 
 const formInputData: FormInputData[] = [
     { name: 'eventName', label: 'event name*', placeholder: 'e.g., orange cat owners gathering', spellCheck: true },
     { name: 'synopse', label: 'synopse*', placeholder: 'a short description of the event', spellCheck: true },
-    { name: 'description', label: 'description*', placeholder: '', spellCheck: true },
-    { name: 'address', label: 'location*', placeholder: '' },
+    { name: 'description', label: 'description*', placeholder: 'min. 24 characters, max. 240', spellCheck: true },
+    // { name: 'address', label: 'location*', placeholder: '' },
 ];
 
 const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) => {
@@ -45,6 +46,10 @@ const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) =>
     const [isDeleteModal, toggleIsDeleteModal] = useState(false);
     const [date, setDate] = useState<Date>(initialData?.date ? new Date(initialData.date) : new Date());
     const [showPicker, setShowPicker] = useState(false);
+
+    const [isMapOpen, setIsMapOpen] = useState(false);
+    const [eventCoords, setEventCoords] = useState<{latitude: number; longitude: number} | null>(null);
+    const [calculatedAddress, setCalculatedAddress] = useState<string | null>(null);
 
     const {
         control,
@@ -102,7 +107,7 @@ const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) =>
             } else eventObject.append(key, data[key].toString());
             }
         });
-    
+        
         if (data.image) {
             if (data.image.includes('file://')) {
                 eventObject.append('image', {
@@ -131,6 +136,7 @@ const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) =>
                                 eventName: result.eventName,
                                 description: result.description,
                                 address: result.address,
+                                coordinates: JSON.stringify(result.coordinates),
                                 date: dayjs(result.date).format('MMM DD HH:mm'),
                                 image: result.image ? `${pb.baseURL}/api/files/events/${result.id}/${result.image}` : '',
                                 allowMessaging: result.allowMessaging ? 1 : 0
@@ -162,6 +168,7 @@ const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) =>
                             eventName: result.eventName,
                             description: result.description,
                             address: result.address,
+                            coordinates: JSON.stringify(result.coordinates),
                             date: dayjs(result.date).format('MMM DD HH:mm'),
                             image: result.image ? `${pb.baseURL}/api/files/events/${result.id}/${result.image}` : '',
                             allowMessaging: result.allowMessaging ? 1 : 0
@@ -174,6 +181,20 @@ const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) =>
             Alert.alert('error', 'an error occurred adding an event, please try again');
         }
     };
+
+    useEffect(() => {
+        const getAddress = async () => {
+            if (eventCoords) {
+                const coordsToAddress = await getAddressFromCoordinates({ lat: eventCoords.latitude, lng: eventCoords.longitude });
+                if (coordsToAddress) {
+                    setCalculatedAddress(coordsToAddress.address);
+                    setValue('address', coordsToAddress.address);
+                    setValue('coordinates', eventCoords)
+                }
+            }
+        };
+        getAddress();
+    }, [eventCoords]);
 
     return (
         <View className="flex-1 px-5 gap-3">
@@ -215,6 +236,53 @@ const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) =>
                                 onPress={() => toggleIsDeleteModal(false)}
                             />
                         </View>
+                    </View>
+                </Modal>
+            ) : null}
+
+            {isMapOpen ? (
+                <Modal
+                    isOpen={isMapOpen}
+                    toggleModal={setIsMapOpen}
+                    styleProps=''
+                >
+                    <View className='w-96 h-[90%] mt-14 border border-primary'>
+
+                        <MapView
+                            style={{ flex: 1 }}
+                            initialRegion={{
+                                latitude: user.location.coordinates?.lat || 0,
+                                longitude: user.location.coordinates?.lng || 0,
+                                latitudeDelta: 0.0922,
+                                longitudeDelta: 0.0421,
+                            }}
+                            onPress={async (val) => {
+                                setEventCoords({latitude: val.nativeEvent.coordinate.latitude, longitude: val.nativeEvent.coordinate.longitude});
+                            }}
+                        >
+                        <Marker
+                            coordinate={{ 
+                                latitude: eventCoords?.latitude || user.location.coordinates?.lat || 0,
+                                longitude: eventCoords?.longitude || user.location.coordinates?.lng || 0,
+                            }}
+                        />
+                        </MapView>
+
+                        <Text className="absolute-center-x bottom-20 shadow text-primary bg-secondary/70 p-1 rounded-2xl text-l font-bold">tap on the map to set the marker</Text>
+
+                        <TouchableOpacity
+                            onPress={() => setIsMapOpen(false)}
+                        >
+                            <Text className="absolute-center-x bottom-10 shadow text-primary bg-secondary/70 p-1 rounded-2xl text-l font-bold">save</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            className="absolute top-2 left-2 z-50"
+                            onPress={() => setIsMapOpen(false)}
+                        >
+                            <Text className="bg-red-500/80 px-2 rounded-sm text-primary font-bold">x</Text>
+                        </TouchableOpacity>
+
                     </View>
                 </Modal>
             ) : null}
@@ -275,7 +343,6 @@ const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) =>
                             mode="datetime"
                             display="spinner"
                             onChange={(e, selectedDate) => {
-                                // setShowPicker(false);
                                 if(selectedDate) {
                                     setDate(selectedDate);
                                     setValue('date', selectedDate.toString(), 
@@ -327,6 +394,29 @@ const EventForm = ({ initialData, submitButtonText = 'save'}: EventFormProps) =>
                         />
                     </Fragment>
                 ))}
+
+                <View>
+                    <View className="flex-row w-24">
+                        <Text className="label">location*</Text>
+                        <TouchableOpacity 
+                            className={`bg-secondary px-3 py-1 rounded-2xl`}
+                            onPress={() => setIsMapOpen(true)}
+                        >
+                            <Text className="text-primary">set</Text>
+                        </TouchableOpacity>
+                    </View>
+                    {calculatedAddress || initialData?.address ? (
+                        <Text className="p-3 border-b border-b-lighterSecondary rounded-xl">{calculatedAddress || initialData?.address}</Text>
+                    ) : null}
+                </View>
+
+                {errors.address ? (
+                    <View className='h-5'>
+                        <Text className='text-red-500 text-center'>
+                            {errors.address.message}
+                        </Text>
+                    </View>
+                ) : null}
             </View>
 
             <View className="gap-2 flex-row justify-center mt-4">

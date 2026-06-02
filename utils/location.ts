@@ -102,4 +102,24 @@ export const calculateDistance = (
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return Math.round(R * c);
+};
+
+// calc exact address from coords
+export const getAddressFromCoordinates = async (coordinates: Coordinates): Promise<{address: string} | null> => {
+    try {
+        const [result] = await Location.reverseGeocodeAsync({
+            latitude: coordinates.lat,
+            longitude: coordinates.lng
+        });
+
+        if(!result) return null;
+
+        return {
+            address: [result.country, result.region, result.city, result.street, result.streetNumber].join(', ') || ''
+        };
+
+    } catch (error) {
+        console.log(error, 'reverse geocode error');
+        return null;
+    };
 }

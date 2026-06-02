@@ -1,4 +1,5 @@
 import { pb } from '@/backend/config/pocketbase';
+import Modal from '@/components/Modal';
 import { icons, images } from '@/constants';
 import Colors from '@/constants/Colors';
 import { PBEventPage } from '@/types/components';
@@ -11,7 +12,8 @@ import { getCalendars } from 'expo-localization';
 import { router, useFocusEffect } from 'expo-router';
 import { ClientResponseError } from 'pocketbase';
 import React, { useCallback, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Image as RNImage, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, Image as RNImage, Text, TouchableOpacity, View } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Events = () => {
@@ -28,6 +30,10 @@ const Events = () => {
   const [eventList, setEventList] = useState<PBEventPage[]>([]);
   const [fetchError, setFetchError] = useState<ClientResponseError | null>();
   const [isLoading, setIsLoading] = useState(false);
+
+  const [isMapOpen, setIsMapOpen] = useState(false);
+  const [eventMapId, setEventMapId] = useState('');
+  const selectedEvent = eventList.find(event => event.id === eventMapId);
 
   useFocusEffect(
     useCallback(() => {
@@ -65,6 +71,57 @@ const Events = () => {
       edges={['top']}
       className='flex-1 p-4'
     >
+
+      {isMapOpen ? (
+        <Modal
+          isOpen={isMapOpen}
+          toggleModal={() => {
+            setIsMapOpen(false);
+            setEventMapId('');
+          }}
+          styleProps=''
+        >
+            <View className='w-96 h-[90%] mt-14 border border-primary'>
+
+              <MapView
+                style={{ flex: 1 }}
+                initialRegion={{
+                  latitude: selectedEvent?.coordinates?.latitude || 0,
+                  longitude: selectedEvent?.coordinates?.longitude || 0,
+                  latitudeDelta: 0.0922,
+                  longitudeDelta: 0.0421,
+                }}
+              >
+              <Marker
+                coordinate={{ 
+                  latitude: selectedEvent?.coordinates?.latitude || 0,
+                  longitude: selectedEvent?.coordinates?.longitude || 0,
+                }}
+              />
+              </MapView>
+
+              <TouchableOpacity
+                onPress={() => {
+                  setIsMapOpen(false);
+                  setEventMapId('');
+                }}
+              >
+                <Text className="absolute-center-x bottom-10 shadow text-primary bg-secondary/70 p-1 rounded-2xl text-l font-bold">close</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                className="absolute top-2 left-2 z-50"
+                onPress={() => {
+                  setIsMapOpen(false);
+                  setEventMapId('');
+                }}
+              >
+                <Text className="bg-red-500/80 px-2 rounded-sm text-primary font-bold">x</Text>
+              </TouchableOpacity>
+
+            </View>
+        </Modal>
+    ) : null}
 
       <Text className='my-4 font-bold text-secondary text-center py-2 px-12 border-b border-secondary'>organazie and participate in the ongoing events to connect with the fellow pet owners in your area!</Text>
 
@@ -120,6 +177,7 @@ const Events = () => {
                   description: item.description,
                   synopse: item.synopse,
                   address: item.address,
+                  coordinates: JSON.stringify(item.coordinates),
                   image: item.image,
                   date: convertedDate,
                   allowMessaging: item.allowMessaging ? 1 : 0
@@ -139,8 +197,8 @@ const Events = () => {
                   />
                 </View>
 
-                <View className='gap-2 w-48 p-1'>
-                  <Text className='text-secondary font-bold'>{item.eventName}</Text>
+                <View className='gap-3 w-48 p-1'>
+                  <Text className='text-secondary font-bold text-lg text-center'>{item.eventName}</Text>
                   <Text className=''>{item.synopse}</Text>
                   <Text className='font-light'>held by: {item.organizerName}</Text>
                   
@@ -151,18 +209,8 @@ const Events = () => {
                       </View>
                     )}
 
-                    <TouchableOpacity
-                      onPress={async () => {
-                        await Clipboard.setStringAsync(item.address);
-                        setIsCopied({ status: true, id: item.id });
-                        
-                        if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
-
-                        copyTimeoutRef.current = setTimeout(() => {
-                          setIsCopied({ status: false, id: '' });
-                          copyTimeoutRef.current = null;
-                        }, 2000);
-                      }}
+                    <View
+                      className='flex-row gap-2'
                     >
                       <RNImage
                         source={icons.copyIcon}
@@ -170,20 +218,45 @@ const Events = () => {
                         resizeMode='contain'
                         tintColor={Colors.secondary}
                       />
+                      <TouchableOpacity
+                        onPress={async () => {
+                          await Clipboard.setStringAsync(item.address);
+                          setIsCopied({ status: true, id: item.id });
+                          
+                          if (copyTimeoutRef.current) clearTimeout(copyTimeoutRef.current);
+
+                          copyTimeoutRef.current = setTimeout(() => {
+                            setIsCopied({ status: false, id: '' });
+                            copyTimeoutRef.current = null;
+                          }, 2000);
+                        }}
+                      >
                       <Text 
                         className='font-light text-secondary text-start' 
-                        lineBreakMode='tail' 
+                        lineBreakMode='tail'
                         numberOfLines={4} 
                         >
                         <Text className='absolute-center-y -left-6'>📍</Text>
                         {item.address}
                       </Text>
-                    </TouchableOpacity>
+                      </TouchableOpacity>
+
+                      <TouchableOpacity 
+                        onPress={() => {
+                          setEventMapId(item.id);
+                          setIsMapOpen(true);
+                        }}
+                      >
+                        <Text className='text-primary font-bold bg-secondary p-2 rounded-2xl'>open map</Text>
+                      </TouchableOpacity>
+
+                    </View>
                   </View>
+
                   
                 </View>
 
-                <Text className='text-secondary font-bold max-w-24 text-start'>{convertedDate}</Text>
+                <Text className='text-secondary font-bold w-20 text-start mb-20'>{convertedDate}</Text>
 
               </View>
             </TouchableOpacity>
