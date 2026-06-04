@@ -422,18 +422,30 @@ const ChatPage = () => {
             toggleModal={toggleMatchProfileModal}
             styleProps={`${matchData ? 'bg-transparent px-6' : 'px-4 bg-white/80'}`}
           >
+
             {matchData && (
               <View className='w-full aspect-[0.55]'>
+
+                <TouchableOpacity 
+                  className='absolute -top-2 left-2 z-50 bg-secondary/80 px-1.5 rounded-xl'
+                  onPress={() => toggleMatchProfileModal(!matchProfileModal)}                
+                >
+                  <Text className='font-bold text-primary'>close</Text>
+                </TouchableOpacity>
+
                 <ProfileInterface
                   profile={{ images: matchData.images, name: matchData.username, bio: matchData.bio }}
                 />
+
               </View>
             )}
+
             {!matchData && (
               <View className='items-center py-10 px-5'>
                 <Text className='text-xl font-bold text-red-400'>error retrieving profile</Text>
               </View>
-              )}
+            )}
+
           </Modal>
       </TouchableOpacity>
       )}
@@ -447,9 +459,18 @@ const ChatPage = () => {
           <View
             className='w-full aspect-[0.55]'
           >
+
+            <TouchableOpacity 
+              className='absolute -top-2 left-2 z-50 bg-secondary/80 px-1.5 rounded-xl'
+              onPress={() => setSelectedPetProfile(null)}
+            >
+              <Text className='font-bold text-primary'>close</Text>
+            </TouchableOpacity>
+
             <ProfileInterface
               profile={{ images: selectedPetProfile.images, name: selectedPetProfile.name, bio: selectedPetProfile.bio }}
             />
+
           </View>
         </Modal>
       )}

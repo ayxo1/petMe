@@ -1,6 +1,7 @@
 import { pb } from '@/backend/config/pocketbase';
 import CommentSection from '@/components/CommentSection';
 import Modal from '@/components/Modal';
+import ReportForm from '@/components/ReportForm';
 import { icons, images } from '@/constants';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
@@ -34,6 +35,8 @@ const BackIcon = () => {
 
 const EventPage = () => {
   const user = useAuthStore(state => state.user);
+  if (!user) return;
+
   const params = useLocalSearchParams<EventPageParams>();
   const { id, organizerId, eventName, organizerName, image, description, address, date, coordinates } = params;
 
@@ -47,6 +50,8 @@ const EventPage = () => {
   const copyTimeoutRef = useRef<null | ReturnType<typeof setTimeout>>(null);
 
   const [isMapOpen, setIsMapOpen] = useState(false);
+
+  const [isReportModal, toggleIsReportModal] = useState(false);
 
   const connectOrganizer = async () => {
     try {
@@ -98,6 +103,21 @@ const EventPage = () => {
       className='flex-1 p-2 items-center'
     >
       <BackIcon />
+
+      {isReportModal && (
+        <Modal
+          isOpen={isReportModal} 
+          toggleModal={toggleIsReportModal}
+          styleProps='px-4 bg-white/80'
+        >
+          <ReportForm
+            toggleModal={toggleIsReportModal}
+            userId={user.id}
+            reportedProfileName={organizerName}
+            reportedProfileId={organizerId}
+          />
+        </Modal>
+      )}
 
       {isMapOpen && eventCoords ? (
         <Modal
@@ -168,6 +188,14 @@ const EventPage = () => {
             >
               <Text className='p-2 text-secondary text-center font-bold text-xl'>{date}</Text>
             </View>
+
+            {organizerId !== user?.id ? 
+            <TouchableOpacity 
+              className='absolute right-44 -bottom-3 rounded-2xl max-w-24 items-center border border-red-500/10'
+              onPress={() => toggleIsReportModal(true)}
+            >
+              <Text className='px-2 text-red-500/60 text-center'>report</Text>
+            </TouchableOpacity> : null}
 
             {organizerId === user?.id ? (
               <TouchableOpacity 

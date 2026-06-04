@@ -171,6 +171,14 @@ export const authAPI = {
 
     return updated as PBUser;
   },
+
+  deleteAccount: async (userId: string) => {
+    try {
+      await pb.collection('users').delete(userId);
+    } catch (error) {
+      console.log('authAPI, deleteAccount error: ', error);
+    }
+  }
 };
 
 /**

@@ -116,9 +116,19 @@ const Profile = () => {
             styleProps={`${user ? 'bg-transparent px-6' : 'px-4 bg-white/80'}`}
           >
             <View className='w-full aspect-[0.55]'>
+
+              <TouchableOpacity 
+                className='absolute -top-2 left-2 z-50 bg-secondary/80 px-1.5 rounded-xl'
+                onPress={() => toggleProfilePreview(false)}
+              >
+                <Text className='font-bold text-primary'>close</Text>
+              </TouchableOpacity>
+
               <ProfileInterface 
                 profile={{ images: user.images, name: user.username, bio: user.bio }}
+                reportBtn={false}
               />
+
             </View>
           </Modal>
         </TouchableOpacity>
@@ -133,8 +143,17 @@ const Profile = () => {
           <View
             className='w-full aspect-[0.55]'
           >
+
+            <TouchableOpacity 
+              className='absolute -top-2 left-2 z-50 bg-secondary/80 px-1.5 rounded-xl'
+              onPress={() => setSelectedPetProfile(null)}
+            >
+              <Text className='font-bold text-primary'>close</Text>
+            </TouchableOpacity>
+
             <ProfileInterface
               profile={{ images: selectedPetProfile.images, name: selectedPetProfile.name, bio: selectedPetProfile.bio }}
+              reportBtn={false}
             />
           </View>
         </Modal>

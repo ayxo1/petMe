@@ -11,7 +11,8 @@ export interface TabBarIconProps {
 }
 
 export interface ProfileCardProps {
-  profile: Partial<FeedProfile>
+  profile: Partial<FeedProfile>;
+  reportBtn?: boolean;
 }
 
 export interface InputComponentProps {

@@ -20,11 +20,11 @@ const ReportForm = ({ userId, reportedProfileName, reportedProfileId, toggleModa
     const [open, setOpen] = useState(false);
     const [reportReason, setReportReason] = useState(null);
     const [selectedReportReason, setSelectedReportReason] = useState([
-    {label: 'inappropriate', value: 'inappropriate'},
-    {label: 'fake', value: 'fake'},
-    {label: 'spam', value: 'spam'},
-    {label: 'harassment', value: 'harassment'},
-    {label: 'other', value: 'other'},
+        {label: 'inappropriate', value: 'inappropriate'},
+        {label: 'fake', value: 'fake'},
+        {label: 'spam', value: 'spam'},
+        {label: 'harassment', value: 'harassment'},
+        {label: 'other', value: 'other'},
     ]);
 
     const {
@@ -77,7 +77,7 @@ const ReportForm = ({ userId, reportedProfileName, reportedProfileId, toggleModa
             nativeID={inputAccessoryViewID}
         >
             <View 
-                className='bg-white/80'
+                className='bg-primary'
             >
                 <TouchableOpacity 
                     className='p-1.5 items-end justify-center'
@@ -114,12 +114,18 @@ const ReportForm = ({ userId, reportedProfileName, reportedProfileId, toggleModa
                     )}
                 </View>
             </View>
-            <View className='p-5'>
+            <View className='p-5 flex-row gap-2 justify-center'>
                 <ButtonComponent
-                title='submit'
-                onPress={handleSubmit(submit)}
-                style='bg-red-900'
-                textStyle='text-primary'
+                    title='submit'
+                    onPress={handleSubmit(submit)}
+                    style='bg-red-900'
+                    textStyle='text-primary'
+                />
+                <ButtonComponent
+                    title='close'
+                    onPress={() => toggleModal(false)}
+                    style='border border-secondary bg-primary/40'
+                    textStyle='text-secondary'
                 />
             </View>
         </View>

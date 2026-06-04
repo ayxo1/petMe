@@ -26,7 +26,7 @@ const END_POSITION = 0;
 const PAW_WIDTH = 80;
 const PAW_HEIGHT = 220;
 
-const ProfileCard = ({ profile, indexes, onSwipeLeft, onSwipeRight, isPaw = false }: ProfileCardPropsWithIndex) => {
+const ProfileCard = ({ profile, indexes, onSwipeLeft, onSwipeRight, isPaw = false, reportBtn }: ProfileCardPropsWithIndex) => {
 
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(-height);
@@ -234,6 +234,7 @@ const ProfileCard = ({ profile, indexes, onSwipeLeft, onSwipeRight, isPaw = fals
           
           <ProfileInterface
             profile={profile}
+            reportBtn={reportBtn}
           />
 
         </TiltEffect>

@@ -5,10 +5,12 @@ import dayjs from 'dayjs';
 import timezone from "dayjs/plugin/timezone";
 import utc from "dayjs/plugin/utc";
 import { getCalendars } from "expo-localization";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { ActivityIndicator, Alert, FlatList, Platform, Text, TouchableOpacity, View } from "react-native";
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import InputComponent from "./InputComponent";
+import Modal from "./Modal";
+import ReportForm from "./ReportForm";
 
 const CommentSection = ({ comments, setComments, isLoadingComments, eventId }: 
   { 
@@ -26,6 +28,9 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
   const { uses24hourClock } = userCalendars[0];
   dayjs.extend(timezone);
   dayjs.extend(utc);
+
+  const [isReportModal, toggleIsReportModal] = useState(false);
+  const [reportedUser, setReportedUser] = useState<Comment | null>(null);
 
   const [replyingTo, setReplyingTo] = useState<string | null>();
   const [commentText, setCommentText] = useState('');
@@ -94,6 +99,21 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
       behavior='position'
       keyboardVerticalOffset={-24}
     >
+
+      {isReportModal && reportedUser && (
+        <Modal
+          isOpen={isReportModal} 
+          toggleModal={toggleIsReportModal}
+          styleProps='px-4 bg-white/80'
+        >
+          <ReportForm
+            toggleModal={toggleIsReportModal}
+            userId={user.id}
+            reportedProfileName={reportedUser.authorName}
+            reportedProfileId={reportedUser.authorId}
+          />
+        </Modal>
+      )}
 
       <TouchableOpacity 
         className="mb-3 mt-1 items-center"
@@ -170,10 +190,11 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
                         <View className="border-b border-b-secondary/15">
                           <View className="max-w-full mb-2">
                               <View className="gap-2 mb-1">
-                                <Text className="font-bold text-secondary">{item.authorName} {item.authorId === user.id && <Text className="text-authPrimary">(you)</Text>}<Text className="font-light text-sm">({convertedDate})</Text></Text>
+                                <Text className="font-bold text-secondary">{item.authorName} {item.authorId === user.id && <Text className="text-authPrimary">(you)</Text>}<Text className="font-light text-sm"> ({convertedDate})</Text></Text>
                                 <Text>{item.text}</Text>
                               </View>
                               <View className="flex-row gap-3">
+
                                 <TouchableOpacity 
                                   className="ml-1"
                                   onPress={() => {
@@ -183,11 +204,22 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
                                 >
                                   <Text className="text-gray-500 font-light">reply</Text>
                                 </TouchableOpacity>
+
                                 {item.authorId === user.id && item.authorName !== 'deleted' && (<TouchableOpacity 
                                   className="ml-1"
                                   onPress={() => deleteComment(item)}
                                 >
                                   <Text className="text-red-400 font-light">delete</Text>
+                                </TouchableOpacity>)}
+
+                                {item.authorId !== user.id && item.authorName !== 'deleted' && (<TouchableOpacity 
+                                  className="ml-1"
+                                  onPress={() => {
+                                    setReportedUser(item);
+                                    toggleIsReportModal(true);
+                                  }}
+                                >
+                                  <Text className="text-red-400 font-light">report</Text>
                                 </TouchableOpacity>)}
                               </View>
                           </View>
@@ -206,12 +238,23 @@ const CommentSection = ({ comments, setComments, isLoadingComments, eventId }:
                                 <View className="gap-2 mb-1">
                                   <Text className="font-bold text-secondary">{reply.authorName} {reply.authorId === user.id && <Text className="text-authPrimary">(you)</Text>}<Text className="font-light text-sm">({convertedDate})</Text></Text>
                                   <Text>{reply.text}</Text>
+
                                   {reply.authorId === user.id && reply.authorName !== 'deleted' && (<TouchableOpacity
                                     className="ml-1"
                                     onPress={() => deleteComment(reply)}
                                   >
                                     <Text className="text-red-400 font-light">delete</Text>
                                   </TouchableOpacity>)}
+
+                                  {reply.authorId !== user.id && reply.authorName !== 'deleted' && (<TouchableOpacity 
+                                  className="ml-1"
+                                  onPress={() => {
+                                    setReportedUser(reply);
+                                    toggleIsReportModal(true);
+                                  }}
+                                >
+                                  <Text className="text-red-400 font-light">report</Text>
+                                </TouchableOpacity>)}
                                 </View>
                               </View>
                             );

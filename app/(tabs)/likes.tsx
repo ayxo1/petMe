@@ -2,6 +2,7 @@ import { pb, petsAPI } from '@/backend/config/pocketbase';
 import AvatarComponent from '@/components/AvatarComponent';
 import BottomSheet from '@/components/BottomSheet';
 import Modal from '@/components/Modal';
+import MultipleModal from '@/components/MultipleModal';
 import ProfileCard from '@/components/ProfileCard';
 import ProfileInterface from '@/components/ProfileInterface';
 import { images } from '@/constants';
@@ -164,6 +165,7 @@ const Likes = () => {
           <Text className='font-bold text-gray-600 text-center'>swipe on owners/seekers to connect with them!</Text>
         </View>
       )}
+      
       <Modal 
         isOpen={isModal}
         toggleModal={() => setIsModal(!isModal)}
@@ -183,31 +185,35 @@ const Likes = () => {
         </View>
       </Modal>
 
-      <Modal 
+      <MultipleModal 
         isOpen={!!selectedProfile}
         toggleModal={() => setSelectedProfile(null)}
         styleProps='bg-transparent px-6'
       >
+
         {selectedProfile && (
           <View
             className='w-full aspect-[0.55]'
           >
+
+            <TouchableOpacity 
+              className='absolute top-0 left-4 z-50 bg-secondary/80 px-1.5 rounded-xl'
+              onPress={() => setSelectedProfile(null)}
+            >
+              <Text className='font-bold text-primary'>close</Text>
+            </TouchableOpacity>
+
             <ProfileCard
               profile={{ images: selectedProfile.images, name: selectedProfile.name, bio: selectedProfile.bio}}
               indexes={{index: 0, reverseIndex: 0, currentIndex: 0}}
               onSwipeLeft={onSwipeLeft}
               onSwipeRight={onSwipeRight}
-              />
+            />
+
           </View>
         )}
-
-        <TouchableOpacity 
-          className='absolute top-14 left-4 z-50 bg-red-500/80 px-2 rounded-xl'
-          onPress={() => setSelectedProfile(null)}
-        >
-          <Text className='font-bold text-primary'>x</Text>
-        </TouchableOpacity>
-      </Modal>
+          
+      </MultipleModal>
 
       <Modal 
         isOpen={!!selectedPetProfile}
@@ -221,21 +227,21 @@ const Likes = () => {
           <View
             className='w-full aspect-[0.55]'
           >
+
+            <TouchableOpacity 
+              className='absolute -top-2 left-2 z-50 bg-secondary/80 px-1.5 rounded-xl'
+              onPress={() => setSelectedProfile(null)}
+            >
+              <Text className='font-bold text-primary'>close</Text>
+            </TouchableOpacity>
+
             <ProfileInterface
               profile={{ images: selectedPetProfile.images, name: selectedPetProfile.name, bio: selectedPetProfile.bio }}
             />
+
           </View>
         )}
 
-        <TouchableOpacity 
-          className='absolute top-11 left-4 z-50 bg-red-500/80 px-2 rounded-xl'
-          onPress={() => {
-            setSelectedPetProfile(null);
-            setActivePetListOwnerId(null);
-          }}
-        >
-          <Text className='font-bold text-primary'>x</Text>
-        </TouchableOpacity>
       </Modal>
 
       <View>

@@ -157,6 +157,7 @@ return (
     <View
       className="flex-1"
     >
+
       <Modal
         isOpen={isModal}
         toggleModal={setIsModal}
@@ -257,8 +258,10 @@ return (
           <ActivityIndicator size="large" color="#3b3a38" />
           <Text className="text-gray-600 mt-4 text-lg">Loading profiles...</Text>
         </SafeAreaView>
-      ) : ((!currentProfile || remaining === 0) && !isFailedFetch) ? (
-        <SafeAreaView className="flex-1 items-center justify-center">
+      ) : (
+        (!currentProfile || remaining === 0) && !isFailedFetch) 
+        ? 
+        (<SafeAreaView className="flex-1 items-center justify-center">
           <Text className="text-2xl font-bold text-gray-600">
             No more profiles! 🐾
           </Text>
@@ -266,8 +269,9 @@ return (
             Check back later for more pets
           </Text>
         </SafeAreaView>
-      ) : (
-        <>
+        ) 
+        : 
+        (<>
           {visibleCards.map((profile, arrIndex) => {
   
             const cardIndex = currentIndex + arrIndex;
@@ -275,17 +279,17 @@ return (
 
             return (
               <View 
-              key={profile.id}
-              className="absolute top-0 left-0 right-0 bottom-12 p-3 pb-4 px-5"
-              style={{
-                zIndex,
-                shadowColor: '#8c8981',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.4,
-                shadowRadius: 7,
-                elevation: 15,
-              }}
-              pointerEvents={arrIndex === 0 ? 'auto' : 'none'}
+                key={profile.id}
+                className="absolute top-0 left-0 right-0 bottom-12 p-3 pb-4 px-5"
+                style={{
+                  zIndex,
+                  shadowColor: '#8c8981',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.4,
+                  shadowRadius: 7,
+                  elevation: 15,
+                }}
+                pointerEvents={arrIndex === 0 ? 'auto' : 'none'}
               >
   
                 <ProfileCard
@@ -294,6 +298,7 @@ return (
                   onSwipeLeft={arrIndex === 0 ? onSwipeLeft : undefined}
                   onSwipeRight={arrIndex === 0 ? onSwipeRight : undefined}
                   isPaw={true}
+                  reportBtn={cardIndex === currentIndex}
                 />
                 
               </View>

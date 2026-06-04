@@ -1,5 +1,5 @@
 import React from 'react';
-import { Keyboard, KeyboardAvoidingView, ModalProps, Platform, Pressable, Modal as RNModal, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, ModalProps, Platform, Pressable, View } from 'react-native';
 import { ModalView } from 'react-native-multiple-modals';
 
 interface ModalComponentProps extends ModalProps {

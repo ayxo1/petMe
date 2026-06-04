@@ -1,4 +1,5 @@
 import { images } from "@/constants";
+import { useAuthStore } from "@/stores/authStore";
 import { FeedProfile } from "@/types/feed";
 import * as Haptics from 'expo-haptics';
 import { Image } from 'expo-image';
@@ -6,6 +7,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useState } from "react";
 import { ImageSourcePropType, Pressable, Text, TouchableOpacity, View } from "react-native";
 import Modal from "./Modal";
+import MultipleModal from "./MultipleModal";
+import ReportForm from "./ReportForm";
 
 interface ProfileInterfaceProps {
     profileImages: string[];
@@ -23,9 +26,15 @@ interface ProfileInterfaceProps {
     }
 };
 
-const ProfileInterface = ({ profile }: { profile: Partial<FeedProfile> }) => {
+const ProfileInterface = ({ profile, reportBtn = true }: { profile: Partial<FeedProfile>; reportBtn?: boolean; }) => {
+
+  const userId = useAuthStore(state => state.user?.id);
+  if (!userId) return;
+
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
   const [adoptionModal, toggleAdoptionModal] = useState(false);
+
+  const [isReportModal, toggleIsReportModal] = useState(false);
 
   const profileCover: ImageSourcePropType = { uri: profile.images ? profile.images[currentImageIdx] : ''}
 
@@ -34,8 +43,36 @@ const ProfileInterface = ({ profile }: { profile: Partial<FeedProfile> }) => {
     className="h-[96.5%] overflow-hidden rounded-lg p-2 mt-6"
     >
 
+        {isReportModal && (
+            <Modal
+                isOpen={isReportModal}
+                toggleModal={toggleIsReportModal}
+                styleProps='justify-center items-center max-w-96'
+                tint
+            >
+                <View className="gap-4 bg-primary/90 px-3 py-4 rounded-2xl border border-lighterSecondary">
+                    <ReportForm
+                        toggleModal={toggleIsReportModal}
+                        userId={userId}
+                        reportedProfileName={profile.name || ''}
+                        reportedProfileId={profile.id || ''}
+                    />
+                </View>
+            </Modal>
+        )}
+
+        {reportBtn 
+        ? 
+        <Pressable 
+            className="absolute top-7 right-6 z-50 bg-red-600/50 px-2.5 rounded-2xl"
+            onPress={() => toggleIsReportModal(true)}
+        >
+            <Text className="text-primary text-xl font-bold shadow">!</Text>
+        </Pressable> 
+        : null}
+
         {adoptionModal && (
-            <Modal 
+            <Modal
                 isOpen={adoptionModal}
                 toggleModal={toggleAdoptionModal}
                 styleProps='mt-48 justify-center items-center max-w-96'

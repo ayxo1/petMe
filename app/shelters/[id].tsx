@@ -1,6 +1,7 @@
 import { pb } from '@/backend/config/pocketbase';
 import Modal from '@/components/Modal';
 import ProfileInterface from '@/components/ProfileInterface';
+import ReportForm from '@/components/ReportForm';
 import { icons, images } from '@/constants';
 import Colors from '@/constants/Colors';
 import { convertPBUserToUser, useAuthStore } from '@/stores/authStore';
@@ -35,6 +36,8 @@ const BackIcon = () => {
  
 const ShelterPage = () => {
   const user = useAuthStore(state => state.user);
+  if (!user) return;
+  
   const params = useLocalSearchParams();
   const { id, image, name, description, address, owner } = params;
 
@@ -46,6 +49,8 @@ const ShelterPage = () => {
 
   const [isCopied, setIsCopied] = useState<{ status: boolean }>({ status: false });
   const copyTimeoutRef = useRef<null | ReturnType<typeof setTimeout>>(null);
+
+  const [isReportModal, toggleIsReportModal] = useState(false);
 
   const connectShelter = async () => {
     try {
@@ -101,7 +106,6 @@ const ShelterPage = () => {
 
     fetchShelterPets();
   }, []);
-console.log(selectedPetProfile);
 
   return (
     <SafeAreaView
@@ -109,6 +113,21 @@ console.log(selectedPetProfile);
       className='flex-1 p-2 items-center'
     >
       <BackIcon />
+
+      {isReportModal && (
+        <Modal
+          isOpen={isReportModal} 
+          toggleModal={toggleIsReportModal}
+          styleProps='px-4 bg-white/80'
+        >
+          <ReportForm
+            toggleModal={toggleIsReportModal}
+            userId={user.id}
+            reportedProfileName={shelterOwner?.username || ''}
+            reportedProfileId={shelterOwner?.id || ''}
+          />
+        </Modal>
+      )}
 
       {isLoading && (
         <ActivityIndicator 
@@ -130,21 +149,22 @@ console.log(selectedPetProfile);
               <View
                 className='w-full aspect-[0.55]'
               >
+
+                <TouchableOpacity 
+                  className='absolute -top-2 left-2 z-50 bg-secondary/80 px-1.5 rounded-xl'
+                  onPress={() => {
+                  setSelectedPetProfile(null);
+                  toggleIsProfileShown(false);
+                }}
+                >
+                  <Text className='font-bold text-primary'>close</Text>
+                </TouchableOpacity>
+
                 <ProfileInterface
                   profile={{ images: selectedPetProfile.images, name: selectedPetProfile.name, bio: selectedPetProfile.bio, adoptionDetails: selectedPetProfile.adoptionDetails, adoptionStatus: selectedPetProfile.adoptionStatus, isAvailableForAdoption: selectedPetProfile.isAvailableForAdoption }}
                 />
               </View>
             )}
-
-          <TouchableOpacity 
-            className='absolute top-11 left-4 z-50 bg-red-500/80 px-2 rounded-xl'
-            onPress={() => {
-              setSelectedPetProfile(null);
-              toggleIsProfileShown(false);
-            }}
-          >
-            <Text className='font-bold text-primary'>x</Text>
-          </TouchableOpacity>
 
           </Modal>
         </>
@@ -173,18 +193,25 @@ console.log(selectedPetProfile);
                 <Text className='p-2 text-green-700'>message</Text>
               </TouchableOpacity>
             ) : null}
-          </View>
 
+            {shelterOwner?.id !== user?.id ? 
+              <TouchableOpacity 
+                className='absolute-center-y right-44 rounded-2xl max-w-24 items-center border border-red-500/10'
+                onPress={() => toggleIsReportModal(true)}
+              >
+                <Text className='px-2 text-red-500/60 text-center'>report</Text>
+              </TouchableOpacity> 
+            : null}
+          </View>
 
           <Text className='text-secondary font-bold text-center mb-2'>{name} {owner === user?.id ? '(your shelter)' : null}</Text>
 
           <View className='items-start gap-4'>
+
             <Text className='text-secondary font-bold'>
                 info: <Text className='font-light text-black/80'>{description}</Text>
             </Text>
-            {/* <Text className='text-secondary font-bold'>
-              address: <Text className='font-light text-black/80'>{address}</Text>
-            </Text> */}
+
             <View>
               {isCopied.status && (
                 <View className='absolute -top-7 bg-secondary/60 px-2 py-1 rounded-md'>
