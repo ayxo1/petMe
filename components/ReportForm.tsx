@@ -77,7 +77,7 @@ const ReportForm = ({ userId, reportedProfileName, reportedProfileId, toggleModa
             nativeID={inputAccessoryViewID}
         >
             <View 
-                className='bg-primary'
+                className='bg-white'
             >
                 <TouchableOpacity 
                     className='p-1.5 items-end justify-center'
@@ -114,18 +114,12 @@ const ReportForm = ({ userId, reportedProfileName, reportedProfileId, toggleModa
                     )}
                 </View>
             </View>
-            <View className='p-5 flex-row gap-2 justify-center'>
+            <View className='p-5'>
                 <ButtonComponent
                     title='submit'
                     onPress={handleSubmit(submit)}
                     style='bg-red-900'
                     textStyle='text-primary'
-                />
-                <ButtonComponent
-                    title='close'
-                    onPress={() => toggleModal(false)}
-                    style='border border-secondary bg-primary/40'
-                    textStyle='text-secondary'
                 />
             </View>
         </View>

@@ -1,4 +1,4 @@
-import { pb } from '@/backend/config/pocketbase';
+import { pb, reportsAPI } from '@/backend/config/pocketbase';
 import Colors from '@/constants/Colors';
 import { useAuthStore } from '@/stores/authStore';
 import { useFeedStore } from '@/stores/useFeedStore';
@@ -10,6 +10,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Alert, Keyboard, Linking, Pressable, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import ButtonComponent from './ButtonComponent';
+import DeletionForm from './DeletionForm';
+import InputComponent from './InputComponent';
 import Modal from './Modal';
 import { speciesOptions } from './pets/PetForm';
 import SupportForm from './SupportForm';
@@ -49,6 +51,7 @@ const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => 
     const [notificationsAllowed, setNotificationsAllowed] = useState(false);
 
     const [isSupportModal, setIsSupportModal] = useState(false);
+    const [isDeleteModal, setIsDeleteModal] = useState(false);
 
     const onEmailChange = async () => {
         if (emailForm.newEmail && emailForm.newEmail !== user.email) {
@@ -188,6 +191,19 @@ const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => 
                         toggleModal={setIsSupportModal}
                     />
                 </View>
+            </Modal>
+        )}
+
+        {isDeleteModal && (
+            <Modal 
+                isOpen={isDeleteModal}
+                toggleModal={setIsDeleteModal}
+                styleProps='bg-white/90'
+            >
+                <DeletionForm 
+                    userId={user.id}
+                    toggleModal={setIsDeleteModal}
+                />
             </Modal>
         )}
 
@@ -402,8 +418,17 @@ const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => 
                 />
             </View>
             
-            <View className='flex-1 justify-end mb-20 border-t border-t-secondary py-4'>
+            <View className='flex-1 justify-end border-t border-t-secondary pt-4'>
                 <LogOutButton />
+            </View>
+            
+            <View className='flex-1 justify-end mt-4 mb-24'>
+                <ButtonComponent 
+                    title='delete account'
+                    style='bg-black/80'
+                    textStyle='text-primary'
+                    onPress={() => setIsDeleteModal(true)}
+                />
             </View>
         </Pressable>
     </ScrollView>

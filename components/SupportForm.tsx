@@ -91,7 +91,7 @@ const SupportForm = ({ userId, toggleModal }: SupportFormProps) => {
             nativeID={inputAccessoryViewID}
         >
             <View 
-                className='bg-primary'
+                className='bg-white'
             >
                 <TouchableOpacity 
                     className='p-1.5 items-end justify-center'

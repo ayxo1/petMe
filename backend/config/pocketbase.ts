@@ -175,6 +175,8 @@ export const authAPI = {
   deleteAccount: async (userId: string) => {
     try {
       await pb.collection('users').delete(userId);
+      const { useAuthStore } = require('@/stores/authStore');
+      useAuthStore.getState().signOut();
     } catch (error) {
       console.log('authAPI, deleteAccount error: ', error);
     }
@@ -475,6 +477,11 @@ export const reportsAPI = {
       reportedUser: reportedProfile,
       reason,
       description: reportDescription
+    });
+  },
+  submitDeletionReason: async (reason: string) => {
+    await pb.collection('deletionReason').create({
+      reason
     });
   }
 };
