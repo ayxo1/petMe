@@ -176,10 +176,10 @@ const EventPage = () => {
             
             {(organizerId !== user?.id && allowMessaging) ? (
               <TouchableOpacity 
-                className='absolute self-center left-40 border border-green-700 rounded-2xl max-w-24 items-center'
+                className='absolute self-center left-40 border border-secondary bg-lighterSecondary/50 rounded-2xl max-w-24 items-center'
                 onPress={connectOrganizer}
               >
-                <Text className='p-2 text-green-700 text-center'>message organizer</Text>
+                <Text className='p-2 text-secondary text-center'>message organizer</Text>
               </TouchableOpacity>
             ) : null}
 

@@ -60,8 +60,17 @@ const DeletionForm = ({ userId, toggleModal }: { userId: string; toggleModal: (i
         <View className='p-6'>
             <ButtonComponent
                 title='delete account'
-                onPress={async () => {
-                    await submit();
+                onPress={() => {
+                    Alert.alert('delete your account', 'please confirm that you want to delete your account', [
+                       {
+                        text: 'delete account',
+                        onPress: async () => await submit()
+                       },
+                       {
+                        text: 'cancel',
+                        onPress: () => toggleModal(false)
+                       }
+                    ]);
                 }}
                 style='bg-black'
                 textStyle='text-primary'

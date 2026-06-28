@@ -756,7 +756,7 @@ routerAdd("POST", "/api/send-notification", (c) => {
 
 routerAdd("POST", "/api/send-mail", (c) => {
     const user = c.auth;
-    const data = new DynamicModel({ inquiryReason: '', description: '' });
+    const data = new DynamicModel({ inquiryReason: '', description: '', email: '' });
     c.bindBody(data);
 
     try {
@@ -773,11 +773,11 @@ routerAdd("POST", "/api/send-mail", (c) => {
     
         mailClient.send(message);
 
-        if (!user) {
+        if (!user && !data.email) {
             const supportCollection = $app.findCollectionByNameOrId('support');
             const supportInquiry = new Record(supportCollection);
-            match.set('reason', data.inquiryReason);
-            match.set('description', data.description);
+            supportInquiry.set('reason', data.inquiryReason);
+            supportInquiry.set('description', data.description);
             $app.save(supportInquiry);
         }
         return c.json(200, { success: true });

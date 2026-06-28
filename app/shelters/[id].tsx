@@ -187,16 +187,16 @@ const ShelterPage = () => {
             />
             {owner !== user?.id ? (
               <TouchableOpacity 
-                className='absolute self-center left-40 border border-green-700 rounded-2xl'
+                className='absolute self-center left-40 border border-secondary bg-lighterSecondary/50 rounded-2xl'
                 onPress={connectShelter}
               >
-                <Text className='p-2 text-green-700'>message</Text>
+                <Text className='p-2 text-secondary'>message</Text>
               </TouchableOpacity>
             ) : null}
 
             {shelterOwner?.id !== user?.id ? 
               <TouchableOpacity 
-                className='absolute-center-y right-44 rounded-2xl max-w-24 items-center border border-red-500/10'
+                className='absolute-center-y right-44 rounded-2xl max-w-24 items-center border border-red-500/10 bg-red-300/20'
                 onPress={() => toggleIsReportModal(true)}
               >
                 <Text className='px-2 text-red-500/60 text-center'>report</Text>
@@ -254,9 +254,9 @@ const ShelterPage = () => {
               }}
             >
               <View
-                className='w-full flex-row gap-4 items-center bg-primary/90 shadow shadow-secondary/20 rounded-2xl p-1 border border-lighterSecondary/40 max-w-full'
+                className='w-full flex-row gap-4 items-center bg-primary/90 shadow shadow-secondary/20 rounded-2xl p-3 border border-lighterSecondary/40 max-w-full'
               >
-
+                
                 <View className='size-24'>
                   <Image
                     source={item.images[0]}
@@ -266,8 +266,8 @@ const ShelterPage = () => {
                   />
                 </View>
 
-                <View className='gap-2 max-w-72'>
-                  <Text className='text-secondary font-bold'>{item.name}</Text>
+                <View className='gap-3 max-w-72'>
+                  <Text className='text-secondary font-bold text-xl text-center mr-[25%]'>{item.name}</Text>
                   <Text className='font-light'>{item.bio}</Text>
                 </View>
 

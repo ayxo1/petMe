@@ -56,7 +56,7 @@ const Rescue = () => {
         />
       </TouchableOpacity>
 
-      <Text className='mt-4 p-1 font-bold text-secondary'>Browse shelter pets: </Text>
+      <Text className='mt-4 p-1 font-bold text-secondary'>Browse pet shelters: </Text>
 
       
       <View className='items-center'>
@@ -90,8 +90,8 @@ const Rescue = () => {
                   />
                 </View>
 
-                <View className='gap-2 w-2/3 p-1'>
-                  <Text className='text-secondary font-bold'>{item.name}</Text>
+                <View className='gap-3 w-2/3 p-1'>
+                  <Text className='text-secondary font-bold text-lg '>{item.name}</Text>
                   <Text className='font-light'>{item.description}</Text>
 
                   <View className='gap-3'>
@@ -120,7 +120,7 @@ const Rescue = () => {
                         tintColor={Colors.secondary}
                       />
                       <Text 
-                        className='font-light' 
+                        className='font-light text-secondary' 
                         lineBreakMode='tail' 
                         numberOfLines={4} 
                         >📍{item.address}

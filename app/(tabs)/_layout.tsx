@@ -14,7 +14,8 @@ const TabBarIcon = ({focused, icon, red = false}: TabBarIconProps) => (
   <View className='mb-2'>
     <Image 
       source={icon}
-      className={`${ icon !== icons.exploreNew ? 'size-9' : 'size-14'}`}
+      // className={`${ icon !== icons.exploreNew ? 'size-9' : 'size-14'}`}
+      className='size-9'
       resizeMode='contain'
       tintColor={focused ? (red ? '#f53361' : Colors.secondary) : Colors.tabIcons}
     />

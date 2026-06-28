@@ -7,6 +7,7 @@ import ProfileSettings from '@/components/ProfileSettings';
 import { icons } from '@/constants';
 import { useAuthStore } from '@/stores/authStore';
 import { usePetStore } from '@/stores/petStore';
+import { useShelterStore } from '@/stores/shelterStore';
 import { useChatStore } from '@/stores/useChatStore';
 import { useLikesStore } from '@/stores/useLikesStore';
 import { PetProfile } from '@/types/pets';
@@ -43,6 +44,7 @@ const Profile = () => {
   const [settingsModal, toggleSettingsModal] = useState(false);
   
   const { pets, hydratePets } = usePetStore();
+  const hydrateShelter = useShelterStore(state => state.hydrateShelter);
   const unsubChat = useChatStore(state => state.unsubscribeChat);
   const unsubLikes = useLikesStore(state => state.unsubscribeLikes);
   
@@ -212,6 +214,7 @@ const Profile = () => {
                     <TouchableOpacity
                       className='p-2 border border-secondary rounded-2xl bg-lighterSecondary/30'
                       onPress={async () => {
+                        await hydrateShelter(user.id);
                         await cleanUpBeforeNavigation('/(auth)/shelter-setup', { initialData: '1' })
                       }}
                     >

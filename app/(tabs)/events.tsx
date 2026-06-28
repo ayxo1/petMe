@@ -43,7 +43,7 @@ const Events = () => {
           setFetchError(null);
           
           const result: PBEventPage[] = await pb.collection('events').getFullList({
-            sort: '-created'
+            sort: 'date'
           });
   
           const convertedEventList = result.map((event) => (
