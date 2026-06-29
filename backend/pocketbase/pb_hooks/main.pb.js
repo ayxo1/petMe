@@ -755,19 +755,20 @@ routerAdd("POST", "/api/send-notification", (c) => {
 }, $apis.requireAuth('users'));
 
 routerAdd("POST", "/api/send-mail", (c) => {
-    const user = c.auth;
+    const user = c.auth || '';
     const data = new DynamicModel({ inquiryReason: '', description: '', email: '' });
     c.bindBody(data);
 
     try {
-        if (!data.inquiryReason || !data.description) return c.json(200, { error: 'invalid data' });
+        if (!data.inquiryReason || !data.description || !data.email) return c.json(200, { error: 'invalid data' });
         const mailClient = $app.newMailClient();
         const message = new MailerMessage({
-            from: { address: 'petapetsupport@gmail.com', name: 'pet-a-pet app'},
+            from: { address: data.email, name: `${data.email}: request`},
             to: [{ address: 'petapetsupport@gmail.com' }],
-            subject: `${data.inquiryReason}`,
-            html: `userId - <strong>${user.id}</strong>
+            subject: `${data.email}: ${data.inquiryReason}`,
+            html: `${user.id ? `userId - <strong>${user.id}</strong>` : ''}
             <br>
+            <p>contact email: ${data.email}</p>
             <p>${data.description}</p>`
         });
     
