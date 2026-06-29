@@ -30,6 +30,7 @@ export interface InputComponentProps {
   ref?: React.RefObject<TextInput | null>;
   autoFocus?: boolean;
   inputAccessoryViewID?: string;
+  onPress?:() => void;
 }
 
 export interface FormInputControllerProps<

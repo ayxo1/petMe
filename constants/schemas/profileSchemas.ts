@@ -49,11 +49,15 @@ export const reportProfile = yup.object({
 });
 
 export const supportForm = yup.object({
+  contactMail: yup
+    .string()
+    .email('must be a valid email address')
+    .required('contact mail is necessary to email you back'),
   description: yup
     .string()
-    .required(),
+    .required('description will help understand the issue better'),
   inquiryReason: yup
     .string()
     .oneOf(['suggestion', 'tech issue', 'report a violation', 'other'])
-    .required()
+    .required('specific reason will help speed up resolution')
 });

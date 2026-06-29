@@ -16,7 +16,8 @@ const InputComponent = ({
     generalStyle = 'w-full',
     ref,
     autoFocus = false,
-    inputAccessoryViewID
+    inputAccessoryViewID,
+    onPress
 }: InputComponentProps) => {
 
     const [isFocused, setIsFocused] = useState(false);
@@ -48,6 +49,7 @@ const InputComponent = ({
         ref={ref}
         autoFocus={autoFocus}
         inputAccessoryViewID={inputAccessoryViewID}
+        onPress={onPress}
       />
       {/* {inputAccessoryViewID ? 
         <InputAccessoryView nativeID={inputAccessoryViewID}>

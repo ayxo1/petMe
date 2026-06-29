@@ -20,7 +20,8 @@ const InputController = (
     textContentType = undefined,
     generalStyle,
     autoFocus = false,
-    inputAccessoryViewID
+    inputAccessoryViewID,
+    onPress
   }: FormInputControllerProps) => {
 
   return (
@@ -45,6 +46,7 @@ const InputController = (
               autoFocus={autoFocus}
               // onBlur={onBlur}
               inputAccessoryViewID={inputAccessoryViewID}
+              onPress={onPress}
             />
           )
         }}

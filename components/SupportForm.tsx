@@ -25,6 +25,7 @@ const SupportForm = ({ userId, toggleModal }: SupportFormProps) => {
         {label: 'report a violation', value: 'report a violation'},
         {label: 'other', value: 'other'},
     ]);
+
     const inputAccessoryViewID = 'supportFormDescription';
 
     const {
@@ -41,12 +42,13 @@ const SupportForm = ({ userId, toggleModal }: SupportFormProps) => {
         }
     });
 
-    const submit = async ({description, inquiryReason } : { description: string; inquiryReason: string; }) => {
+    const submit = async ({ description, inquiryReason, contactMail } : { description: string; inquiryReason: string; contactMail: string; }) => {
         if(!inquiryReason) return;
         try {
             if (user) {                
                 await pb.collection('support').create({
                     submitter: userId,
+                    contactMail,
                     description,
                     inquiryReason
                 });
@@ -56,7 +58,7 @@ const SupportForm = ({ userId, toggleModal }: SupportFormProps) => {
                 body: {
                     inquiryReason,
                     description,
-                    email: ''
+                    email: contactMail
                 }
             });
             Alert.alert('support inquiry submitted', 'thanks for the info!');
@@ -78,31 +80,48 @@ const SupportForm = ({ userId, toggleModal }: SupportFormProps) => {
             <InputController
                 multiline
                 control={control}
+                name='contactMail'
+                label='contact email address'
+                errors={errors}
+                placeholder="please describe your inquiry"
+                labelStyling={'text-secondary'}
+                spellCheck
+                inputAccessoryViewID={'dimsiss-emailInput'}
+            />
+        </View>
+
+        <View>
+            <InputController
+                multiline
+                control={control}
                 name='description'
                 label='description'
                 errors={errors}
                 placeholder="please describe your inquiry"
                 labelStyling={'text-secondary'}
                 spellCheck
-                inputAccessoryViewID={inputAccessoryViewID}
+                inputAccessoryViewID={'dimsiss-descriptionInput'}
             />
         </View>
-                    
-        <InputAccessoryView 
-            nativeID={inputAccessoryViewID}
-        >
-            <View 
-                className='bg-white'
+
+        {['emailInput', 'descriptionInput'].map((key) => (
+            <InputAccessoryView
+                key={key}
+                nativeID={`dimsiss-${key}`}
             >
-                <TouchableOpacity 
-                    className='p-1.5 items-end justify-center'
-                    onPress={() => Keyboard.dismiss()}
+                <View 
+                    className='bg-white'
                 >
-                    <Text className='mr-12 text-lg text-secondary font-semibold'>done</Text>
-                </TouchableOpacity>
-            </View>
-        </InputAccessoryView>
-        
+                    <TouchableOpacity 
+                        className='p-1.5 items-end justify-center'
+                        onPress={() => Keyboard.dismiss()}
+                    >
+                        <Text className='mr-12 text-lg text-secondary font-semibold'>done</Text>
+                    </TouchableOpacity>
+                </View>
+            </InputAccessoryView>
+        ))}
+                    
         <View>
             <View>
                 <Text className='label my-2 text-secondary'>select the reason</Text>
@@ -131,7 +150,6 @@ const SupportForm = ({ userId, toggleModal }: SupportFormProps) => {
                 </View>
             </View>
         </View>
-
 
         <View className='p-6'>
             <ButtonComponent

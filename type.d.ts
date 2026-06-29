@@ -16,6 +16,7 @@ interface InputComponentProps {
   generalStyle?: string;
   autoFocus?: boolean;
   inputAccessoryViewID?: string;
+  onPress?: () => void;
 }
 
 export interface FormInputControllerProps extends InputComponentProps {

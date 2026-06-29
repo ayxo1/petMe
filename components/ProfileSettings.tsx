@@ -183,7 +183,7 @@ const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => 
             <Modal 
                 isOpen={isSupportModal}
                 toggleModal={setIsSupportModal}
-                styleProps='bg-white/90'
+                styleProps='bg-white/95'
             >
                 <View>
                     <SupportForm 
