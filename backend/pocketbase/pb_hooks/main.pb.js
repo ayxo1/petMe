@@ -773,13 +773,6 @@ routerAdd("POST", "/api/send-mail", (c) => {
     
         mailClient.send(message);
 
-        if (!user && !data.email) {
-            const supportCollection = $app.findCollectionByNameOrId('support');
-            const supportInquiry = new Record(supportCollection);
-            supportInquiry.set('reason', data.inquiryReason);
-            supportInquiry.set('description', data.description);
-            $app.save(supportInquiry);
-        }
         return c.json(200, { success: true });
     } catch (error) {
         console.log('/api/send-mail error', error);

@@ -55,7 +55,8 @@ const SupportForm = ({ userId, toggleModal }: SupportFormProps) => {
                 method: "POST",
                 body: {
                     inquiryReason,
-                    description
+                    description,
+                    email: ''
                 }
             });
             Alert.alert('support inquiry submitted', 'thanks for the info!');
@@ -119,6 +120,7 @@ const SupportForm = ({ userId, toggleModal }: SupportFormProps) => {
                     onChangeValue={val => {setValue('inquiryReason', val as 'suggestion')}}
                     style={errors.inquiryReason ? { borderColor: 'red', backgroundColor: '#ffffff99' } : {backgroundColor: '#fffff'}}
                     placeholder='select the reason'
+                    onOpen={() => Keyboard.dismiss()}
                 />
                 <View className='h-5'>
                     {errors.inquiryReason && (

@@ -34,7 +34,7 @@ const SignIn = () => {
 
   const { signIn, signInWithOAuth, isLoading } = useAuthStore();
 
-  const [isSupportModal, setIsSupportModal] = useState(false);
+  // const [isSupportModal, setIsSupportModal] = useState(false);
   const [forgotPasswordModal, toggleForgotPasswordModal] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
 
@@ -102,7 +102,7 @@ const SignIn = () => {
         className='gap-3 rounded-lg p-5'
       >
 
-        {isSupportModal && (
+        {/* {isSupportModal && (
           <Modal 
             isOpen={isSupportModal}
             toggleModal={setIsSupportModal}
@@ -116,7 +116,7 @@ const SignIn = () => {
               />
             </View>
           </Modal>
-        )}
+        )} */}
         
         {forgotPasswordModal && (
           <Modal
@@ -208,18 +208,26 @@ const SignIn = () => {
             <Text className='text-xl text-secondary'>forgot password</Text>
           </TouchableOpacity>
 
-          <View>
-            <ButtonComponent 
-              title='contact support'
+          <View
+            className='bg-secondary px-3 py-2 rounded-2xl'
+          >
+            <Link 
+              href='https://petapetapp.com/contact'
+              className='text-primary'
+            >
+              support
+            </Link>
+            {/* <ButtonComponent 
+              title='support'
               style='bg-lighterSecondary'
               textStyle='text-secondary'
               onPress={() => setIsSupportModal(true)}
-            />
+            /> */}
           </View>
         </View>
       </View>
     </Fragment>
   )
-}
+};
 
 export default SignIn;
