@@ -75,7 +75,7 @@ const ProfileInterface = ({ profile, reportBtn = true }: { profile: Partial<Feed
             <Modal
                 isOpen={adoptionModal}
                 toggleModal={toggleAdoptionModal}
-                styleProps='mt-48 justify-center items-center max-w-96'
+                styleProps='mt-[30%] justify-center items-center max-w-96'
                 tint={false}
             >
                 <View className="gap-4 bg-primary/90 px-3 py-4 rounded-2xl border border-lighterSecondary">

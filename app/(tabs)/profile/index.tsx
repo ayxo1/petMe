@@ -42,7 +42,7 @@ const Profile = () => {
   const [profilePreview, toggleProfilePreview] = useState(false);
   const [selectedPetProfile, setSelectedPetProfile] = useState<PetProfile | null>();
   const [settingsModal, toggleSettingsModal] = useState(false);
-  
+  console.log(selectedPetProfile)
   const { pets, hydratePets } = usePetStore();
   const hydrateShelter = useShelterStore(state => state.hydrateShelter);
   const unsubChat = useChatStore(state => state.unsubscribeChat);
@@ -154,7 +154,7 @@ const Profile = () => {
             </TouchableOpacity>
 
             <ProfileInterface
-              profile={{ images: selectedPetProfile.images, name: selectedPetProfile.name, bio: selectedPetProfile.bio }}
+              profile={selectedPetProfile}
               reportBtn={false}
             />
           </View>
