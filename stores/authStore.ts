@@ -10,7 +10,6 @@ import { AuthState, RegistrationState, SignInFormData, SignUpFormData, User } fr
 export const convertPBUserToUser = (pbUser: PBUser): User => {
   
   const imageUrls = pbUser.images.map(filename => stringImageToPbUrl(filename, 'users', pbUser.id));
-// console.log('email log:', pbUser.email);
 
   return {
     id: pbUser.id,
@@ -68,7 +67,6 @@ export const useAuthStore = create<AuthState>()(
             const externalAuths = await pb.collection('_externalAuths').getFullList({
               filter: `recordRef = "${currentId}"`
             });
-            // const externalAuths = await pb.collection('users').listExternalAuths(currentId);
             const isOAuth = externalAuths.length > 0;
 
             set({
@@ -93,7 +91,8 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: true,
             user,
             registrationState: user.regState,
-            isLoading: false
+            isLoading: false,
+            isOAuth: true
           });
         } catch (error) {
           set({ isLoading: false });

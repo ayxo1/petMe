@@ -61,9 +61,9 @@ const Index = () => {
         <SafeAreaView className="flex-1 px-2 items-center justify-center">
           <Text className="text-2xl font-bold text-gray-600 text-center max-w-96">
             {user?.accountType === 'owner' 
-              ? 'Swipe on profiles to connect with more pets and seekers!' 
+              ? 'swipe on profiles to connect with more pets and seekers!' 
               : (user?.accountType === 'seeker' 
-                ? 'Swipe on profiles to connect with more pets!' 
+                ? 'swipe on profiles to connect with more owners and their pets!' 
                 : 'people interested in your pets will be able to connect with you')
             }
             {"\n"}

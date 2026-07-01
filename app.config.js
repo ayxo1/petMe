@@ -10,7 +10,7 @@ module.exports = {
     "scheme": "petme",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Your location will help connect you with nearby pets and pet owners.",
         "NSMotionUsageDescription": "Used to create a tilt effect on profile cards.",
@@ -62,7 +62,7 @@ module.exports = {
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app accesses your photos to let you setup a profile for you and your pets."
+          "photosPermission": "The app accesses your photos to let you setup profiles for you and your pets."
         }
       ],
       "expo-web-browser",

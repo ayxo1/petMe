@@ -211,7 +211,7 @@ const ProfileSettings = ({ signOut, LogOutButton, modalOpen }: { signOut: () => 
             onPress={() => Keyboard.dismiss()}
         >
             {/* email verification */}
-            {(!pb.authStore.record?.verified && !isOAuth) ? (
+            {(!pb.authStore.record?.verified) ? (
             <View className='bg-primary/90 shadow shadow-secondary/30 rounded-2xl'>
                 <View className='gap-2 p-3 border border-secondary rounded-2xl'>
                     <View className='flex-row items-center justify-between'>

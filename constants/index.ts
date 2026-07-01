@@ -24,6 +24,7 @@ import rescueIcon from '../assets/icons/rescueIcon.png';
 import appIcon from '../assets/images/icon.jpg';
 import mrBigDislike from '../assets/images/mrBigDislike.png';
 import mrBigLike from '../assets/images/mrBigLike.png';
+import mrOrange from '../assets/images/mrOrange.png';
 import orangePaw from '../assets/images/paw.png';
 import profileCardBorder from '../assets/images/profileCardBorder.png';
 
@@ -36,7 +37,8 @@ export const images = {
     mrBigBlurhash,
     orangePaw,
     mrBigLike,
-    mrBigDislike
+    mrBigDislike,
+    mrOrange
 };
 
 export const icons = {

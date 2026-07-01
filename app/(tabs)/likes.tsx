@@ -27,15 +27,17 @@ const Likes = () => {
   const user = useAuthStore(state => state.user);
   if (user?.accountType === 'shelter') return (
     <View className="flex-1">
-      <SafeAreaView className="flex-1 items-center justify-center p-6 gap-4">
+      <SafeAreaView className="flex-1 items-center justify-center p-1 gap-4">
           <Text className="text-2xl font-bold text-gray-600 text-center p-2">
-            since users can just contact shelters directly and can't swipe on their pets, here's a picture of mr big (again)
+            since users can just contact shelters directly and can't swipe on their pets, here's a picture of mr. orange (again)
           </Text>
-          <Image 
-            className="size-1/2"
-            source={images.mrBigLike}
-            resizeMode="cover"
-          />
+          <View className="w-full h-[25%] items-center">
+            <Image 
+              className="size-full"
+              source={images.mrOrange}
+              resizeMode='contain'
+            />
+          </View>
       </SafeAreaView>
     </View>
   );
