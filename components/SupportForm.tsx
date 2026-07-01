@@ -110,13 +110,13 @@ const SupportForm = ({ userId, toggleModal }: SupportFormProps) => {
                 nativeID={`dimsiss-${key}`}
             >
                 <View 
-                    className='bg-white'
+                    className='bg-tabIcons'
                 >
                     <TouchableOpacity 
                         className='p-1.5 items-end justify-center'
                         onPress={() => Keyboard.dismiss()}
                     >
-                        <Text className='mr-12 text-lg text-secondary font-semibold'>done</Text>
+                        <Text className='mr-12 text-lg text-primary font-semibold'>done</Text>
                     </TouchableOpacity>
                 </View>
             </InputAccessoryView>

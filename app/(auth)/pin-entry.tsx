@@ -73,9 +73,12 @@ const PinEntry = () => {
 
   return (
     <View className='items-center gap-3'>
-        <Text className=' color-secondary text-xl'>{registrationState !== 'completed' ? 'a code was sent to ' : 'verifying '}<Text className='font-bold underline decoration-gray-800 underline-offset-4'>{email}</Text></Text>
+        <Text className='color-secondary text-xl text-center'>
+            {registrationState !== 'completed' ? 'a code was sent to ' : 'verifying '}
+                <Text className='font-bold underline decoration-gray-800 underline-offset-4'>{email}</Text>
+        </Text>
         <Text 
-        className='text-center'
+            className='text-center'
         >
             {registrationState !== 'completed' ? 'please enter it below' : 'click on the send code button to receive a code to your email, enter the code below:'}
         </Text>
@@ -111,7 +114,7 @@ const PinEntry = () => {
         </View>)}
         {registrationState !== 'completed' && (<View className='border-t-red-500/20'>
         <TouchableOpacity 
-            className='border mt-4 p-1 rounded-2xl px-2 border-red-400 bg-red-400/20'
+            className='border mt-4 p-1 rounded-2xl px-2 border-red-400 bg-red-200/20'
             onPress={async () => {
                 await updateProfile({ regState: 'verified' });
             }}

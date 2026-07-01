@@ -53,9 +53,13 @@ const PetForm = ({ initialData, onSubmit, submitButtonText = 'save'}: PetFormPro
         formState: { errors, isSubmitting }
     } = useForm({
         resolver: yupResolver(petFormSchema),
-        defaultValues: initialData ? { ...initialData } : { isAvailableForAdoption: false }
+        defaultValues: initialData ? { 
+            ...initialData,
+            adoptionReason: initialData.adoptionDetails?.reason,
+            adoptionRequirements: initialData.adoptionDetails?.requirements
+        } : { isAvailableForAdoption: false }
     });
-
+    
     const species = watch('species');
     const petImages = watch('images');
     const isAvailableForAdoption = watch('isAvailableForAdoption');
